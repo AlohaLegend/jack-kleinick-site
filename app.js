@@ -412,7 +412,8 @@ function beginDrag(event, index) {
   body.lastY = point.y;
   body.lastMove = performance.now();
   body.token.setPointerCapture(event.pointerId);
-  grid.classList.add("is-dragging-cover");
+  document.body.appendChild(body.token);
+  body.token.classList.add("is-dragging-token");
   body.token.style.zIndex = "40";
   event.preventDefault();
 }
@@ -441,6 +442,8 @@ function endDrag(event, index) {
   body.dragging = false;
   body.pointerId = null;
   body.token.releasePointerCapture(event.pointerId);
+  grid.appendChild(body.token);
+  body.token.classList.remove("is-dragging-token");
   body.token.style.zIndex = "";
   body.introPinned = false;
 
@@ -456,9 +459,6 @@ function endDrag(event, index) {
     focusProject(index);
   }
 
-  if (!bodies.some((item) => item.dragging)) {
-    grid.classList.remove("is-dragging-cover");
-  }
 }
 
 function releaseFocusedProject(options = {}) {

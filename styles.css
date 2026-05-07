@@ -282,10 +282,6 @@ img {
   overflow: hidden;
 }
 
-.cover-field.is-dragging-cover {
-  z-index: 12;
-}
-
 .cover-token {
   position: absolute;
   display: block;
@@ -310,6 +306,10 @@ img {
 
 .cover-token:active {
   cursor: grabbing;
+}
+
+.cover-token.is-dragging-token {
+  z-index: 80;
 }
 
 .cover-token img {
