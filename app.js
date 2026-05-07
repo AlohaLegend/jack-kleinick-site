@@ -532,6 +532,36 @@ function dragToken(event, index) {
   body.lastMove = now;
 }
 
+function pushBodyFromDrag(dragged, target) {
+  if (!dragged || !target || target.dragging || target.pinned) return;
+
+  const draggedSize = dragged.token.offsetWidth || 116;
+  const targetSize = target.token.offsetWidth || 116;
+  const draggedRadius = draggedSize * 0.5;
+  const targetRadius = targetSize * 0.5;
+  const draggedCenterX = dragged.x + draggedRadius;
+  const draggedCenterY = dragged.y + draggedRadius;
+  const targetCenterX = target.x + targetRadius;
+  const targetCenterY = target.y + targetRadius;
+  const dx = targetCenterX - draggedCenterX;
+  const dy = targetCenterY - draggedCenterY;
+  const distance = Math.max(1, Math.hypot(dx, dy));
+  const cushion = (draggedRadius + targetRadius) * 1.42;
+
+  if (distance >= cushion) return;
+
+  const nx = dx / distance;
+  const ny = dy / distance;
+  const pressure = (cushion - distance) / cushion;
+  const push = pressure * pressure * 8.2;
+
+  target.x += nx * push;
+  target.y += ny * push;
+  target.vx += nx * (0.028 + pressure * 0.06) + dragged.vx * 0.018;
+  target.vy += ny * (0.028 + pressure * 0.06) + dragged.vy * 0.018;
+  target.rotation += nx * pressure * 0.32;
+}
+
 function endDrag(event, index) {
   const body = bodies[index];
   if (!body.dragging || body.pointerId !== event.pointerId) return;
@@ -706,12 +736,12 @@ function separatePair(a, b) {
   if (aLocked && bLocked) return;
 
   if (aLocked) {
-    applySeparation(b, axis, -direction * separation);
+    applySeparation(b, axis, -direction * separation * 0.48);
     return;
   }
 
   if (bLocked) {
-    applySeparation(a, axis, direction * separation);
+    applySeparation(a, axis, direction * separation * 0.48);
     return;
   }
 
@@ -720,7 +750,12 @@ function separatePair(a, b) {
 }
 
 function resolveCoverCollisions(bounds, floor) {
-  for (let pass = 0; pass < 4; pass += 1) {
+  const draggedBodies = bodies.filter((body) => body.dragging);
+  draggedBodies.forEach((dragged) => {
+    bodies.forEach((body) => pushBodyFromDrag(dragged, body));
+  });
+
+  for (let pass = 0; pass < 3; pass += 1) {
     for (let first = 0; first < bodies.length; first += 1) {
       for (let second = first + 1; second < bodies.length; second += 1) {
         separatePair(bodies[first], bodies[second]);
