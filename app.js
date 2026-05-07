@@ -201,7 +201,6 @@ const projects = [
 
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
-const stageCopy = document.querySelector(".stage-copy");
 const stageFocus = document.querySelector("#stage-focus");
 const stageTarget = document.querySelector(".stage-target");
 const focusTitle = document.querySelector("#focus-title");
@@ -455,8 +454,8 @@ function setupBodies() {
       token,
       x: -bleed + ((index * 173 + lane * 41) % spread),
       y: -bleed + ((index * 67 + lane * 29) % Math.max(120, bounds.height - size + bleed * 2)),
-      vx: ((index % 7) - 3) * 0.085,
-      vy: ((index % 5) - 2) * 0.04,
+      vx: ((index % 7) - 3) * 0.052,
+      vy: ((index % 5) - 2) * 0.026,
       drift: index * 1.73,
       rotation: (index % 2 === 0 ? -1 : 1) * (2 + (index % 5)),
       dragging: false,
@@ -660,11 +659,11 @@ function applySeparation(body, axis, amount) {
 
 function keepBodyMoving(body, timestamp, delta) {
   const speed = Math.hypot(body.vx, body.vy);
-  if (speed > 0.09) return;
+  if (speed > 0.055) return;
 
-  const driftTime = timestamp * 0.00022 + body.drift;
-  body.vx += Math.sin(driftTime * 1.7) * 0.01 * delta;
-  body.vy += Math.cos(driftTime * 1.3) * 0.006 * delta;
+  const driftTime = timestamp * 0.00016 + body.drift;
+  body.vx += Math.sin(driftTime * 1.7) * 0.0055 * delta;
+  body.vy += Math.cos(driftTime * 1.3) * 0.0038 * delta;
 }
 
 function separatePair(a, b) {
@@ -756,13 +755,13 @@ function updateStage(timestamp) {
 
   bodies.forEach((body) => {
     if (!body.dragging && !body.pinned) {
-      const driftTime = timestamp * 0.00022 + body.drift;
-      body.vx += Math.sin(driftTime) * 0.0048 * delta;
-      body.vx += deviceGravity.x * 0.0065 * delta;
-      body.vy += (0.004 + deviceGravity.y * 0.006 + Math.cos(driftTime * 0.8) * 0.0022) * delta;
+      const driftTime = timestamp * 0.00016 + body.drift;
+      body.vx += Math.sin(driftTime) * 0.0029 * delta;
+      body.vx += deviceGravity.x * 0.0052 * delta;
+      body.vy += (0.0026 + deviceGravity.y * 0.0048 + Math.cos(driftTime * 0.8) * 0.0014) * delta;
       keepBodyMoving(body, timestamp, delta);
-      body.vx *= 0.999;
-      body.vy *= 0.999;
+      body.vx *= 0.994;
+      body.vy *= 0.994;
       body.x += body.vx * delta;
       body.y += body.vy * delta;
       body.rotation += body.vx * 0.008;
@@ -851,10 +850,8 @@ focusOpen.addEventListener("click", () => {
   openProject(displayedProject);
 });
 
-[stageCopy, stageFocus].forEach((element) => {
-  element?.addEventListener("click", (event) => {
-    event.stopPropagation();
-  });
+stageFocus?.addEventListener("click", (event) => {
+  event.stopPropagation();
 });
 
 prevButton.addEventListener("click", () => {
