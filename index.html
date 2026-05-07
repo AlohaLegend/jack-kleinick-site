@@ -13,15 +13,21 @@
     <header class="site-header">
       <button class="name-button" type="button" data-view="work">Jack Kleinick</button>
       <div class="header-actions">
-        <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark theme">
-          Dark
-        </button>
+        <button class="work-link" type="button" data-view="work">Selected</button>
         <button class="info-button" type="button" data-view="info">Info</button>
       </div>
     </header>
 
     <main class="site-main">
       <section class="view is-active" id="work-view" aria-label="Selected works">
+        <section class="synth-intro" aria-label="Intro">
+          <canvas id="synth-lines" aria-hidden="true"></canvas>
+          <div class="intro-copy">
+            <p>Los Angeles / New York / London</p>
+            <h1>Jack Kleinick</h1>
+            <span>Production / writing / songs</span>
+          </div>
+        </section>
         <div class="work-grid" id="work-grid"></div>
       </section>
 
@@ -34,8 +40,8 @@
               Angeles, New York, and London.
             </p>
             <p>
-              This page is a simple working draft for selected productions, playlist listening, and
-              project inquiries while final credits and photography are being gathered.
+              This page is a working draft for selected productions, playlist listening, and project
+              inquiries while final credits and photography are being gathered.
             </p>
 
             <div class="contact-block">
@@ -47,13 +53,13 @@
                 target="_blank"
                 rel="noreferrer"
               >
-                Listen to Selected Works →
+                Listen to Selected Works &rarr;
               </a>
             </div>
 
             <div class="info-footer">
               <button type="button" class="back-button hover-glow" data-view="work">
-                ← Back to Selected Works
+                &larr; Back to Selected Works
               </button>
             </div>
           </div>
@@ -64,7 +70,7 @@
     <div class="modal" id="project-modal" aria-hidden="true">
       <div class="modal-backdrop" data-close></div>
       <article class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-        <button class="close-button" type="button" aria-label="Close project" data-close>×</button>
+        <button class="close-button" type="button" aria-label="Close project" data-close>&times;</button>
         <img id="modal-image" src="assets/studio-hero.png" alt="" />
         <div class="modal-copy">
           <h1 id="modal-title"></h1>
@@ -78,7 +84,7 @@
             <div class="track-list" id="modal-tracks"></div>
           </div>
           <footer class="modal-nav">
-            <button type="button" class="hover-glow" data-close>← Back to Selected Works</button>
+            <button type="button" class="hover-glow" data-close>&larr; Back to Selected Works</button>
             <div>
               <button type="button" class="hover-glow" id="prev-project">prev</button>
               <span>/</span>

@@ -210,7 +210,8 @@ const modalRole = document.querySelector("#modal-role");
 const modalTracks = document.querySelector("#modal-tracks");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
-const themeToggle = document.querySelector("#theme-toggle");
+const synthCanvas = document.querySelector("#synth-lines");
+const synthContext = synthCanvas.getContext("2d");
 
 let activeProject = 0;
 
@@ -218,7 +219,7 @@ function renderGrid() {
   grid.innerHTML = projects
     .map(
       (project, index) => `
-        <button class="work-card" type="button" data-project="${index}" style="--tint:${project.tint};--sat:${project.sat};--x:${project.x};--y:${project.y}">
+        <button class="work-card" type="button" data-project="${index}">
           <img src="${project.image}" alt="${project.album} cover" loading="lazy">
           <span class="work-overlay">
             <p><em>${project.album}</em></p>
@@ -236,14 +237,6 @@ function showView(view) {
   workView.classList.toggle("is-active", !showInfo);
   infoView.classList.toggle("is-active", showInfo);
   closeModal();
-}
-
-function setTheme(theme) {
-  document.body.dataset.theme = theme;
-  localStorage.setItem("jack-kleinick-theme", theme);
-  const isDark = theme === "dark";
-  themeToggle.textContent = isDark ? "Light" : "Dark";
-  themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} theme`);
 }
 
 function openProject(index) {
@@ -276,7 +269,53 @@ function closeModal() {
 }
 
 renderGrid();
-setTheme(localStorage.getItem("jack-kleinick-theme") || "light");
+
+function resizeSynthCanvas() {
+  const scale = window.devicePixelRatio || 1;
+  const rect = synthCanvas.getBoundingClientRect();
+  synthCanvas.width = Math.max(1, Math.floor(rect.width * scale));
+  synthCanvas.height = Math.max(1, Math.floor(rect.height * scale));
+  synthContext.setTransform(scale, 0, 0, scale, 0, 0);
+}
+
+function drawSynthLines(time = 0) {
+  const rect = synthCanvas.getBoundingClientRect();
+  const width = rect.width;
+  const height = rect.height;
+  synthContext.clearRect(0, 0, width, height);
+
+  const glow = synthContext.createLinearGradient(0, 0, width, 0);
+  glow.addColorStop(0, "rgba(126, 178, 173, 0)");
+  glow.addColorStop(0.25, "rgba(126, 178, 173, 0.62)");
+  glow.addColorStop(0.65, "rgba(216, 165, 91, 0.5)");
+  glow.addColorStop(1, "rgba(126, 178, 173, 0)");
+
+  for (let line = 0; line < 8; line += 1) {
+    const base = height * (0.2 + line * 0.085);
+    const amp = 10 + line * 2;
+    const speed = time * 0.0014 + line * 0.65;
+
+    synthContext.beginPath();
+    synthContext.strokeStyle = line % 2 === 0 ? glow : "rgba(245, 241, 234, 0.14)";
+    synthContext.lineWidth = line % 2 === 0 ? 1.4 : 0.8;
+
+    for (let x = -12; x <= width + 12; x += 12) {
+      const pulse = Math.sin(x * 0.018 + speed) * amp;
+      const step = Math.sin((x + time * 0.09) * 0.05 + line) > 0.96 ? amp * 2.6 : 0;
+      const y = base + pulse + step;
+      if (x === -12) synthContext.moveTo(x, y);
+      synthContext.lineTo(x, y);
+    }
+
+    synthContext.stroke();
+  }
+
+  requestAnimationFrame(drawSynthLines);
+}
+
+resizeSynthCanvas();
+drawSynthLines();
+window.addEventListener("resize", resizeSynthCanvas);
 
 document.addEventListener("click", (event) => {
   const viewButton = event.target.closest("[data-view]");
@@ -286,10 +325,6 @@ document.addEventListener("click", (event) => {
   if (viewButton) showView(viewButton.dataset.view);
   if (card) openProject(Number(card.dataset.project));
   if (close) closeModal();
-});
-
-themeToggle.addEventListener("click", () => {
-  setTheme(document.body.dataset.theme === "dark" ? "light" : "dark");
 });
 
 prevButton.addEventListener("click", () => {
