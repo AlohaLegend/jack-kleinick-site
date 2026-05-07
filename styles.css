@@ -255,7 +255,7 @@ img {
 .stage-copy span {
   color: var(--muted);
   font-size: clamp(0.96rem, 2vw, 1.2rem);
-  padding-bottom: 1.2rem;
+  padding-bottom: 0.5rem;
 }
 
 .cover-field {
@@ -325,15 +325,18 @@ img {
 
 .stage-target {
   position: absolute;
-  left: 50%;
-  top: 52%;
-  z-index: 1;
-  width: clamp(9rem, 20vw, 15rem);
+  left: clamp(21rem, 36vw, 40rem);
+  top: clamp(10.5rem, 26vh, 16rem);
+  z-index: 5;
+  width: clamp(7rem, 12vw, 10rem);
   aspect-ratio: 1;
-  border: 1px solid rgba(245, 241, 234, 0.12);
+  border: 1px solid rgba(245, 241, 234, 0.24);
   border-radius: 50%;
-  transform: translate(-50%, -50%);
-  box-shadow: inset 0 0 3rem rgba(126, 178, 173, 0.08);
+  transform: translateY(-50%);
+  pointer-events: none;
+  box-shadow:
+    inset 0 0 3rem rgba(126, 178, 173, 0.12),
+    0 0 3rem rgba(126, 178, 173, 0.08);
 }
 
 .stage-target::after {
@@ -341,10 +344,10 @@ img {
   position: absolute;
   left: 50%;
   top: 50%;
-  width: 0.45rem;
+  width: 0.35rem;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: rgba(245, 241, 234, 0.3);
+  background: rgba(245, 241, 234, 0.38);
   transform: translate(-50%, -50%);
 }
 
@@ -633,11 +636,19 @@ img {
 
   .stage-copy {
     display: grid;
+    gap: 0.8rem;
     padding-top: 5rem;
   }
 
   .stage-copy span {
     padding-bottom: 0.8rem;
+  }
+
+  .stage-target {
+    left: auto;
+    right: 1rem;
+    top: 8.4rem;
+    width: clamp(5.8rem, 24vw, 7rem);
   }
 
   .cover-token {

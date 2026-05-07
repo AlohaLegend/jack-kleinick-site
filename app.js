@@ -201,6 +201,7 @@ const projects = [
 
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
+const stageTarget = document.querySelector(".stage-target");
 const focusTitle = document.querySelector("#focus-title");
 const focusMeta = document.querySelector("#focus-meta");
 const focusRole = document.querySelector("#focus-role");
@@ -230,6 +231,24 @@ function viewportBounds() {
   };
 }
 
+function focusTargetPosition(size = 0) {
+  if (!stageTarget) {
+    const bounds = viewportBounds();
+    return {
+      x: bounds.width * 0.5 - size * 0.5,
+      y: bounds.height * 0.52 - size * 0.5,
+      radius: Math.max(118, bounds.width * 0.12),
+    };
+  }
+
+  const target = stageTarget.getBoundingClientRect();
+  return {
+    x: target.left + target.width * 0.5 - size * 0.5,
+    y: target.top + target.height * 0.5 - size * 0.5,
+    radius: Math.max(96, target.width * 0.72),
+  };
+}
+
 function renderGrid() {
   grid.innerHTML = projects
     .map(
@@ -243,7 +262,7 @@ function renderGrid() {
     .join("");
 
   setupBodies();
-  focusProject(0, { snap: true });
+  focusProject(0);
   window.requestAnimationFrame(updateStage);
 }
 
@@ -260,8 +279,9 @@ function setupBodies() {
       token,
       x: 16 + ((index * 173 + lane * 41) % spread),
       y: 76 + ((index * 67 + lane * 29) % Math.max(120, bounds.height - size - 170)),
-      vx: ((index % 7) - 3) * 0.09,
-      vy: 0,
+      vx: ((index % 7) - 3) * 0.055,
+      vy: ((index % 5) - 2) * 0.025,
+      drift: index * 1.73,
       rotation: (index % 2 === 0 ? -1 : 1) * (2 + (index % 5)),
       dragging: false,
       pinned: false,
@@ -330,13 +350,11 @@ function endDrag(event, index) {
   body.token.releasePointerCapture(event.pointerId);
   body.token.style.zIndex = "";
 
-  const bounds = viewportBounds();
   const size = body.token.offsetWidth || 116;
-  const centerX = bounds.width * 0.5 - size * 0.5;
-  const centerY = bounds.height * 0.52 - size * 0.5;
-  const distance = Math.hypot(body.x - centerX, body.y - centerY);
+  const target = focusTargetPosition(size);
+  const distance = Math.hypot(body.x - target.x, body.y - target.y);
 
-  if (distance < Math.max(118, bounds.width * 0.12)) {
+  if (distance < target.radius) {
     focusProject(index, { snap: true });
   } else {
     focusProject(index);
@@ -365,11 +383,11 @@ function focusProject(index, options = {}) {
   });
 
   if (options.snap && bodies[index]) {
-    const bounds = viewportBounds();
     const body = bodies[index];
     const size = body.token.offsetWidth || 116;
-    body.x = bounds.width * 0.5 - size * 0.5;
-    body.y = bounds.height * 0.52 - size * 0.5;
+    const target = focusTargetPosition(size);
+    body.x = target.x;
+    body.y = target.y;
     body.vx = 0;
     body.vy = 0;
     body.rotation = 0;
@@ -484,12 +502,14 @@ function updateStage(timestamp) {
 
   bodies.forEach((body) => {
     if (!body.dragging && !body.pinned) {
-      body.vy += 0.055 * delta;
-      body.vx *= 0.988;
-      body.vy *= 0.992;
+      const driftTime = timestamp * 0.00018 + body.drift;
+      body.vx += Math.sin(driftTime) * 0.0022 * delta;
+      body.vy += (0.006 + Math.cos(driftTime * 0.8) * 0.0014) * delta;
+      body.vx *= 0.997;
+      body.vy *= 0.997;
       body.x += body.vx * delta;
       body.y += body.vy * delta;
-      body.rotation += body.vx * 0.015;
+      body.rotation += body.vx * 0.008;
 
       clampBodyToViewport(body, bounds, floor);
     }
