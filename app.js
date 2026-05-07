@@ -412,7 +412,8 @@ function beginDrag(event, index) {
   body.lastY = point.y;
   body.lastMove = performance.now();
   body.token.setPointerCapture(event.pointerId);
-  body.token.style.zIndex = "8";
+  grid.classList.add("is-dragging-cover");
+  body.token.style.zIndex = "40";
   event.preventDefault();
 }
 
@@ -453,6 +454,10 @@ function endDrag(event, index) {
     body.vy = -0.18;
   } else {
     focusProject(index);
+  }
+
+  if (!bodies.some((item) => item.dragging)) {
+    grid.classList.remove("is-dragging-cover");
   }
 }
 
@@ -633,18 +638,18 @@ function resolveRecordCollision(body) {
   const dx = centerX - record.x;
   const dy = centerY - record.y;
   const distance = Math.max(1, Math.hypot(dx, dy));
-  const minDistance = record.radius + coverRadius * 0.82;
+  const minDistance = record.radius + coverRadius * 1.08;
 
   if (distance >= minDistance) return;
 
   const nx = dx / distance;
   const ny = dy / distance;
-  const push = minDistance - distance;
+  const push = minDistance - distance + 1;
   body.x += nx * push;
   body.y += ny * push;
-  body.vx = body.vx * -0.22 + nx * 0.065;
-  body.vy = body.vy * -0.18 + ny * 0.052;
-  body.rotation += nx * 0.75;
+  body.vx = Math.max(-1.2, Math.min(1.2, body.vx * 0.24 + nx * 0.18));
+  body.vy = Math.max(-1.2, Math.min(1.2, body.vy * 0.24 + ny * 0.16));
+  body.rotation += nx * 0.55;
 }
 
 function updateStage(timestamp) {
@@ -678,7 +683,7 @@ function updateStage(timestamp) {
   bodies.forEach((body, index) => {
     const scale = index === focusedProject ? (body.pinned ? 1.28 : 1.16) : 1;
     body.token.style.transform = `translate3d(${body.x}px, ${body.y}px, 0) rotate(${body.rotation}deg) scale(${scale})`;
-    body.token.style.zIndex = body.dragging ? "9" : body.pinned ? "7" : String(3 + (index % 3));
+    body.token.style.zIndex = body.dragging ? "40" : body.pinned ? "7" : String(3 + (index % 3));
   });
 
   window.requestAnimationFrame(updateStage);
