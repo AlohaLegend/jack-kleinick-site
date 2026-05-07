@@ -252,7 +252,7 @@ function setupBodies() {
     bodies.push({
       token,
       x: 16 + ((index * 173 + lane * 41) % spread),
-      y: 92 + ((index * 67 + lane * 29) % Math.max(120, rect.height * 0.45)),
+      y: 76 + ((index * 67 + lane * 29) % Math.max(120, rect.height - size - 170)),
       vx: ((index % 7) - 3) * 0.09,
       vy: 0,
       rotation: (index % 2 === 0 ? -1 : 1) * (2 + (index % 5)),
@@ -375,7 +375,7 @@ function focusProject(index, options = {}) {
 function updateStage(timestamp) {
   const rect = stage.getBoundingClientRect();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
-  const floor = rect.height - Math.max(92, rect.height < 720 ? 230 : 120);
+  const floor = rect.height - 28;
   lastFrame = timestamp;
 
   bodies.forEach((body) => {
@@ -383,11 +383,11 @@ function updateStage(timestamp) {
 
     if (!body.dragging && !body.pinned) {
       body.vy += 0.055 * delta;
-      body.vx *= 0.995;
-      body.vy *= 0.996;
+      body.vx *= 0.988;
+      body.vy *= 0.992;
       body.x += body.vx * delta;
       body.y += body.vy * delta;
-      body.rotation += body.vx * 0.02;
+      body.rotation += body.vx * 0.015;
 
       if (body.x < 12) {
         body.x = 12;
@@ -401,9 +401,15 @@ function updateStage(timestamp) {
 
       if (body.y + size > floor) {
         body.y = floor - size;
-        body.vy = -Math.abs(body.vy) * 0.2;
-        body.vx *= 0.985;
-        body.rotation *= 0.985;
+        body.vy = Math.abs(body.vy) > 0.7 ? -Math.abs(body.vy) * 0.08 : 0;
+        body.vx *= 0.9;
+        body.rotation *= 0.92;
+
+        if (Math.abs(body.vx) < 0.018 && Math.abs(body.vy) < 0.018) {
+          body.vx = 0;
+          body.vy = 0;
+          body.rotation *= 0.86;
+        }
       }
 
       if (body.y < 68) {
@@ -427,11 +433,11 @@ function updateStage(timestamp) {
       const by = b.y + bSize * 0.5;
       const dx = bx - ax;
       const dy = by - ay;
-      const minDistance = (aSize + bSize) * 0.42;
+      const minDistance = (aSize + bSize) * 0.36;
       const distance = Math.max(1, Math.hypot(dx, dy));
 
       if (distance < minDistance) {
-        const push = (minDistance - distance) * 0.018;
+        const push = (minDistance - distance) * 0.006;
         const nx = dx / distance;
         const ny = dy / distance;
         a.vx -= nx * push;
