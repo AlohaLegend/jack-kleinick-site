@@ -965,6 +965,82 @@ body.is-playing .stage-target::after {
   .cover-token {
     width: clamp(4rem, 18vw, 5.4rem);
   }
+
+  .cover-token span,
+  .cover-token:hover span,
+  .cover-token.is-focused span {
+    opacity: 0;
+  }
+
+  .modal {
+    align-items: center;
+    padding: 0.55rem;
+  }
+
+  .modal-card {
+    width: 100%;
+    max-height: calc(100dvh - 1.1rem);
+    overflow: auto;
+  }
+
+  .modal-art-shell {
+    min-height: 0;
+    padding: 1rem 1rem 0.35rem;
+  }
+
+  .modal-art-shell::before {
+    width: min(58%, 12rem);
+    transform: translate(16%, 7%);
+  }
+
+  .modal-art-shell img {
+    width: min(66%, 13.5rem);
+  }
+
+  .modal-copy {
+    gap: 0.85rem;
+    align-content: start;
+    min-height: 0;
+    padding: 0.4rem 1rem 1rem;
+  }
+
+  .modal-copy h1 {
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 0.92;
+  }
+
+  .modal-year {
+    margin-top: -0.55rem;
+    font-size: 0.98rem;
+  }
+
+  .track-list {
+    max-height: 6.3rem;
+    overflow: auto;
+    padding-right: 0.2rem;
+  }
+
+  .track-list span,
+  .track-list a {
+    padding: 0.34rem 0.48rem;
+    font-size: 0.92rem;
+    line-height: 1.05;
+  }
+
+  .platform-links {
+    gap: 0.4rem;
+  }
+
+  .platform-icon {
+    width: 2.05rem;
+  }
+
+  .modal-nav {
+    align-items: center;
+    gap: 0.6rem;
+    padding-top: 0.75rem;
+    font-size: 0.9rem;
+  }
 }
 
 
