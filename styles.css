@@ -316,8 +316,16 @@ body.is-info-view .cover-field {
   cursor: grabbing;
 }
 
-.cover-token.is-dragging-token {
+.cover-token.is-drag-source {
+  opacity: 0;
+}
+
+.cover-token.drag-proxy {
+  position: fixed;
+  left: 0;
+  top: 0;
   z-index: 80;
+  pointer-events: none;
 }
 
 .cover-token img {

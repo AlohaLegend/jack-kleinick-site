@@ -414,9 +414,10 @@ function beginDrag(event, index) {
   body.lastY = point.y;
   body.lastMove = performance.now();
   body.token.setPointerCapture(event.pointerId);
-  document.body.appendChild(body.token);
-  body.token.classList.add("is-dragging-token");
-  body.token.style.zIndex = "40";
+  body.dragClone = body.token.cloneNode(true);
+  body.dragClone.classList.add("drag-proxy");
+  document.body.appendChild(body.dragClone);
+  body.token.classList.add("is-drag-source");
   event.preventDefault();
 }
 
@@ -444,8 +445,9 @@ function endDrag(event, index) {
   body.dragging = false;
   body.pointerId = null;
   body.token.releasePointerCapture(event.pointerId);
-  grid.appendChild(body.token);
-  body.token.classList.remove("is-dragging-token");
+  body.dragClone?.remove();
+  body.dragClone = null;
+  body.token.classList.remove("is-drag-source");
   body.token.style.zIndex = "";
   body.introPinned = false;
 
@@ -684,8 +686,12 @@ function updateStage(timestamp) {
 
   bodies.forEach((body, index) => {
     const scale = index === focusedProject ? (body.pinned ? 1.28 : 1.16) : 1;
-    body.token.style.transform = `translate3d(${body.x}px, ${body.y}px, 0) rotate(${body.rotation}deg) scale(${scale})`;
-    body.token.style.zIndex = body.dragging ? "40" : body.pinned ? "7" : String(3 + (index % 3));
+    const transform = `translate3d(${body.x}px, ${body.y}px, 0) rotate(${body.rotation}deg) scale(${scale})`;
+    body.token.style.transform = transform;
+    body.token.style.zIndex = body.pinned ? "7" : String(3 + (index % 3));
+    if (body.dragClone) {
+      body.dragClone.style.transform = transform;
+    }
   });
 
   window.requestAnimationFrame(updateStage);
