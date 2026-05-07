@@ -201,6 +201,8 @@ const projects = [
 
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
+const stageCopy = document.querySelector(".stage-copy");
+const stageFocus = document.querySelector("#stage-focus");
 const stageTarget = document.querySelector(".stage-target");
 const focusTitle = document.querySelector("#focus-title");
 const focusMeta = document.querySelector("#focus-meta");
@@ -745,6 +747,12 @@ document.addEventListener("click", (event) => {
 focusOpen.addEventListener("click", () => {
   if (focusedProject < 0) return;
   openProject(focusedProject);
+});
+
+[stageCopy, stageFocus].forEach((element) => {
+  element?.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
 });
 
 prevButton.addEventListener("click", () => {
