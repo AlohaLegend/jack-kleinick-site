@@ -263,7 +263,17 @@ function focusTargetPosition(size = 0) {
   return {
     x: target.left + target.width * 0.5 - size * 0.5,
     y: target.top + target.height * 0.5 - size * 0.5,
-    radius: Math.max(96, target.width * 0.72),
+    radius: Math.max(96, target.width * 0.58),
+  };
+}
+
+function recordObstacle() {
+  if (!stageTarget) return null;
+  const target = stageTarget.getBoundingClientRect();
+  return {
+    x: target.left + target.width * 0.5,
+    y: target.top + target.height * 0.5,
+    radius: target.width * 0.5,
   };
 }
 
@@ -273,8 +283,10 @@ function edgeBleed() {
 
 function applyAlbumMood(index) {
   const mood = albumMoods[index % albumMoods.length];
+  const image = projects[index]?.image || "assets/studio-hero.png";
   document.body.style.setProperty("--album-a", mood[0]);
   document.body.style.setProperty("--album-b", mood[1]);
+  document.body.style.setProperty("--record-art", `url("${image}")`);
 }
 
 function randomProjectIndex() {
@@ -563,6 +575,33 @@ function resolveCoverCollisions(bounds, floor) {
   }
 }
 
+function resolveRecordCollision(body) {
+  if (body.dragging || body.pinned) return;
+
+  const record = recordObstacle();
+  if (!record) return;
+
+  const size = body.token.offsetWidth || 116;
+  const coverRadius = size * 0.5;
+  const centerX = body.x + coverRadius;
+  const centerY = body.y + coverRadius;
+  const dx = centerX - record.x;
+  const dy = centerY - record.y;
+  const distance = Math.max(1, Math.hypot(dx, dy));
+  const minDistance = record.radius + coverRadius * 0.82;
+
+  if (distance >= minDistance) return;
+
+  const nx = dx / distance;
+  const ny = dy / distance;
+  const push = minDistance - distance;
+  body.x += nx * push;
+  body.y += ny * push;
+  body.vx = body.vx * -0.22 + nx * 0.065;
+  body.vy = body.vy * -0.18 + ny * 0.052;
+  body.rotation += nx * 0.75;
+}
+
 function updateStage(timestamp) {
   const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
@@ -586,6 +625,10 @@ function updateStage(timestamp) {
   });
 
   resolveCoverCollisions(bounds, floor);
+  bodies.forEach((body) => {
+    resolveRecordCollision(body);
+    clampBodyToViewport(body, bounds, floor);
+  });
 
   bodies.forEach((body, index) => {
     const scale = index === focusedProject ? (body.pinned ? 1.28 : 1.16) : 1;
