@@ -215,7 +215,7 @@ const modalTitle = document.querySelector("#modal-title");
 const modalYear = document.querySelector("#modal-year");
 const modalRole = document.querySelector("#modal-role");
 const modalTracks = document.querySelector("#modal-tracks");
-const modalSpotify = document.querySelector("#modal-spotify");
+const modalPlatforms = document.querySelector("#modal-platforms");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
 const entryScreen = document.querySelector("#entry-screen");
@@ -292,6 +292,43 @@ function applyAlbumMood(index) {
 
 function randomProjectIndex() {
   return Math.floor(Math.random() * projects.length);
+}
+
+function platformSearchQuery(project, trackTitle = "") {
+  return encodeURIComponent(`${project.artist} ${trackTitle || project.album}`);
+}
+
+function platformIcon(name) {
+  const icons = {
+    spotify: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M7.4 9.5c3.5-1 6.7-.7 9.8.9"></path><path d="M8.1 12.2c2.6-.7 5.2-.5 7.5.7"></path><path d="M8.8 14.7c1.9-.5 3.8-.4 5.6.5"></path></svg>`,
+    apple: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.8 4.2v10.4a3 3 0 1 1-1.7-2.7V7.1l-6.5 1.4v7.2a3 3 0 1 1-1.7-2.7V7.2z"></path></svg>`,
+    youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.5v7l6-3.5z"></path><rect x="3" y="6" width="18" height="12" rx="4"></rect></svg>`,
+    google: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.2 10.8h7.1c.1.5.2.9.2 1.5 0 4.2-2.8 7.2-7.1 7.2A7.5 7.5 0 1 1 17.6 6"></path></svg>`,
+  };
+  return icons[name];
+}
+
+function renderPlatformLinks(project) {
+  const firstTrack = project.tracks.find((track) => typeof track !== "string" && track.url);
+  const firstTitle = firstTrack?.title || project.album;
+  const query = platformSearchQuery(project, firstTitle);
+  const spotifyHref = firstTrack?.url || "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp";
+  const platforms = [
+    ["spotify", "Spotify", spotifyHref],
+    ["apple", "Apple Music", `https://music.apple.com/us/search?term=${query}`],
+    ["youtube", "YouTube Music", `https://music.youtube.com/search?q=${query}`],
+    ["google", "Google", `https://www.google.com/search?q=${query}`],
+  ];
+
+  return platforms
+    .map(
+      ([name, label, href]) => `
+        <a class="platform-icon ${name}" href="${href}" target="_blank" rel="noreferrer" aria-label="${label}">
+          ${platformIcon(name)}
+        </a>
+      `,
+    )
+    .join("");
 }
 
 function renderGrid() {
@@ -669,8 +706,7 @@ function openProject(index) {
         : `<span>${item.title}</span>`;
     })
     .join("");
-  const firstSpotifyLink = project.tracks.find((track) => typeof track !== "string" && track.url)?.url;
-  modalSpotify.href = firstSpotifyLink || "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp";
+  modalPlatforms.innerHTML = renderPlatformLinks(project);
   modalImage.src = project.image;
   modalImage.alt = project.album;
   prevButton.disabled = index === 0;

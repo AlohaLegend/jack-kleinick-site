@@ -663,11 +663,52 @@ body.is-playing .stage-target::after {
   text-shadow: 0 0 12px rgba(126, 178, 173, 0.5);
 }
 
-.spotify-link {
-  align-self: start;
-  padding: 0.55rem 0.72rem;
-  border: 1px solid color-mix(in srgb, var(--album-b) 28%, transparent);
-  background: color-mix(in srgb, var(--album-b) 18%, transparent);
+.platform-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+}
+
+.info-platforms {
+  margin-top: 0.35rem;
+}
+
+.platform-icon {
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  aspect-ratio: 1;
+  border: 1px solid color-mix(in srgb, var(--album-b) 24%, rgba(245, 241, 234, 0.1));
+  background: color-mix(in srgb, var(--album-a) 16%, rgba(245, 241, 234, 0.04));
+  color: var(--ink);
+  transition:
+    transform 180ms ease,
+    background 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.platform-icon:hover {
+  background: color-mix(in srgb, var(--album-b) 18%, rgba(245, 241, 234, 0.08));
+  box-shadow: 0 0 1.4rem color-mix(in srgb, var(--album-b) 24%, transparent);
+  transform: translateY(-0.1rem);
+}
+
+.platform-icon svg {
+  width: 1.2rem;
+  height: 1.2rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.7;
+}
+
+.platform-icon.spotify svg circle,
+.platform-icon.spotify svg path:first-of-type,
+.platform-icon.spotify svg path:nth-of-type(2),
+.platform-icon.spotify svg path:nth-of-type(3) {
+  fill: none;
 }
 
 .close-button {
