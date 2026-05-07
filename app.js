@@ -378,6 +378,104 @@ function focusProject(index, options = {}) {
   }
 }
 
+function clampBodyToViewport(body, bounds, floor) {
+  const size = body.token.offsetWidth || 116;
+
+  if (body.x < 12) {
+    body.x = 12;
+    body.vx = Math.abs(body.vx) * 0.45;
+  }
+
+  if (body.x + size > bounds.width - 12) {
+    body.x = bounds.width - size - 12;
+    body.vx = -Math.abs(body.vx) * 0.45;
+  }
+
+  if (body.y < 68) {
+    body.y = 68;
+    body.vy = Math.abs(body.vy) * 0.35;
+  }
+
+  if (body.y + size > floor) {
+    body.y = floor - size;
+    body.vy = Math.abs(body.vy) > 0.7 ? -Math.abs(body.vy) * 0.08 : 0;
+    body.vx *= 0.9;
+    body.rotation *= 0.92;
+
+    if (Math.abs(body.vx) < 0.018 && Math.abs(body.vy) < 0.018) {
+      body.vx = 0;
+      body.vy = 0;
+      body.rotation *= 0.86;
+    }
+  }
+}
+
+function applySeparation(body, axis, amount) {
+  if (axis === "x") {
+    body.x += amount;
+    body.vx *= -0.08;
+    return;
+  }
+
+  body.y += amount;
+  body.vy = 0;
+  body.vx *= 0.82;
+  body.rotation *= 0.94;
+}
+
+function separatePair(a, b) {
+  const aSize = a.token.offsetWidth || 116;
+  const bSize = b.token.offsetWidth || 116;
+  const aLeft = a.x;
+  const aRight = a.x + aSize;
+  const aTop = a.y;
+  const aBottom = a.y + aSize;
+  const bLeft = b.x;
+  const bRight = b.x + bSize;
+  const bTop = b.y;
+  const bBottom = b.y + bSize;
+  const overlapX = Math.min(aRight, bRight) - Math.max(aLeft, bLeft);
+  const overlapY = Math.min(aBottom, bBottom) - Math.max(aTop, bTop);
+
+  if (overlapX <= 0 || overlapY <= 0) return;
+
+  const axis = overlapY < overlapX * 1.2 ? "y" : "x";
+  const aCenter = axis === "x" ? a.x + aSize * 0.5 : a.y + aSize * 0.5;
+  const bCenter = axis === "x" ? b.x + bSize * 0.5 : b.y + bSize * 0.5;
+  const direction = aCenter < bCenter ? -1 : 1;
+  const overlap = axis === "x" ? overlapX : overlapY;
+  const separation = overlap + 0.5;
+  const aLocked = a.dragging || a.pinned;
+  const bLocked = b.dragging || b.pinned;
+
+  if (aLocked && bLocked) return;
+
+  if (aLocked) {
+    applySeparation(b, axis, -direction * separation);
+    return;
+  }
+
+  if (bLocked) {
+    applySeparation(a, axis, direction * separation);
+    return;
+  }
+
+  applySeparation(a, axis, direction * separation * 0.5);
+  applySeparation(b, axis, -direction * separation * 0.5);
+}
+
+function resolveCoverCollisions(bounds, floor) {
+  for (let pass = 0; pass < 4; pass += 1) {
+    for (let first = 0; first < bodies.length; first += 1) {
+      for (let second = first + 1; second < bodies.length; second += 1) {
+        separatePair(bodies[first], bodies[second]);
+      }
+    }
+
+    bodies.forEach((body) => clampBodyToViewport(body, bounds, floor));
+  }
+}
+
 function updateStage(timestamp) {
   const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
@@ -385,8 +483,6 @@ function updateStage(timestamp) {
   lastFrame = timestamp;
 
   bodies.forEach((body) => {
-    const size = body.token.offsetWidth || 116;
-
     if (!body.dragging && !body.pinned) {
       body.vy += 0.055 * delta;
       body.vx *= 0.988;
@@ -395,64 +491,11 @@ function updateStage(timestamp) {
       body.y += body.vy * delta;
       body.rotation += body.vx * 0.015;
 
-      if (body.x < 12) {
-        body.x = 12;
-        body.vx = Math.abs(body.vx) * 0.65;
-      }
-
-      if (body.x + size > bounds.width - 12) {
-        body.x = bounds.width - size - 12;
-        body.vx = -Math.abs(body.vx) * 0.65;
-      }
-
-      if (body.y + size > floor) {
-        body.y = floor - size;
-        body.vy = Math.abs(body.vy) > 0.7 ? -Math.abs(body.vy) * 0.08 : 0;
-        body.vx *= 0.9;
-        body.rotation *= 0.92;
-
-        if (Math.abs(body.vx) < 0.018 && Math.abs(body.vy) < 0.018) {
-          body.vx = 0;
-          body.vy = 0;
-          body.rotation *= 0.86;
-        }
-      }
-
-      if (body.y < 68) {
-        body.y = 68;
-        body.vy = Math.abs(body.vy) * 0.45;
-      }
+      clampBodyToViewport(body, bounds, floor);
     }
   });
 
-  for (let first = 0; first < bodies.length; first += 1) {
-    for (let second = first + 1; second < bodies.length; second += 1) {
-      const a = bodies[first];
-      const b = bodies[second];
-      if (a.dragging || b.dragging || a.pinned || b.pinned) continue;
-
-      const aSize = a.token.offsetWidth || 116;
-      const bSize = b.token.offsetWidth || 116;
-      const ax = a.x + aSize * 0.5;
-      const ay = a.y + aSize * 0.5;
-      const bx = b.x + bSize * 0.5;
-      const by = b.y + bSize * 0.5;
-      const dx = bx - ax;
-      const dy = by - ay;
-      const minDistance = (aSize + bSize) * 0.36;
-      const distance = Math.max(1, Math.hypot(dx, dy));
-
-      if (distance < minDistance) {
-        const push = (minDistance - distance) * 0.006;
-        const nx = dx / distance;
-        const ny = dy / distance;
-        a.vx -= nx * push;
-        a.vy -= ny * push;
-        b.vx += nx * push;
-        b.vy += ny * push;
-      }
-    }
-  }
+  resolveCoverCollisions(bounds, floor);
 
   bodies.forEach((body, index) => {
     body.token.style.transform = `translate3d(${body.x}px, ${body.y}px, 0) rotate(${body.rotation}deg)`;
