@@ -249,6 +249,10 @@ function focusTargetPosition(size = 0) {
   };
 }
 
+function edgeBleed(size) {
+  return Math.min(34, size * 0.28);
+}
+
 function renderGrid() {
   grid.innerHTML = projects
     .map(
@@ -274,11 +278,12 @@ function setupBodies() {
   tokens.forEach((token, index) => {
     const size = token.offsetWidth || 116;
     const lane = index % 5;
-    const spread = Math.max(1, bounds.width - size - 32);
+    const bleed = edgeBleed(size);
+    const spread = Math.max(1, bounds.width - size + bleed * 2);
     bodies.push({
       token,
-      x: 16 + ((index * 173 + lane * 41) % spread),
-      y: 76 + ((index * 67 + lane * 29) % Math.max(120, bounds.height - size - 170)),
+      x: -bleed + ((index * 173 + lane * 41) % spread),
+      y: -bleed + ((index * 67 + lane * 29) % Math.max(120, bounds.height - size + bleed * 2)),
       vx: ((index % 7) - 3) * 0.055,
       vy: ((index % 5) - 2) * 0.025,
       drift: index * 1.73,
@@ -398,19 +403,23 @@ function focusProject(index, options = {}) {
 
 function clampBodyToViewport(body, bounds, floor) {
   const size = body.token.offsetWidth || 116;
+  const bleed = edgeBleed(size);
+  const leftEdge = -bleed;
+  const rightEdge = bounds.width - size + bleed;
+  const topEdge = -bleed;
 
-  if (body.x < 12) {
-    body.x = 12;
+  if (body.x < leftEdge) {
+    body.x = leftEdge;
     body.vx = Math.abs(body.vx) * 0.58 + 0.02;
   }
 
-  if (body.x + size > bounds.width - 12) {
-    body.x = bounds.width - size - 12;
+  if (body.x > rightEdge) {
+    body.x = rightEdge;
     body.vx = -Math.abs(body.vx) * 0.58 - 0.02;
   }
 
-  if (body.y < 68) {
-    body.y = 68;
+  if (body.y < topEdge) {
+    body.y = topEdge;
     body.vy = Math.abs(body.vy) * 0.5 + 0.015;
   }
 
@@ -497,7 +506,7 @@ function resolveCoverCollisions(bounds, floor) {
 function updateStage(timestamp) {
   const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
-  const floor = bounds.height - 28;
+  const floor = bounds.height + 10;
   lastFrame = timestamp;
 
   bodies.forEach((body) => {
@@ -598,8 +607,9 @@ window.addEventListener("resize", () => {
   const bounds = viewportBounds();
   bodies.forEach((body) => {
     const size = body.token.offsetWidth || 116;
-    body.x = Math.min(Math.max(12, body.x), bounds.width - size - 12);
-    body.y = Math.min(Math.max(68, body.y), bounds.height - size - 12);
+    const bleed = edgeBleed(size);
+    body.x = Math.min(Math.max(-bleed, body.x), bounds.width - size + bleed);
+    body.y = Math.min(Math.max(-bleed, body.y), bounds.height - size + bleed);
   });
 });
 
