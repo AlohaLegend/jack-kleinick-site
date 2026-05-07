@@ -137,7 +137,7 @@ const projects = [
     year: "Playlist album block",
     role: "Producer, Songwriter",
     tracks: [
-      { title: "Tú Con Él", url: "https://open.spotify.com/track/79cT5SZjsXBBCFTtURNyxL" },
+      { title: "Tu Con El", url: "https://open.spotify.com/track/79cT5SZjsXBBCFTtURNyxL" },
       { title: "The Wedding Song", url: "https://open.spotify.com/track/2f4c6QmK9z7zmCzX2ZNHsX" },
       { title: "Fall", url: "https://open.spotify.com/track/7iXv9DKsDwc4VhfUB369wK" },
       { title: "That's All, Right?", url: "https://open.spotify.com/track/6Zz8d5d4GYtHD0rTBgSYWo" },
@@ -212,6 +212,7 @@ const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
 const synthCanvas = document.querySelector("#synth-lines");
 const synthContext = synthCanvas.getContext("2d");
+const entryScreen = document.querySelector("#entry-screen");
 
 let activeProject = 0;
 
@@ -317,6 +318,10 @@ resizeSynthCanvas();
 drawSynthLines();
 window.addEventListener("resize", resizeSynthCanvas);
 
+window.setTimeout(() => {
+  entryScreen.classList.add("is-complete");
+}, 2600);
+
 document.addEventListener("click", (event) => {
   const viewButton = event.target.closest("[data-view]");
   const card = event.target.closest("[data-project]");
@@ -341,3 +346,4 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "ArrowLeft" && activeProject > 0) openProject(activeProject - 1);
   if (event.key === "ArrowRight" && activeProject < projects.length - 1) openProject(activeProject + 1);
 });
+

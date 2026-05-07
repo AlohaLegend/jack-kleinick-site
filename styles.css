@@ -101,6 +101,63 @@ img {
   color: var(--muted);
 }
 
+.entry-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 70% 42%, rgba(126, 178, 173, 0.16), transparent 26rem),
+    radial-gradient(circle at 22% 70%, rgba(216, 165, 91, 0.12), transparent 23rem),
+    var(--page);
+  transition:
+    opacity 900ms ease,
+    visibility 900ms ease;
+}
+
+.entry-screen.is-complete {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#synth-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+}
+
+.entry-copy {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 0.6rem;
+  width: min(82rem, calc(100% - 2rem));
+}
+
+.entry-copy p,
+.entry-copy span {
+  color: var(--muted);
+  font-size: clamp(0.92rem, 2vw, 1.18rem);
+  opacity: 0;
+  animation: entryText 1600ms ease forwards;
+}
+
+.entry-copy h1 {
+  max-width: 10ch;
+  color: var(--ink);
+  font-size: clamp(4.6rem, 15vw, 14rem);
+  font-weight: 500;
+  line-height: 0.85;
+  opacity: 0;
+  transform: translateY(0.5rem);
+  animation: entryTitle 1600ms 180ms ease forwards;
+}
+
 .site-main {
   min-height: 100vh;
   padding-top: 3.8rem;
@@ -112,46 +169,6 @@ img {
 
 .view.is-active {
   display: block;
-}
-
-.synth-intro {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: clamp(24rem, 56vh, 38rem);
-  overflow: hidden;
-  border-bottom: 1px solid var(--line);
-}
-
-#synth-lines {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.86;
-}
-
-.intro-copy {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  gap: 0.55rem;
-  width: min(82rem, calc(100% - 2rem));
-  padding-top: 2rem;
-}
-
-.intro-copy p,
-.intro-copy span {
-  color: var(--muted);
-  font-size: clamp(0.92rem, 2vw, 1.2rem);
-}
-
-.intro-copy h1 {
-  max-width: 10ch;
-  color: var(--ink);
-  font-size: clamp(4.6rem, 15vw, 14rem);
-  font-weight: 500;
-  line-height: 0.85;
 }
 
 .work-grid {
@@ -369,6 +386,19 @@ img {
   cursor: not-allowed;
 }
 
+@keyframes entryTitle {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes entryText {
+  to {
+    opacity: 1;
+  }
+}
+
 @media (min-width: 768px) {
   .site-header {
     padding: 1rem 1.25rem;
@@ -384,7 +414,7 @@ img {
   .work-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 1rem;
-    padding: 1.25rem 1.25rem 5rem;
+    padding: 4.75rem 1.25rem 5rem;
   }
 
   .work-card:nth-child(1),

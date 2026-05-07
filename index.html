@@ -10,6 +10,15 @@
     <script src="app.js" defer></script>
   </head>
   <body>
+    <div class="entry-screen" id="entry-screen" aria-hidden="true">
+      <canvas id="synth-lines" aria-hidden="true"></canvas>
+      <div class="entry-copy">
+        <p>initializing signal</p>
+        <h1>Jack Kleinick</h1>
+        <span>production / writing / songs</span>
+      </div>
+    </div>
+
     <header class="site-header">
       <button class="name-button" type="button" data-view="work">Jack Kleinick</button>
       <div class="header-actions">
@@ -20,14 +29,6 @@
 
     <main class="site-main">
       <section class="view is-active" id="work-view" aria-label="Selected works">
-        <section class="synth-intro" aria-label="Intro">
-          <canvas id="synth-lines" aria-hidden="true"></canvas>
-          <div class="intro-copy">
-            <p>Los Angeles / New York / London</p>
-            <h1>Jack Kleinick</h1>
-            <span>Production / writing / songs</span>
-          </div>
-        </section>
         <div class="work-grid" id="work-grid"></div>
       </section>
 
