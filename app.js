@@ -215,6 +215,7 @@ const modalTitle = document.querySelector("#modal-title");
 const modalYear = document.querySelector("#modal-year");
 const modalRole = document.querySelector("#modal-role");
 const modalTracks = document.querySelector("#modal-tracks");
+const modalSpotify = document.querySelector("#modal-spotify");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
 const entryScreen = document.querySelector("#entry-screen");
@@ -299,7 +300,7 @@ function renderGrid() {
       (project, index) => `
         <button class="cover-token" type="button" data-token="${index}" aria-label="Focus ${project.album} by ${project.artist}">
           <img src="${project.image}" alt="${project.album} cover" loading="lazy">
-          <span>${project.album} / ${project.artist}</span>
+          <span><strong>${project.album}</strong><small>${project.artist}</small></span>
         </button>
       `,
     )
@@ -668,6 +669,8 @@ function openProject(index) {
         : `<span>${item.title}</span>`;
     })
     .join("");
+  const firstSpotifyLink = project.tracks.find((track) => typeof track !== "string" && track.url)?.url;
+  modalSpotify.href = firstSpotifyLink || "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp";
   modalImage.src = project.image;
   modalImage.alt = project.album;
   prevButton.disabled = index === 0;
