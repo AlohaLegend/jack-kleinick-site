@@ -12,6 +12,14 @@ This version has no build step. Open `index.html` directly, or serve the folder:
 
 Then visit `http://localhost:4173`.
 
+If your browser cannot reach `localhost`, use:
+
+```powershell
+.\open-site.cmd
+```
+
+That starts the server and opens `http://127.0.0.1:4173` directly.
+
 ## Notes
 
 - `assets/studio-hero.png` is a generated placeholder hero image and should be replaced with approved Jack/studio photography when available.
