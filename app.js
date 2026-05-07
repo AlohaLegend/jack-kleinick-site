@@ -1,162 +1,182 @@
-const credits = [
+const projects = [
   {
-    title: "Artist Development Sessions",
-    place: "Los Angeles",
-    tag: "la",
-    role: "producer / arrangement",
-    detail: "Early-stage records built around voice, tempo, and a production palette that leaves space.",
+    album: "Selected Works",
+    artist: "Jack Kleinick",
+    year: "2026",
+    role: "Producer",
+    tracks: ["Playlist Reel"],
+    tint: "rgba(24, 32, 36, .18)",
+    sat: "1.05",
+    x: "28%",
+    y: "30%",
   },
   {
-    title: "Downtown Writing Rooms",
-    place: "New York",
-    tag: "ny",
-    role: "co-production",
-    detail: "Compact sessions for artists moving between writing, tracking, and finishing decisions.",
+    album: "Los Angeles Sessions",
+    artist: "Various Artists",
+    year: "Los Angeles",
+    role: "Production, arrangement",
+    tracks: ["Artist Development", "Tracking"],
+    tint: "rgba(150, 74, 44, .18)",
+    sat: "1.15",
+    x: "68%",
+    y: "24%",
   },
   {
-    title: "Remote Finishing Passes",
-    place: "London",
-    tag: "london",
-    role: "production notes",
-    detail: "Cross-time-zone polish: structure, sonic references, transitions, and final record feel.",
+    album: "New York Rooms",
+    artist: "Various Artists",
+    year: "New York",
+    role: "Co-production, writing support",
+    tracks: ["Writing", "Edits"],
+    tint: "rgba(35, 82, 112, .2)",
+    sat: ".95",
+    x: "34%",
+    y: "72%",
   },
   {
-    title: "Playlist Reel",
-    place: "Source Playlist",
-    tag: "all",
-    role: "selected work",
-    detail: "A living reel connected to Jack's shared Spotify playlist while final credit metadata is locked.",
+    album: "London Passes",
+    artist: "Various Artists",
+    year: "London",
+    role: "Finishing notes, production perspective",
+    tracks: ["Remote Finish", "Reference Pass"],
+    tint: "rgba(73, 91, 60, .18)",
+    sat: ".9",
+    x: "72%",
+    y: "68%",
+  },
+  {
+    album: "Vocal Direction",
+    artist: "Studio",
+    year: "Current",
+    role: "Vocal production",
+    tracks: ["Comping", "Tone", "Performance"],
+    tint: "rgba(128, 47, 78, .18)",
+    sat: "1.2",
+    x: "50%",
+    y: "40%",
+  },
+  {
+    album: "Song Architecture",
+    artist: "Studio",
+    year: "Current",
+    role: "Structure, arrangement",
+    tracks: ["Pre-production", "Arrangement"],
+    tint: "rgba(55, 55, 55, .16)",
+    sat: ".82",
+    x: "22%",
+    y: "62%",
+  },
+  {
+    album: "Texture Studies",
+    artist: "Studio",
+    year: "Current",
+    role: "Synths, production palette",
+    tracks: ["Keys", "Synths", "Atmosphere"],
+    tint: "rgba(179, 132, 52, .18)",
+    sat: "1.25",
+    x: "64%",
+    y: "42%",
+  },
+  {
+    album: "Playlist Reel",
+    artist: "Spotify",
+    year: "Listen",
+    role: "Shared selected-work playlist",
+    tracks: ["Open Spotify"],
+    tint: "rgba(20, 110, 68, .2)",
+    sat: "1.1",
+    x: "44%",
+    y: "24%",
+    url: "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp",
   },
 ];
 
-const phases = {
-  pre: "Finding the song's center: references, tempo, key, lyric intent, and the sonic world around it.",
-  track: "Building performances that feel alive without crowding the artist: vocals, instruments, edits, and tone.",
-  finish: "Turning rough promise into release-ready decisions: arrangement trims, mix perspective, and handoff notes.",
-};
+const grid = document.querySelector("#work-grid");
+const workView = document.querySelector("#work-view");
+const infoView = document.querySelector("#info-view");
+const modal = document.querySelector("#project-modal");
+const modalImage = document.querySelector("#modal-image");
+const modalTitle = document.querySelector("#modal-title");
+const modalYear = document.querySelector("#modal-year");
+const modalRole = document.querySelector("#modal-role");
+const modalTracks = document.querySelector("#modal-tracks");
+const prevButton = document.querySelector("#prev-project");
+const nextButton = document.querySelector("#next-project");
 
-const grid = document.querySelector("#credit-grid");
-const chips = document.querySelectorAll(".chip");
-const orbitLabel = document.querySelector("#orbit-label");
-const phaseButtons = document.querySelectorAll(".phase");
-const phaseCopy = document.querySelector("#phase-copy");
-const soundToggle = document.querySelector("#sound-toggle");
-const canvas = document.querySelector("#signal-canvas");
-const context = canvas.getContext("2d");
+let activeProject = 0;
 
-let activeFilter = "all";
-let pointerX = 0.5;
-let pointerY = 0.5;
-let soundOn = false;
-let audioContext;
-let oscillator;
-let gain;
-
-function renderCredits() {
-  const visible = credits.filter((credit) => activeFilter === "all" || credit.tag === activeFilter);
-  grid.innerHTML = visible
+function renderGrid() {
+  grid.innerHTML = projects
     .map(
-      (credit) => `
-        <article class="credit-card" tabindex="0" data-orbit="${credit.role}">
-          <div class="credit-meta">
-            <span>${credit.place}</span>
-            <span>${credit.role}</span>
-          </div>
-          <h3>${credit.title}</h3>
-          <p>${credit.detail}</p>
-        </article>
+      (project, index) => `
+        <button class="work-card" type="button" data-project="${index}" style="--tint:${project.tint};--sat:${project.sat};--x:${project.x};--y:${project.y}">
+          <span class="cover-art">
+            <span class="cover-initial">${project.album.charAt(0)}</span>
+          </span>
+          <span class="work-overlay">
+            <p><em>${project.album}</em></p>
+            <p>${project.artist}</p>
+            <p>${project.year}</p>
+          </span>
+        </button>
       `,
     )
     .join("");
-
-  document.querySelectorAll(".credit-card").forEach((card) => {
-    card.addEventListener("pointerenter", () => {
-      orbitLabel.textContent = card.dataset.orbit;
-    });
-    card.addEventListener("focus", () => {
-      orbitLabel.textContent = card.dataset.orbit;
-    });
-  });
 }
 
-chips.forEach((chip) => {
-  chip.addEventListener("click", () => {
-    activeFilter = chip.dataset.filter;
-    chips.forEach((item) => item.classList.toggle("active", item === chip));
-    renderCredits();
-  });
-});
-
-phaseButtons.forEach((button) => {
-  button.addEventListener("click", () => {
-    phaseButtons.forEach((item) => item.classList.toggle("active", item === button));
-    phaseCopy.textContent = phases[button.dataset.phase];
-  });
-});
-
-function resizeCanvas() {
-  const scale = window.devicePixelRatio || 1;
-  canvas.width = Math.floor(window.innerWidth * scale);
-  canvas.height = Math.floor(window.innerHeight * scale);
-  context.setTransform(scale, 0, 0, scale, 0, 0);
+function showView(view) {
+  const showInfo = view === "info";
+  workView.classList.toggle("is-active", !showInfo);
+  infoView.classList.toggle("is-active", showInfo);
+  document.body.style.backgroundColor = "#fff";
+  closeModal();
 }
 
-function drawSignal(time = 0) {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  context.clearRect(0, 0, width, height);
-  context.globalAlpha = 0.55;
-
-  for (let i = 0; i < 9; i += 1) {
-    const y = height * (0.18 + i * 0.09);
-    const amplitude = 12 + i * 2 + pointerY * 22;
-    context.beginPath();
-    context.strokeStyle = i % 3 === 0 ? "rgba(215,151,70,.20)" : "rgba(143,183,201,.13)";
-    context.lineWidth = 1;
-
-    for (let x = 0; x <= width; x += 18) {
-      const drift = time * 0.001 + i * 0.7 + pointerX * 2;
-      const wave = Math.sin(x * 0.014 + drift) * amplitude;
-      const mod = Math.cos(x * 0.004 - drift) * 8;
-      if (x === 0) context.moveTo(x, y + wave + mod);
-      context.lineTo(x, y + wave + mod);
-    }
-    context.stroke();
-  }
-
-  requestAnimationFrame(drawSignal);
+function openProject(index) {
+  activeProject = index;
+  const project = projects[index];
+  modalTitle.innerHTML = `<em>${project.album}</em><br>${project.artist}`;
+  modalYear.textContent = project.year;
+  modalRole.textContent = project.role;
+  modalTracks.innerHTML = project.tracks.map((track) => `<span>${track}</span>`).join("");
+  modalImage.style.setProperty("--tint", project.tint);
+  modalImage.src = "assets/studio-hero.png";
+  modalImage.alt = project.album;
+  prevButton.disabled = index === 0;
+  nextButton.disabled = index === projects.length - 1;
+  modal.classList.add("is-open");
+  modal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
 }
 
-function startSignal() {
-  audioContext = new AudioContext();
-  oscillator = audioContext.createOscillator();
-  gain = audioContext.createGain();
-  oscillator.type = "sine";
-  oscillator.frequency.value = 88;
-  gain.gain.value = 0.025;
-  oscillator.connect(gain).connect(audioContext.destination);
-  oscillator.start();
+function closeModal() {
+  modal.classList.remove("is-open");
+  modal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
 }
 
-soundToggle.addEventListener("click", async () => {
-  if (!audioContext) startSignal();
-  soundOn = !soundOn;
-  gain.gain.setTargetAtTime(soundOn ? 0.035 : 0, audioContext.currentTime, 0.05);
-  soundToggle.classList.toggle("active", soundOn);
-  soundToggle.setAttribute("aria-pressed", String(soundOn));
+renderGrid();
+
+document.addEventListener("click", (event) => {
+  const viewButton = event.target.closest("[data-view]");
+  const card = event.target.closest("[data-project]");
+  const close = event.target.closest("[data-close]");
+
+  if (viewButton) showView(viewButton.dataset.view);
+  if (card) openProject(Number(card.dataset.project));
+  if (close) closeModal();
 });
 
-window.addEventListener("pointermove", (event) => {
-  pointerX = event.clientX / window.innerWidth;
-  pointerY = event.clientY / window.innerHeight;
-  if (oscillator && soundOn) {
-    oscillator.frequency.setTargetAtTime(72 + pointerX * 54, audioContext.currentTime, 0.06);
-  }
+prevButton.addEventListener("click", () => {
+  if (activeProject > 0) openProject(activeProject - 1);
 });
 
-window.addEventListener("resize", resizeCanvas);
-document.querySelector("#year").textContent = new Date().getFullYear();
+nextButton.addEventListener("click", () => {
+  if (activeProject < projects.length - 1) openProject(activeProject + 1);
+});
 
-resizeCanvas();
-renderCredits();
-drawSignal();
+document.addEventListener("keydown", (event) => {
+  if (!modal.classList.contains("is-open")) return;
+  if (event.key === "Escape") closeModal();
+  if (event.key === "ArrowLeft" && activeProject > 0) openProject(activeProject - 1);
+  if (event.key === "ArrowRight" && activeProject < projects.length - 1) openProject(activeProject + 1);
+});

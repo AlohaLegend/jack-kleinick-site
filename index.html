@@ -3,148 +3,85 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta
-      name="description"
-      content="Portfolio website for Los Angeles music producer Jack Kleinick."
-    />
-    <title>Jack Kleinick | Music Producer</title>
+    <meta name="description" content="Selected work and contact for producer Jack Kleinick." />
+    <title>Jack Kleinick</title>
     <link rel="preload" href="assets/studio-hero.png" as="image" />
     <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
   </head>
   <body>
-    <canvas id="signal-canvas" aria-hidden="true"></canvas>
-
     <header class="site-header">
-      <a class="brand" href="#top" aria-label="Jack Kleinick home">JK</a>
-      <nav class="nav" aria-label="Primary navigation">
-        <a href="#work">Work</a>
-        <a href="#process">Process</a>
-        <a href="#listen">Listen</a>
-        <a href="#contact">Contact</a>
-      </nav>
-      <button class="icon-button" id="sound-toggle" type="button" aria-label="Toggle ambient signal">
-        <span aria-hidden="true">◐</span>
-      </button>
+      <button class="name-button" type="button" data-view="work">Jack Kleinick</button>
+      <button class="info-button" type="button" data-view="info">Info</button>
     </header>
 
-    <main id="top">
-      <section class="hero" aria-label="Intro">
-        <div class="hero-media" aria-hidden="true"></div>
-        <div class="hero-copy">
-          <p class="eyebrow">Los Angeles • New York • London</p>
-          <h1>Jack Kleinick</h1>
-          <p class="lede">
-            Producer and collaborator shaping records with texture, restraint, and a sharp ear for the
-            moment where a song starts to tell the truth.
-          </p>
-          <div class="hero-actions">
-            <a class="button primary" href="#listen">Play Reel</a>
-            <a class="button ghost" href="#contact">Start a Project</a>
-          </div>
-        </div>
-        <div class="hero-panel" aria-label="Current focus">
-          <p>Current orbit</p>
-          <strong id="orbit-label">artist development</strong>
-        </div>
+    <main class="site-main">
+      <section class="view is-active" id="work-view" aria-label="Selected works">
+        <div class="work-grid" id="work-grid"></div>
       </section>
 
-      <section class="ticker" aria-label="Studio locations">
-        <div class="ticker-track">
-          <span>production</span><span>arrangement</span><span>song architecture</span>
-          <span>vocal direction</span><span>mix perspective</span><span>production</span>
-          <span>arrangement</span><span>song architecture</span><span>vocal direction</span>
-          <span>mix perspective</span>
-        </div>
-      </section>
-
-      <section class="section work-section" id="work">
-        <div class="section-heading">
-          <p class="eyebrow">Selected Work</p>
-          <h2>Credits that move between scenes.</h2>
-        </div>
-        <div class="filter-bar" aria-label="Filter credits">
-          <button class="chip active" type="button" data-filter="all">All</button>
-          <button class="chip" type="button" data-filter="la">Los Angeles</button>
-          <button class="chip" type="button" data-filter="ny">New York</button>
-          <button class="chip" type="button" data-filter="london">London</button>
-        </div>
-        <div class="credit-grid" id="credit-grid"></div>
-      </section>
-
-      <section class="split-section" id="process">
-        <div class="process-copy">
-          <p class="eyebrow">Approach</p>
-          <h2>Small decisions, big emotional weather.</h2>
-          <p>
-            The site is built to present Jack as a working producer rather than a static resume: fast
-            listening paths, flexible credit modules, and a contact flow for artists, managers, and
-            labels.
-          </p>
-        </div>
-        <div class="process-board" aria-label="Production phases">
-          <button class="phase active" type="button" data-phase="pre">01 Pre-production</button>
-          <button class="phase" type="button" data-phase="track">02 Tracking</button>
-          <button class="phase" type="button" data-phase="finish">03 Finish</button>
-          <p id="phase-copy">
-            Finding the song’s center: references, tempo, key, lyric intent, and the sonic world around it.
-          </p>
-        </div>
-      </section>
-
-      <section class="section listen-section" id="listen">
-        <div class="section-heading">
-          <p class="eyebrow">Listen</p>
-          <h2>Playlist reel</h2>
-        </div>
-        <div class="listen-layout">
-          <iframe
-            title="Jack Kleinick Spotify playlist"
-            src="https://open.spotify.com/embed/playlist/0vlibWutg819Jhq4i6lZmp?utm_source=generator&theme=0"
-            width="100%"
-            height="380"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"
-          ></iframe>
-          <div class="listen-notes">
+      <section class="view info-view" id="info-view" aria-label="Info">
+        <div class="info-shell">
+          <img src="assets/studio-hero.png" alt="Recording studio" />
+          <div class="info-copy">
             <p>
-              This embed keeps the prototype connected to the source playlist while the final credits,
-              roles, and artist approvals are confirmed.
+              Jack Kleinick is a music producer based in Los Angeles, with work moving through Los
+              Angeles, New York, and London.
             </p>
-            <a class="button ghost" href="https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp" target="_blank" rel="noreferrer">
-              Open Spotify
-            </a>
+            <p>
+              This page is a simple working draft for selected productions, playlist listening, and
+              project inquiries while final credits and photography are being gathered.
+            </p>
+
+            <div class="contact-block">
+              <h2>Contact</h2>
+              <a class="hover-glow" href="mailto:hello@example.com">hello@example.com</a>
+              <a
+                class="hover-glow"
+                href="https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Listen to Selected Works →
+              </a>
+            </div>
+
+            <div class="info-footer">
+              <button type="button" class="back-button hover-glow" data-view="work">
+                ← Back to Selected Works
+              </button>
+            </div>
           </div>
         </div>
-      </section>
-
-      <section class="contact-section" id="contact">
-        <div>
-          <p class="eyebrow">Booking / Projects</p>
-          <h2>Bring the song in early.</h2>
-        </div>
-        <form class="contact-form" action="mailto:hello@example.com" method="post" enctype="text/plain">
-          <label>
-            <span>Name</span>
-            <input name="name" autocomplete="name" required />
-          </label>
-          <label>
-            <span>Email</span>
-            <input name="email" type="email" autocomplete="email" required />
-          </label>
-          <label>
-            <span>Project</span>
-            <textarea name="project" rows="4" required></textarea>
-          </label>
-          <button class="button primary" type="submit">Send Inquiry</button>
-        </form>
       </section>
     </main>
 
-    <footer class="site-footer">
-      <span>© <span id="year"></span> Jack Kleinick</span>
-      <a href="#top">Back to top</a>
-    </footer>
-
-    <script src="app.js" defer></script>
+    <div class="modal" id="project-modal" aria-hidden="true">
+      <div class="modal-backdrop" data-close></div>
+      <article class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <button class="close-button" type="button" aria-label="Close project" data-close>×</button>
+        <img id="modal-image" src="assets/studio-hero.png" alt="" />
+        <div class="modal-copy">
+          <h1 id="modal-title"></h1>
+          <p class="modal-year" id="modal-year"></p>
+          <div>
+            <h2>Credits</h2>
+            <p id="modal-role"></p>
+          </div>
+          <div>
+            <h2>Tracks</h2>
+            <div class="track-list" id="modal-tracks"></div>
+          </div>
+          <footer class="modal-nav">
+            <button type="button" class="hover-glow" data-close>← Back to Selected Works</button>
+            <div>
+              <button type="button" class="hover-glow" id="prev-project">prev</button>
+              <span>/</span>
+              <button type="button" class="hover-glow" id="next-project">next</button>
+            </div>
+          </footer>
+        </div>
+      </article>
+    </div>
   </body>
 </html>
