@@ -281,6 +281,17 @@ function recordObstacle() {
   };
 }
 
+function panelObstacle() {
+  if (!stageFocus || window.innerWidth > 560) return null;
+  const panel = stageFocus.getBoundingClientRect();
+  return {
+    left: panel.left,
+    right: panel.right,
+    top: panel.top,
+    bottom: panel.bottom,
+  };
+}
+
 function edgeBleed() {
   return 0;
 }
@@ -658,6 +669,45 @@ function resolveRecordCollision(body) {
   body.rotation += nx * 0.55;
 }
 
+function resolvePanelCollision(body) {
+  if (body.dragging || body.pinned) return;
+
+  const panel = panelObstacle();
+  if (!panel) return;
+
+  const size = body.token.offsetWidth || 116;
+  const left = body.x;
+  const right = body.x + size;
+  const top = body.y;
+  const bottom = body.y + size;
+  const overlapX = Math.min(right, panel.right) - Math.max(left, panel.left);
+  const overlapY = Math.min(bottom, panel.bottom) - Math.max(top, panel.top);
+
+  if (overlapX <= 0 || overlapY <= 0) return;
+
+  if (window.innerWidth <= 560) {
+    body.y = Math.min(body.y, panel.top - size - 8);
+    body.vy = -Math.abs(body.vy) * 0.45 - 0.05;
+    body.vx += (left + size * 0.5 < window.innerWidth * 0.5 ? -0.025 : 0.025);
+    body.rotation *= 0.96;
+    return;
+  }
+
+  if (overlapY <= overlapX) {
+    const towardTop = top + size * 0.5 < panel.top + (panel.bottom - panel.top) * 0.5;
+    body.y += towardTop ? -(overlapY + 6) : overlapY + 6;
+    body.vy = towardTop ? -Math.abs(body.vy) * 0.45 - 0.05 : Math.abs(body.vy) * 0.28 + 0.03;
+    body.vx += (left + size * 0.5 < window.innerWidth * 0.5 ? -0.035 : 0.035);
+  } else {
+    const towardLeft = left + size * 0.5 < panel.left + (panel.right - panel.left) * 0.5;
+    body.x += towardLeft ? -(overlapX + 6) : overlapX + 6;
+    body.vx = towardLeft ? -Math.abs(body.vx) * 0.42 - 0.05 : Math.abs(body.vx) * 0.42 + 0.05;
+    body.vy *= 0.86;
+  }
+
+  body.rotation *= 0.96;
+}
+
 function updateStage(timestamp) {
   const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
@@ -683,6 +733,7 @@ function updateStage(timestamp) {
   resolveCoverCollisions(bounds, floor);
   bodies.forEach((body) => {
     resolveRecordCollision(body);
+    resolvePanelCollision(body);
     clampBodyToViewport(body, bounds, floor);
   });
 
