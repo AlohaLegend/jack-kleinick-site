@@ -4,7 +4,9 @@ Interactive portfolio prototype for music producer Jack Kleinick.
 
 ## Run locally
 
-This version has no build step. Open `index.html` directly, or serve the folder:
+This version has no build step. The easiest preview is to open `index.html` directly from File Explorer.
+
+You can also serve the folder:
 
 ```powershell
 .\start-site.cmd
