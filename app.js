@@ -92,6 +92,7 @@ const modalRole = document.querySelector("#modal-role");
 const modalTracks = document.querySelector("#modal-tracks");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
+const themeToggle = document.querySelector("#theme-toggle");
 
 let activeProject = 0;
 
@@ -116,8 +117,15 @@ function showView(view) {
   const showInfo = view === "info";
   workView.classList.toggle("is-active", !showInfo);
   infoView.classList.toggle("is-active", showInfo);
-  document.body.style.backgroundColor = "#fff";
   closeModal();
+}
+
+function setTheme(theme) {
+  document.body.dataset.theme = theme;
+  localStorage.setItem("jack-kleinick-theme", theme);
+  const isDark = theme === "dark";
+  themeToggle.textContent = isDark ? "Light" : "Dark";
+  themeToggle.setAttribute("aria-label", `Switch to ${isDark ? "light" : "dark"} theme`);
 }
 
 function openProject(index) {
@@ -143,6 +151,7 @@ function closeModal() {
 }
 
 renderGrid();
+setTheme(localStorage.getItem("jack-kleinick-theme") || "light");
 
 document.addEventListener("click", (event) => {
   const viewButton = event.target.closest("[data-view]");
@@ -152,6 +161,10 @@ document.addEventListener("click", (event) => {
   if (viewButton) showView(viewButton.dataset.view);
   if (card) openProject(Number(card.dataset.project));
   if (close) closeModal();
+});
+
+themeToggle.addEventListener("click", () => {
+  setTheme(document.body.dataset.theme === "dark" ? "light" : "dark");
 });
 
 prevButton.addEventListener("click", () => {

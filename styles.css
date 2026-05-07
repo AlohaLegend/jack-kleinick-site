@@ -15,11 +15,30 @@ body {
 }
 
 body {
-  background: #fff;
-  color: #111;
+  --page: #fff;
+  --ink: #111;
+  --muted: #5d5d5d;
+  --line: #ddd;
+  --header: rgba(255, 255, 255, 0.82);
+  --card: #fff;
+  --soft: #f1f1f1;
+  --modal-backdrop: rgba(31, 39, 39, 0.9);
+  background: var(--page);
+  color: var(--ink);
   font-family: "Local Serif", Georgia, "Times New Roman", serif;
   -webkit-font-smoothing: antialiased;
   transition: background-color 700ms ease;
+}
+
+body[data-theme="dark"] {
+  --page: #111312;
+  --ink: #f4f0e8;
+  --muted: #c5beb4;
+  --line: #343837;
+  --header: rgba(17, 19, 18, 0.82);
+  --card: #181a19;
+  --soft: #242826;
+  --modal-backdrop: rgba(0, 0, 0, 0.82);
 }
 
 button,
@@ -50,12 +69,13 @@ img {
   display: flex;
   justify-content: space-between;
   padding: 1rem;
-  background: rgba(255, 255, 255, 0.82);
+  background: var(--header);
   backdrop-filter: blur(12px);
 }
 
 .name-button,
-.info-button {
+.info-button,
+.theme-toggle {
   position: relative;
   z-index: 1;
   font-size: clamp(1.18rem, 2vw, 1.45rem);
@@ -66,6 +86,7 @@ img {
 .hover-glow,
 .name-button,
 .info-button,
+.theme-toggle,
 .work-card {
   transition:
     opacity 220ms ease,
@@ -77,6 +98,16 @@ img {
 .name-button:hover,
 .info-button:hover {
   text-shadow: 0 0 15px rgba(33, 150, 243, 0.45);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-toggle {
+  color: var(--muted);
 }
 
 .site-main {
@@ -106,7 +137,7 @@ img {
   aspect-ratio: 1;
   overflow: hidden;
   text-align: left;
-  background: #f4f4f4;
+  background: var(--soft);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
@@ -180,7 +211,7 @@ img {
   gap: 0.45rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--line);
 }
 
 .contact-block h2,
@@ -211,7 +242,7 @@ img {
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--modal-backdrop);
   backdrop-filter: blur(12px);
 }
 
@@ -223,7 +254,7 @@ img {
   width: min(calc(100% - 2rem), 76rem);
   max-height: 100vh;
   overflow: auto;
-  background: #fff;
+  background: var(--card);
   box-shadow: 0 16px 60px rgba(0, 0, 0, 0.18);
 }
 
@@ -261,7 +292,7 @@ img {
 .track-list span {
   padding: 0.2rem 0.45rem;
   border-radius: 3px;
-  background: #f1f1f1;
+  background: var(--soft);
 }
 
 .close-button {
@@ -286,7 +317,7 @@ img {
   gap: 1rem;
   margin-top: auto;
   padding-top: 1rem;
-  border-top: 1px solid #ddd;
+  border-top: 1px solid var(--line);
   font-size: 0.95rem;
 }
 
@@ -336,7 +367,11 @@ img {
   }
 
   .close-button {
-    color: #111;
+    color: var(--ink);
     background: rgba(0, 0, 0, 0.08);
+  }
+
+  body[data-theme="dark"] .close-button {
+    background: rgba(255, 255, 255, 0.12);
   }
 }
