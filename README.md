@@ -22,6 +22,18 @@ If your browser cannot reach `localhost`, use:
 
 That starts the server and opens `http://127.0.0.1:4173` directly.
 
+For another computer on the same network, keep `start-site.cmd` running and open:
+
+```text
+http://YOUR-LAN-IP:4173
+```
+
+Find the LAN IP with:
+
+```powershell
+ipconfig
+```
+
 ## Notes
 
 - `assets/studio-hero.png` is a generated placeholder hero image and should be replaced with approved Jack/studio photography when available.

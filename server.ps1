@@ -2,7 +2,7 @@ $ErrorActionPreference = "Stop"
 
 $Root = $PSScriptRoot
 $Port = 4173
-$Address = [System.Net.IPAddress]::Parse("127.0.0.1")
+$Address = [System.Net.IPAddress]::Any
 $Listener = [System.Net.Sockets.TcpListener]::new($Address, $Port)
 
 $Types = @{
@@ -33,7 +33,8 @@ function Send-Response {
 
 try {
   $Listener.Start()
-  Write-Host "Jack Kleinick site running at http://127.0.0.1:$Port"
+  Write-Host "Jack Kleinick site running locally at http://127.0.0.1:$Port"
+  Write-Host "For another computer on this network, use this computer's LAN IP with port $Port."
 
   while ($true) {
     $Client = $Listener.AcceptTcpClient()
