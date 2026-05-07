@@ -227,7 +227,11 @@ let focusedProject = 0;
 let displayedProject = 0;
 let lastFrame = 0;
 let introReleaseTimer;
+let sensorPermissionAsked = false;
+let lastShakeAt = 0;
+let lastMotionMagnitude = 0;
 const bodies = [];
+const deviceGravity = { x: 0, y: 0 };
 const albumMoods = [
   ["#b96a3d", "#7eb2ad"],
   ["#6d4430", "#e0b885"],
@@ -285,6 +289,10 @@ function edgeBleed() {
   return 0;
 }
 
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
 function stageFloor(bounds) {
   if (!stageFocus || window.innerWidth > 560) return bounds.height;
 
@@ -292,6 +300,71 @@ function stageFloor(bounds) {
   if (!panel.height) return bounds.height;
 
   return Math.max(160, panel.top - 8);
+}
+
+function tossCovers(force = 1) {
+  bodies.forEach((body, index) => {
+    if (body.dragging || body.pinned) return;
+
+    const phase = performance.now() * 0.003 + index * 1.91;
+    body.vx += Math.cos(phase) * 0.72 * force + deviceGravity.x * 0.6;
+    body.vy += Math.sin(phase * 1.23) * 0.55 * force - 0.28 * force;
+    body.rotation += Math.sin(phase) * 5.5 * force;
+  });
+}
+
+function handleDeviceOrientation(event) {
+  if (typeof event.gamma === "number") {
+    const targetX = clamp(event.gamma / 34, -1, 1);
+    deviceGravity.x += (targetX - deviceGravity.x) * 0.08;
+  }
+
+  if (typeof event.beta === "number") {
+    const targetY = clamp((event.beta - 22) / 42, -0.85, 1);
+    deviceGravity.y += (targetY - deviceGravity.y) * 0.06;
+  }
+}
+
+function handleDeviceMotion(event) {
+  const source = event.accelerationIncludingGravity || event.acceleration;
+  if (!source) return;
+
+  const x = source.x || 0;
+  const y = source.y || 0;
+  const z = source.z || 0;
+  const magnitude = Math.hypot(x, y, z);
+  const delta = Math.abs(magnitude - lastMotionMagnitude);
+  lastMotionMagnitude = magnitude;
+
+  const now = performance.now();
+  if (delta < 8.5 || now - lastShakeAt < 650) return;
+
+  lastShakeAt = now;
+  tossCovers(clamp(delta / 11, 0.8, 1.8));
+}
+
+async function enableDeviceSensors() {
+  if (sensorPermissionAsked) return;
+  sensorPermissionAsked = true;
+
+  try {
+    const permissionRequests = [];
+    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
+      permissionRequests.push(DeviceOrientationEvent.requestPermission());
+    }
+
+    if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
+      permissionRequests.push(DeviceMotionEvent.requestPermission());
+    }
+
+    const states = await Promise.all(permissionRequests);
+    if (states.some((state) => state !== "granted")) return;
+  } catch {
+    return;
+  }
+
+  window.addEventListener("deviceorientation", handleDeviceOrientation);
+  window.addEventListener("devicemotion", handleDeviceMotion);
 }
 
 function applyAlbumMood(index) {
@@ -684,7 +757,8 @@ function updateStage(timestamp) {
     if (!body.dragging && !body.pinned) {
       const driftTime = timestamp * 0.00022 + body.drift;
       body.vx += Math.sin(driftTime) * 0.0048 * delta;
-      body.vy += (0.004 + Math.cos(driftTime * 0.8) * 0.0022) * delta;
+      body.vx += deviceGravity.x * 0.0065 * delta;
+      body.vy += (0.004 + deviceGravity.y * 0.006 + Math.cos(driftTime * 0.8) * 0.0022) * delta;
       keepBodyMoving(body, timestamp, delta);
       body.vx *= 0.999;
       body.vy *= 0.999;
@@ -767,6 +841,9 @@ document.addEventListener("click", (event) => {
   if (viewButton) showView(viewButton.dataset.view);
   if (close) closeModal();
 });
+
+document.addEventListener("pointerdown", enableDeviceSensors, { once: true });
+document.addEventListener("touchstart", enableDeviceSensors, { once: true });
 
 focusOpen.addEventListener("click", () => {
   if (displayedProject < 0) return;
