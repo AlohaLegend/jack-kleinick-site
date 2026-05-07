@@ -81,7 +81,7 @@ img {
 
 .site-main {
   min-height: 100vh;
-  padding-top: 3.6rem;
+  padding-top: 6rem;
 }
 
 .view {
@@ -95,10 +95,10 @@ img {
 .work-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
+  gap: 1rem;
   max-width: 80rem;
   margin: 0 auto;
-  padding: 0.5rem;
+  padding: 2rem 1rem 4rem;
 }
 
 .work-card {
@@ -106,42 +106,20 @@ img {
   aspect-ratio: 1;
   overflow: hidden;
   text-align: left;
-  background: #eee;
+  background: #f4f4f4;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
 }
 
 .work-card:hover {
   transform: scale(0.992);
 }
 
-.cover-art {
+.work-card > img {
   position: absolute;
   inset: 0;
-  display: grid;
-  place-items: center;
-  overflow: hidden;
-  background:
-    linear-gradient(var(--tint), var(--tint)),
-    url("assets/studio-hero.png") center / cover;
-  filter: saturate(var(--sat)) contrast(1.04);
-}
-
-.cover-art::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(135deg, transparent 45%, rgba(255, 255, 255, 0.22) 45% 47%, transparent 47%),
-    radial-gradient(circle at var(--x) var(--y), rgba(255, 255, 255, 0.28), transparent 38%);
-  mix-blend-mode: screen;
-}
-
-.cover-initial {
-  position: relative;
-  z-index: 1;
-  color: rgba(255, 255, 255, 0.86);
-  font-size: clamp(4rem, 14vw, 10rem);
-  font-style: italic;
-  line-height: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .work-overlay {
@@ -153,7 +131,7 @@ img {
   justify-content: flex-end;
   padding: 0.85rem;
   color: #fff;
-  background: rgba(0, 0, 0, 0.26);
+  background: rgba(0, 0, 0, 0.28);
   opacity: 0;
   transition: opacity 220ms ease;
 }
@@ -242,7 +220,7 @@ img {
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  width: min(100%, 72rem);
+  width: min(calc(100% - 2rem), 76rem);
   max-height: 100vh;
   overflow: auto;
   background: #fff;
@@ -258,7 +236,7 @@ img {
 .modal-copy {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 2.35rem;
   min-height: 28rem;
   padding: 1rem;
 }
@@ -330,14 +308,14 @@ img {
   }
 
   .site-main {
-    padding-top: 5rem;
+    padding-top: 8.6rem;
     padding-bottom: 5rem;
   }
 
   .work-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 1.25rem;
-    padding: 1.25rem;
+    gap: 1.75rem;
+    padding: 2.25rem 1.25rem 5rem;
   }
 
   .work-overlay {

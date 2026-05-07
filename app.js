@@ -1,92 +1,83 @@
 const projects = [
   {
-    album: "Selected Works",
-    artist: "Jack Kleinick",
+    album: "To Let Go Your Hand",
+    artist: "kabir",
     year: "2026",
+    role: "Producer, Songwriter, Guitar",
+    tracks: ["To Let Go Your Hand"],
+    image: "assets/covers/kabir-to-let-go-your-hand.jpg",
+  },
+  {
+    album: "Thought You Knew",
+    artist: "Madeline",
+    year: "2024",
+    role: "Producer, Songwriter, Acoustic Guitar",
+    tracks: ["Thought You Knew"],
+    image: "assets/covers/madeline-thought-you-knew.jpg",
+  },
+  {
+    album: "Sad Eyes",
+    artist: "Madeline",
+    year: "2024",
+    role: "Producer, Songwriter",
+    tracks: ["Sad Eyes"],
+    image: "assets/covers/madeline-sad-eyes.jpg",
+  },
+  {
+    album: "Good Girl",
+    artist: "Jack Rabbit",
+    year: "2025",
+    role: "Producer, Songwriter",
+    tracks: ["Good Girl"],
+    image: "assets/covers/jack-rabbit-good-girl.jpg",
+  },
+  {
+    album: "12065",
+    artist: "grentperez",
+    year: "2025",
     role: "Producer",
-    tracks: ["Playlist Reel"],
-    tint: "rgba(24, 32, 36, .18)",
-    sat: "1.05",
-    x: "28%",
-    y: "30%",
+    tracks: ["12065"],
+    image: "assets/covers/grentperez-12065.jpg",
   },
   {
-    album: "Los Angeles Sessions",
-    artist: "Various Artists",
-    year: "Los Angeles",
-    role: "Production, arrangement",
-    tracks: ["Artist Development", "Tracking"],
-    tint: "rgba(150, 74, 44, .18)",
-    sat: "1.15",
-    x: "68%",
-    y: "24%",
+    album: "Talk",
+    artist: "Wingtip",
+    year: "2023",
+    role: "Producer",
+    tracks: ["Talk"],
+    image: "assets/covers/wingtip-talk.jpg",
   },
   {
-    album: "New York Rooms",
-    artist: "Various Artists",
-    year: "New York",
-    role: "Co-production, writing support",
-    tracks: ["Writing", "Edits"],
-    tint: "rgba(35, 82, 112, .2)",
-    sat: ".95",
-    x: "34%",
-    y: "72%",
+    album: "breakfast song",
+    artist: "Juliet Ivy",
+    year: "2023",
+    role: "Producer, Writer",
+    tracks: ["breakfast song"],
+    image: "assets/covers/juliet-ivy-breakfast-song.jpg",
   },
   {
-    album: "London Passes",
-    artist: "Various Artists",
-    year: "London",
-    role: "Finishing notes, production perspective",
-    tracks: ["Remote Finish", "Reference Pass"],
-    tint: "rgba(73, 91, 60, .18)",
-    sat: ".9",
-    x: "72%",
-    y: "68%",
+    album: "Texas Sky",
+    artist: "Jack Rabbit",
+    year: "2025",
+    role: "Producer, Songwriter",
+    tracks: ["Texas Sky"],
+    image: "assets/covers/jack-rabbit-texas-sky.jpg",
   },
   {
-    album: "Vocal Direction",
-    artist: "Studio",
-    year: "Current",
-    role: "Vocal production",
-    tracks: ["Comping", "Tone", "Performance"],
-    tint: "rgba(128, 47, 78, .18)",
-    sat: "1.2",
-    x: "50%",
-    y: "40%",
+    album: "That's All, Right?",
+    artist: "Jack Rabbit",
+    year: "2025",
+    role: "Producer, Songwriter",
+    tracks: ["That's All, Right?"],
+    image: "assets/covers/jack-rabbit-thats-all-right.jpg",
   },
   {
-    album: "Song Architecture",
-    artist: "Studio",
-    year: "Current",
-    role: "Structure, arrangement",
-    tracks: ["Pre-production", "Arrangement"],
-    tint: "rgba(55, 55, 55, .16)",
-    sat: ".82",
-    x: "22%",
-    y: "62%",
-  },
-  {
-    album: "Texture Studies",
-    artist: "Studio",
-    year: "Current",
-    role: "Synths, production palette",
-    tracks: ["Keys", "Synths", "Atmosphere"],
-    tint: "rgba(179, 132, 52, .18)",
-    sat: "1.25",
-    x: "64%",
-    y: "42%",
-  },
-  {
-    album: "Playlist Reel",
-    artist: "Spotify",
+    album: "Selected Works",
+    artist: "Spotify Playlist",
     year: "Listen",
-    role: "Shared selected-work playlist",
+    role: "Playlist reel",
     tracks: ["Open Spotify"],
-    tint: "rgba(20, 110, 68, .2)",
-    sat: "1.1",
-    x: "44%",
-    y: "24%",
-    url: "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp",
+    image: "assets/studio-hero.png",
   },
 ];
 
@@ -109,9 +100,7 @@ function renderGrid() {
     .map(
       (project, index) => `
         <button class="work-card" type="button" data-project="${index}" style="--tint:${project.tint};--sat:${project.sat};--x:${project.x};--y:${project.y}">
-          <span class="cover-art">
-            <span class="cover-initial">${project.album.charAt(0)}</span>
-          </span>
+          <img src="${project.image}" alt="${project.album} cover" loading="lazy">
           <span class="work-overlay">
             <p><em>${project.album}</em></p>
             <p>${project.artist}</p>
@@ -138,8 +127,7 @@ function openProject(index) {
   modalYear.textContent = project.year;
   modalRole.textContent = project.role;
   modalTracks.innerHTML = project.tracks.map((track) => `<span>${track}</span>`).join("");
-  modalImage.style.setProperty("--tint", project.tint);
-  modalImage.src = "assets/studio-hero.png";
+  modalImage.src = project.image;
   modalImage.alt = project.album;
   prevButton.disabled = index === 0;
   nextButton.disabled = index === projects.length - 1;
