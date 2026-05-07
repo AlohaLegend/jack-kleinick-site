@@ -289,10 +289,15 @@ img {
   gap: 0.35rem;
 }
 
-.track-list span {
+.track-list span,
+.track-list a {
   padding: 0.2rem 0.45rem;
   border-radius: 3px;
   background: var(--soft);
+}
+
+.track-list a:hover {
+  text-shadow: 0 0 12px rgba(33, 150, 243, 0.45);
 }
 
 .close-button {
