@@ -200,6 +200,12 @@ const projects = [
 ];
 
 const grid = document.querySelector("#work-grid");
+const stage = document.querySelector("#gravity-stage");
+const focusTitle = document.querySelector("#focus-title");
+const focusMeta = document.querySelector("#focus-meta");
+const focusRole = document.querySelector("#focus-role");
+const focusTracks = document.querySelector("#focus-tracks");
+const focusOpen = document.querySelector("#focus-open");
 const workView = document.querySelector("#work-view");
 const infoView = document.querySelector("#info-view");
 const modal = document.querySelector("#project-modal");
@@ -213,23 +219,235 @@ const nextButton = document.querySelector("#next-project");
 const entryScreen = document.querySelector("#entry-screen");
 
 let activeProject = 0;
+let focusedProject = 0;
+let lastFrame = 0;
+const bodies = [];
 
 function renderGrid() {
   grid.innerHTML = projects
     .map(
       (project, index) => `
-        <button class="work-card" type="button" data-project="${index}" data-number="${String(index + 1).padStart(2, "0")}">
+        <button class="cover-token" type="button" data-token="${index}" aria-label="Focus ${project.album} by ${project.artist}">
           <img src="${project.image}" alt="${project.album} cover" loading="lazy">
-          <span class="work-overlay">
-            <p><em>${project.album}</em></p>
-            <p>${project.artist}</p>
-            <p>${project.year}</p>
-          </span>
+          <span>${project.album} / ${project.artist}</span>
         </button>
       `,
     )
     .join("");
 
+  setupBodies();
+  focusProject(0, { snap: true });
+  window.requestAnimationFrame(updateStage);
+}
+
+function setupBodies() {
+  const rect = stage.getBoundingClientRect();
+  const tokens = [...grid.querySelectorAll(".cover-token")];
+  bodies.length = 0;
+
+  tokens.forEach((token, index) => {
+    const size = token.offsetWidth || 116;
+    const lane = index % 5;
+    const spread = Math.max(1, rect.width - size - 32);
+    bodies.push({
+      token,
+      x: 16 + ((index * 173 + lane * 41) % spread),
+      y: 92 + ((index * 67 + lane * 29) % Math.max(120, rect.height * 0.45)),
+      vx: ((index % 7) - 3) * 0.09,
+      vy: 0,
+      rotation: (index % 2 === 0 ? -1 : 1) * (2 + (index % 5)),
+      dragging: false,
+      pinned: false,
+      pointerId: null,
+      offsetX: 0,
+      offsetY: 0,
+      lastX: 0,
+      lastY: 0,
+      lastMove: 0,
+    });
+
+    token.addEventListener("pointerdown", (event) => beginDrag(event, index));
+    token.addEventListener("pointermove", (event) => dragToken(event, index));
+    token.addEventListener("pointerup", (event) => endDrag(event, index));
+    token.addEventListener("pointercancel", (event) => endDrag(event, index));
+    token.addEventListener("dblclick", () => openProject(index));
+  });
+}
+
+function stagePoint(event) {
+  const rect = stage.getBoundingClientRect();
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top,
+  };
+}
+
+function beginDrag(event, index) {
+  const body = bodies[index];
+  const point = stagePoint(event);
+  body.dragging = true;
+  body.pinned = false;
+  body.pointerId = event.pointerId;
+  body.offsetX = point.x - body.x;
+  body.offsetY = point.y - body.y;
+  body.lastX = point.x;
+  body.lastY = point.y;
+  body.lastMove = performance.now();
+  body.token.setPointerCapture(event.pointerId);
+  body.token.style.zIndex = "8";
+  event.preventDefault();
+}
+
+function dragToken(event, index) {
+  const body = bodies[index];
+  if (!body.dragging || body.pointerId !== event.pointerId) return;
+
+  const point = stagePoint(event);
+  const now = performance.now();
+  const elapsed = Math.max(16, now - body.lastMove);
+  body.x = point.x - body.offsetX;
+  body.y = point.y - body.offsetY;
+  body.vx = ((point.x - body.lastX) / elapsed) * 16;
+  body.vy = ((point.y - body.lastY) / elapsed) * 16;
+  body.rotation = Math.max(-9, Math.min(9, body.vx * 2.4));
+  body.lastX = point.x;
+  body.lastY = point.y;
+  body.lastMove = now;
+}
+
+function endDrag(event, index) {
+  const body = bodies[index];
+  if (!body.dragging || body.pointerId !== event.pointerId) return;
+
+  body.dragging = false;
+  body.pointerId = null;
+  body.token.releasePointerCapture(event.pointerId);
+  body.token.style.zIndex = "";
+
+  const rect = stage.getBoundingClientRect();
+  const size = body.token.offsetWidth || 116;
+  const centerX = rect.width * 0.5 - size * 0.5;
+  const centerY = rect.height * 0.52 - size * 0.5;
+  const distance = Math.hypot(body.x - centerX, body.y - centerY);
+
+  if (distance < Math.max(118, rect.width * 0.12)) {
+    focusProject(index, { snap: true });
+  } else {
+    focusProject(index);
+  }
+}
+
+function focusProject(index, options = {}) {
+  focusedProject = index;
+  const project = projects[index];
+  focusTitle.textContent = project.album;
+  focusMeta.textContent = `${project.artist} / ${project.year}`;
+  focusRole.textContent = project.role;
+  focusTracks.innerHTML = project.tracks
+    .slice(0, 4)
+    .map((track) => {
+      const item = typeof track === "string" ? { title: track, url: "" } : track;
+      return item.url
+        ? `<a href="${item.url}" target="_blank" rel="noreferrer">${item.title}</a>`
+        : `<span>${item.title}</span>`;
+    })
+    .join("");
+
+  bodies.forEach((body, bodyIndex) => {
+    body.token.classList.toggle("is-focused", bodyIndex === index);
+    if (bodyIndex !== index) body.pinned = false;
+  });
+
+  if (options.snap && bodies[index]) {
+    const rect = stage.getBoundingClientRect();
+    const body = bodies[index];
+    const size = body.token.offsetWidth || 116;
+    body.x = rect.width * 0.5 - size * 0.5;
+    body.y = rect.height * 0.52 - size * 0.5;
+    body.vx = 0;
+    body.vy = 0;
+    body.rotation = 0;
+    body.pinned = true;
+    body.token.style.zIndex = "7";
+  }
+}
+
+function updateStage(timestamp) {
+  const rect = stage.getBoundingClientRect();
+  const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
+  const floor = rect.height - Math.max(92, rect.height < 720 ? 230 : 120);
+  lastFrame = timestamp;
+
+  bodies.forEach((body) => {
+    const size = body.token.offsetWidth || 116;
+
+    if (!body.dragging && !body.pinned) {
+      body.vy += 0.055 * delta;
+      body.vx *= 0.995;
+      body.vy *= 0.996;
+      body.x += body.vx * delta;
+      body.y += body.vy * delta;
+      body.rotation += body.vx * 0.02;
+
+      if (body.x < 12) {
+        body.x = 12;
+        body.vx = Math.abs(body.vx) * 0.65;
+      }
+
+      if (body.x + size > rect.width - 12) {
+        body.x = rect.width - size - 12;
+        body.vx = -Math.abs(body.vx) * 0.65;
+      }
+
+      if (body.y + size > floor) {
+        body.y = floor - size;
+        body.vy = -Math.abs(body.vy) * 0.2;
+        body.vx *= 0.985;
+        body.rotation *= 0.985;
+      }
+
+      if (body.y < 68) {
+        body.y = 68;
+        body.vy = Math.abs(body.vy) * 0.45;
+      }
+    }
+  });
+
+  for (let first = 0; first < bodies.length; first += 1) {
+    for (let second = first + 1; second < bodies.length; second += 1) {
+      const a = bodies[first];
+      const b = bodies[second];
+      if (a.dragging || b.dragging || a.pinned || b.pinned) continue;
+
+      const aSize = a.token.offsetWidth || 116;
+      const bSize = b.token.offsetWidth || 116;
+      const ax = a.x + aSize * 0.5;
+      const ay = a.y + aSize * 0.5;
+      const bx = b.x + bSize * 0.5;
+      const by = b.y + bSize * 0.5;
+      const dx = bx - ax;
+      const dy = by - ay;
+      const minDistance = (aSize + bSize) * 0.42;
+      const distance = Math.max(1, Math.hypot(dx, dy));
+
+      if (distance < minDistance) {
+        const push = (minDistance - distance) * 0.018;
+        const nx = dx / distance;
+        const ny = dy / distance;
+        a.vx -= nx * push;
+        a.vy -= ny * push;
+        b.vx += nx * push;
+        b.vy += ny * push;
+      }
+    }
+  }
+
+  bodies.forEach((body, index) => {
+    body.token.style.transform = `translate3d(${body.x}px, ${body.y}px, 0) rotate(${body.rotation}deg)`;
+    body.token.style.zIndex = body.dragging ? "9" : body.pinned ? "7" : String(3 + (index % 3));
+  });
+
+  window.requestAnimationFrame(updateStage);
 }
 
 function showView(view) {
@@ -276,12 +494,14 @@ window.setTimeout(() => {
 
 document.addEventListener("click", (event) => {
   const viewButton = event.target.closest("[data-view]");
-  const card = event.target.closest("[data-project]");
   const close = event.target.closest("[data-close]");
 
   if (viewButton) showView(viewButton.dataset.view);
-  if (card) openProject(Number(card.dataset.project));
   if (close) closeModal();
+});
+
+focusOpen.addEventListener("click", () => {
+  openProject(focusedProject);
 });
 
 prevButton.addEventListener("click", () => {
@@ -297,5 +517,14 @@ document.addEventListener("keydown", (event) => {
   if (event.key === "Escape") closeModal();
   if (event.key === "ArrowLeft" && activeProject > 0) openProject(activeProject - 1);
   if (event.key === "ArrowRight" && activeProject < projects.length - 1) openProject(activeProject + 1);
+});
+
+window.addEventListener("resize", () => {
+  const rect = stage.getBoundingClientRect();
+  bodies.forEach((body) => {
+    const size = body.token.offsetWidth || 116;
+    body.x = Math.min(Math.max(12, body.x), rect.width - size - 12);
+    body.y = Math.min(Math.max(68, body.y), rect.height - size - 12);
+  });
 });
 
