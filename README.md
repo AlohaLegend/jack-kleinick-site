@@ -7,7 +7,7 @@ Interactive portfolio prototype for music producer Jack Kleinick.
 This version has no build step. Open `index.html` directly, or serve the folder:
 
 ```powershell
-node server.mjs
+.\start-site.cmd
 ```
 
 Then visit `http://localhost:4173`.
