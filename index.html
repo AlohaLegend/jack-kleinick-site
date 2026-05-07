@@ -31,7 +31,18 @@
 
     <main class="site-main">
       <section class="view is-active" id="work-view" aria-label="Selected works">
-        <div class="work-grid" id="work-grid"></div>
+        <section class="work-browser" aria-label="Selected works browser">
+          <aside class="work-preview" aria-label="Current selected work">
+            <p class="preview-kicker">Selected work</p>
+            <img id="preview-image" src="assets/covers/grentperez-12065.jpg" alt="12065 cover" />
+            <div class="preview-copy">
+              <h2 id="preview-title">12065</h2>
+              <p id="preview-artist">grentperez</p>
+              <span id="preview-meta">2025</span>
+            </div>
+          </aside>
+          <div class="work-index" id="work-grid"></div>
+        </section>
       </section>
 
       <section class="view info-view" id="info-view" aria-label="Info">

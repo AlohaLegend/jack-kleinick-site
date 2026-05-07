@@ -221,50 +221,106 @@ img {
   display: block;
 }
 
-.work-grid {
+.work-browser {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  grid-auto-flow: dense;
   gap: 1rem;
-  max-width: 88rem;
+  max-width: 92rem;
   margin: 0 auto;
   padding: 1rem 1rem 4rem;
+}
+
+.work-preview {
+  position: relative;
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(145deg, rgba(245, 241, 234, 0.055), transparent 44%),
+    #0e1111;
+  min-height: 24rem;
+}
+
+.preview-kicker {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+
+.work-preview img {
+  width: min(18rem, 72%);
+  aspect-ratio: 1;
+  object-fit: cover;
+  justify-self: end;
+  align-self: center;
+  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.42);
+  transition:
+    opacity 180ms ease,
+    transform 220ms ease;
+}
+
+.work-preview.is-swapping img {
+  opacity: 0.35;
+  transform: translateY(0.35rem) scale(0.98);
+}
+
+.preview-copy {
+  align-self: end;
+  display: grid;
+  gap: 0.15rem;
+}
+
+.preview-copy h2 {
+  max-width: 9ch;
+  font-size: clamp(3.4rem, 12vw, 8.5rem);
+  font-weight: 500;
+  line-height: 0.82;
+}
+
+.preview-copy p,
+.preview-copy span {
+  color: var(--muted);
+  font-size: 1.05rem;
+}
+
+.work-index {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
 }
 
 .work-card {
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
   gap: 1rem;
-  min-height: 18rem;
-  padding: 1rem;
+  align-items: center;
+  min-height: 5.35rem;
+  padding: 0.9rem 0;
   overflow: clip;
   text-align: left;
-  border: 1px solid var(--line);
-  background:
-    linear-gradient(145deg, rgba(245, 241, 234, 0.055), transparent 42%),
-    var(--soft);
-  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.22);
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  box-shadow: none;
 }
 
 .work-card:hover {
-  transform: translateY(-4px);
-  border-color: rgba(245, 241, 234, 0.28);
+  transform: translateX(0.35rem);
 }
 
 .work-card > img {
-  width: min(8rem, 58%);
+  width: 3.2rem;
   aspect-ratio: 1;
   object-fit: cover;
-  justify-self: end;
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+  justify-self: start;
+  opacity: 0.48;
+  box-shadow: none;
 }
 
 .work-overlay {
   position: static;
   z-index: 2;
   display: grid;
-  gap: 0.08rem;
+  gap: 0.12rem;
   align-self: end;
   color: var(--ink);
   background: transparent;
@@ -278,7 +334,7 @@ img {
 }
 
 .work-overlay p {
-  font-size: clamp(1.32rem, 3vw, 2.35rem);
+  font-size: clamp(1.35rem, 4vw, 3rem);
   font-weight: 500;
   line-height: 1.02;
 }
@@ -290,21 +346,18 @@ img {
 }
 
 .work-card::after {
-  content: "";
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-  width: 2.2rem;
-  height: 1px;
-  background: var(--muted);
-  opacity: 0.65;
+  content: "open";
+  position: static;
+  align-self: center;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding-right: 0.35rem;
 }
 
 .work-card::before {
-  content: "open";
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
+  content: attr(data-number);
+  position: static;
+  align-self: center;
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -495,38 +548,17 @@ img {
     padding-bottom: 5rem;
   }
 
-  .work-grid {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    align-items: stretch;
-    gap: 1rem;
+  .work-browser {
+    grid-template-columns: minmax(22rem, 0.88fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem;
     padding: 4.75rem 1.25rem 5rem;
   }
 
-  .work-card {
-    grid-column: span 2;
-    min-height: 21rem;
-    padding: 1.15rem;
-  }
-
-  .work-card:nth-child(1),
-  .work-card:nth-child(7) {
-    grid-column: span 3;
-    min-height: 28rem;
-  }
-
-  .work-card:nth-child(4),
-  .work-card:nth-child(11) {
-    grid-column: span 3;
-  }
-
-  .work-card:nth-child(1) > img,
-  .work-card:nth-child(7) > img {
-    width: min(13rem, 46%);
-  }
-
-  .work-card:nth-child(1) .work-overlay p:first-child,
-  .work-card:nth-child(7) .work-overlay p:first-child {
-    font-size: clamp(2.8rem, 6vw, 5rem);
+  .work-preview {
+    position: sticky;
+    top: 4.75rem;
+    min-height: calc(100vh - 6rem);
   }
 
   .info-view {
@@ -545,10 +577,14 @@ img {
 
 @media (max-width: 560px) {
   .work-card {
-    min-height: 16rem;
+    grid-template-columns: 2.6rem minmax(0, 1fr);
   }
 
   .work-card::after {
-    width: 1.5rem;
+    display: none;
+  }
+
+  .work-card > img {
+    display: none;
   }
 }

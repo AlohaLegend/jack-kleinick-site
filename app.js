@@ -211,6 +211,11 @@ const modalTracks = document.querySelector("#modal-tracks");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
 const entryScreen = document.querySelector("#entry-screen");
+const preview = document.querySelector(".work-preview");
+const previewImage = document.querySelector("#preview-image");
+const previewTitle = document.querySelector("#preview-title");
+const previewArtist = document.querySelector("#preview-artist");
+const previewMeta = document.querySelector("#preview-meta");
 
 let activeProject = 0;
 
@@ -218,7 +223,7 @@ function renderGrid() {
   grid.innerHTML = projects
     .map(
       (project, index) => `
-        <button class="work-card" type="button" data-project="${index}">
+        <button class="work-card" type="button" data-project="${index}" data-number="${String(index + 1).padStart(2, "0")}">
           <img src="${project.image}" alt="${project.album} cover" loading="lazy">
           <span class="work-overlay">
             <p><em>${project.album}</em></p>
@@ -229,6 +234,11 @@ function renderGrid() {
       `,
     )
     .join("");
+
+  document.querySelectorAll(".work-card").forEach((card) => {
+    card.addEventListener("pointerenter", () => updatePreview(Number(card.dataset.project)));
+    card.addEventListener("focus", () => updatePreview(Number(card.dataset.project)));
+  });
 }
 
 function showView(view) {
@@ -259,6 +269,19 @@ function openProject(index) {
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
+}
+
+function updatePreview(index) {
+  const project = projects[index];
+  preview.classList.add("is-swapping");
+  window.setTimeout(() => {
+    previewImage.src = project.image;
+    previewImage.alt = `${project.album} cover`;
+    previewTitle.textContent = project.album;
+    previewArtist.textContent = project.artist;
+    previewMeta.textContent = project.year;
+    preview.classList.remove("is-swapping");
+  }, 90);
 }
 
 function closeModal() {
