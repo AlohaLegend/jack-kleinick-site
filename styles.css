@@ -530,12 +530,20 @@ body.is-playing .stage-target::after {
   font-size: 0.86rem;
 }
 
-#focus-open {
+.focus-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  justify-self: start;
+  margin-top: 0;
+}
+
+#focus-open,
+.motion-button {
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
-  justify-self: start;
-  margin-top: 0;
   padding: 0.48rem 0.62rem;
   border: 1px solid color-mix(in srgb, var(--album-b) 32%, rgba(245, 241, 234, 0.12));
   background: color-mix(in srgb, var(--album-b) 16%, rgba(245, 241, 234, 0.04));
@@ -547,10 +555,19 @@ body.is-playing .stage-target::after {
     transform 180ms ease;
 }
 
-#focus-open:hover {
+#focus-open:hover,
+.motion-button:hover {
   background: color-mix(in srgb, var(--album-b) 24%, rgba(245, 241, 234, 0.08));
   box-shadow: 0 0 1.4rem color-mix(in srgb, var(--album-b) 24%, transparent);
   transform: translateY(-0.08rem);
+}
+
+.motion-button {
+  display: none;
+}
+
+body.motion-enabled .motion-button {
+  display: none;
 }
 
 #focus-open svg {
@@ -926,6 +943,10 @@ body.is-playing .stage-target::after {
 
   .focus-tracks {
     display: none;
+  }
+
+  .motion-button {
+    display: inline-flex;
   }
 
   .cover-token {

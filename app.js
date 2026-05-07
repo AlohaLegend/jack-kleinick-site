@@ -208,6 +208,7 @@ const focusMeta = document.querySelector("#focus-meta");
 const focusRole = document.querySelector("#focus-role");
 const focusTracks = document.querySelector("#focus-tracks");
 const focusOpen = document.querySelector("#focus-open");
+const motionEnable = document.querySelector("#motion-enable");
 const workView = document.querySelector("#work-view");
 const infoView = document.querySelector("#info-view");
 const modal = document.querySelector("#project-modal");
@@ -227,6 +228,7 @@ let displayedProject = 0;
 let lastFrame = 0;
 let introReleaseTimer;
 let sensorPermissionAsked = false;
+let sensorsActive = false;
 let lastShakeAt = 0;
 let lastMotionMagnitude = 0;
 const bodies = [];
@@ -343,7 +345,8 @@ function handleDeviceMotion(event) {
 }
 
 async function enableDeviceSensors() {
-  if (sensorPermissionAsked) return;
+  if (sensorsActive) return true;
+  if (sensorPermissionAsked) return false;
   sensorPermissionAsked = true;
 
   try {
@@ -357,13 +360,22 @@ async function enableDeviceSensors() {
     }
 
     const states = await Promise.all(permissionRequests);
-    if (states.some((state) => state !== "granted")) return;
+    if (states.some((state) => state !== "granted")) {
+      sensorPermissionAsked = false;
+      return false;
+    }
   } catch {
-    return;
+    sensorPermissionAsked = false;
+    return false;
   }
 
   window.addEventListener("deviceorientation", handleDeviceOrientation);
   window.addEventListener("devicemotion", handleDeviceMotion);
+  sensorsActive = true;
+  document.body.classList.add("motion-enabled");
+  motionEnable?.setAttribute("hidden", "");
+  tossCovers(0.35);
+  return true;
 }
 
 function applyAlbumMood(index) {
@@ -842,8 +854,13 @@ document.addEventListener("click", (event) => {
   if (close) closeModal();
 });
 
-document.addEventListener("pointerdown", enableDeviceSensors, { once: true });
-document.addEventListener("touchstart", enableDeviceSensors, { once: true });
+motionEnable?.addEventListener("click", async (event) => {
+  event.stopPropagation();
+  const enabled = await enableDeviceSensors();
+  if (!enabled) {
+    motionEnable.removeAttribute("hidden");
+  }
+});
 
 focusOpen.addEventListener("click", () => {
   if (displayedProject < 0) return;
