@@ -210,8 +210,6 @@ const modalRole = document.querySelector("#modal-role");
 const modalTracks = document.querySelector("#modal-tracks");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
-const synthCanvas = document.querySelector("#synth-lines");
-const synthContext = synthCanvas.getContext("2d");
 const entryScreen = document.querySelector("#entry-screen");
 
 let activeProject = 0;
@@ -270,70 +268,6 @@ function closeModal() {
 }
 
 renderGrid();
-
-function resizeSynthCanvas() {
-  const scale = window.devicePixelRatio || 1;
-  const rect = synthCanvas.getBoundingClientRect();
-  synthCanvas.width = Math.max(1, Math.floor(rect.width * scale));
-  synthCanvas.height = Math.max(1, Math.floor(rect.height * scale));
-  synthContext.setTransform(scale, 0, 0, scale, 0, 0);
-}
-
-function drawSynthLines(time = 0) {
-  const rect = synthCanvas.getBoundingClientRect();
-  const width = rect.width;
-  const height = rect.height;
-  synthContext.clearRect(0, 0, width, height);
-
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const tubeGradient = synthContext.createRadialGradient(centerX, centerY, 0, centerX, centerY, width * 0.55);
-  tubeGradient.addColorStop(0, "rgba(216, 165, 91, 0.08)");
-  tubeGradient.addColorStop(0.58, "rgba(126, 178, 173, 0.035)");
-  tubeGradient.addColorStop(1, "rgba(0, 0, 0, 0)");
-  synthContext.fillStyle = tubeGradient;
-  synthContext.fillRect(0, 0, width, height);
-
-  for (let line = 0; line < 5; line += 1) {
-    const base = height * (0.28 + line * 0.105);
-    const amp = 20 + line * 5;
-    const speed = time * 0.0009 + line * 0.9;
-
-    synthContext.beginPath();
-    synthContext.strokeStyle =
-      line % 2 === 0 ? "rgba(216, 165, 91, 0.64)" : "rgba(126, 178, 173, 0.38)";
-    synthContext.lineWidth = line === 0 ? 2.2 : 1.35;
-    synthContext.shadowColor = line % 2 === 0 ? "rgba(216, 165, 91, 0.74)" : "rgba(126, 178, 173, 0.54)";
-    synthContext.shadowBlur = 14;
-
-    for (let x = -24; x <= width + 24; x += 8) {
-      const slow = Math.sin(x * 0.012 + speed) * amp;
-      const harmonic = Math.sin(x * 0.034 - speed * 1.8) * (amp * 0.28);
-      const drift = Math.sin(time * 0.002 + line) * 7;
-      const fold = Math.tanh(Math.sin(x * 0.006 + speed * 0.8) * 2.4) * amp * 0.42;
-      const y = base + slow + harmonic + fold + drift;
-      if (x === -24) synthContext.moveTo(x, y);
-      synthContext.lineTo(x, y);
-    }
-
-    synthContext.stroke();
-  }
-
-  synthContext.shadowBlur = 0;
-
-  for (let marker = 0; marker < 9; marker += 1) {
-    const x = ((time * 0.035 + marker * width * 0.19) % (width + 80)) - 40;
-    const y = height * (0.24 + (marker % 5) * 0.105);
-    synthContext.fillStyle = marker % 2 === 0 ? "rgba(216, 165, 91, 0.42)" : "rgba(245, 241, 234, 0.2)";
-    synthContext.fillRect(x, y, 18, 1.5);
-  }
-
-  requestAnimationFrame(drawSynthLines);
-}
-
-resizeSynthCanvas();
-drawSynthLines();
-window.addEventListener("resize", resizeSynthCanvas);
 
 window.setTimeout(() => {
   entryScreen.classList.add("is-complete");
