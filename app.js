@@ -224,6 +224,7 @@ const entryScreen = document.querySelector("#entry-screen");
 
 let activeProject = 0;
 let focusedProject = 0;
+let displayedProject = 0;
 let lastFrame = 0;
 let introReleaseTimer;
 const bodies = [];
@@ -486,6 +487,7 @@ function releaseFocusedProject(options = {}) {
 
 function focusProject(index, options = {}) {
   focusedProject = index;
+  displayedProject = index;
   const project = projects[index];
   applyAlbumMood(index);
   document.body.classList.add("is-playing");
@@ -751,8 +753,8 @@ document.addEventListener("click", (event) => {
 });
 
 focusOpen.addEventListener("click", () => {
-  if (focusedProject < 0) return;
-  openProject(focusedProject);
+  if (displayedProject < 0) return;
+  openProject(displayedProject);
 });
 
 [stageCopy, stageFocus].forEach((element) => {

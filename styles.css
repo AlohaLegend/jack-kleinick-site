@@ -28,6 +28,8 @@ body {
   --album-a: #b96a3d;
   --album-b: #7eb2ad;
   --record-art: url("assets/studio-hero.png");
+  --panel-bg: rgba(9, 11, 12, 0.52);
+  --panel-border: color-mix(in srgb, var(--album-b) 30%, rgba(245, 241, 234, 0.12));
   background: var(--page);
   color: var(--ink);
   font-family: "Local Serif", Georgia, "Times New Roman", serif;
@@ -393,7 +395,8 @@ body.is-info-view .cover-field {
 .stage-target {
   position: relative;
   z-index: 1;
-  width: clamp(8.2rem, 12vw, 11rem);
+  width: 10rem;
+  flex: 0 0 10rem;
   aspect-ratio: 1;
   border: 1px solid rgba(245, 241, 234, 0.18);
   border-radius: 50%;
@@ -483,15 +486,21 @@ body.is-playing .stage-target::after {
   bottom: auto;
   z-index: 6;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: 10rem minmax(0, 1fr);
   align-items: center;
-  gap: 0.45rem;
-  width: min(40rem, 48vw);
-  padding: 0.8rem;
-  border: 1px solid color-mix(in srgb, var(--album-b) 22%, transparent);
+  gap: 0.9rem;
+  min-width: 38rem;
+  max-width: 38rem;
+  width: 38rem;
+  min-height: 13.5rem;
+  max-height: 13.5rem;
+  height: 13.5rem;
+  padding: 0.9rem;
+  overflow: hidden;
+  border: 1px solid var(--panel-border);
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--album-a) 16%, transparent), transparent 62%),
-    rgba(9, 11, 12, 0.44);
+    var(--panel-bg);
   backdrop-filter: blur(14px);
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18);
   text-shadow: 0 0 1.7rem color-mix(in srgb, var(--album-a) 26%, transparent);
@@ -499,8 +508,11 @@ body.is-playing .stage-target::after {
 
 .focus-copy {
   display: grid;
-  gap: 0.45rem;
+  grid-template-rows: auto auto auto auto minmax(0, 1fr) auto;
+  gap: 0.35rem;
   min-width: 0;
+  height: 100%;
+  overflow: hidden;
 }
 
 .stage-focus p:first-child {
@@ -510,23 +522,32 @@ body.is-playing .stage-target::after {
 }
 
 .stage-focus h2 {
-  font-size: clamp(2.2rem, 5vw, 4.8rem);
+  overflow: hidden;
+  font-size: clamp(1.8rem, 3.2vw, 3.2rem);
   font-style: italic;
   font-weight: 500;
-  line-height: 0.9;
+  line-height: 0.92;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .stage-focus span,
 #focus-role {
+  overflow: hidden;
   color: var(--muted);
-  font-size: 0.98rem;
+  font-size: 0.92rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .focus-tracks {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  margin-top: 0.45rem;
+  align-content: start;
+  min-height: 0;
+  overflow: hidden;
+  margin-top: 0.2rem;
 }
 
 .focus-tracks a,
@@ -541,7 +562,7 @@ body.is-playing .stage-target::after {
   align-items: center;
   gap: 0.45rem;
   justify-self: start;
-  margin-top: 0.55rem;
+  margin-top: 0;
   padding: 0.48rem 0.62rem;
   border: 1px solid color-mix(in srgb, var(--album-b) 32%, rgba(245, 241, 234, 0.12));
   background: color-mix(in srgb, var(--album-b) 16%, rgba(245, 241, 234, 0.04));
@@ -585,7 +606,7 @@ body.is-playing .stage-target::after {
   font-style: italic;
 }
 .info-view {
-  max-width: 64rem;
+  max-width: 70rem;
   margin: 0 auto;
   padding: 4rem 1rem;
   background:
@@ -595,11 +616,19 @@ body.is-playing .stage-target::after {
 
 .info-shell {
   display: grid;
-  gap: 2rem;
+  gap: 1rem;
+  padding: 1rem;
+  border: 1px solid var(--panel-border);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--album-a) 14%, transparent), transparent 58%),
+    var(--panel-bg);
+  backdrop-filter: blur(14px);
 }
 
 .info-shell img {
   width: 100%;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
 }
 
@@ -616,7 +645,7 @@ body.is-playing .stage-target::after {
   gap: 0.45rem;
   margin-top: 1.5rem;
   padding-top: 1.5rem;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--panel-border);
 }
 
 .contact-block h2,
@@ -664,11 +693,11 @@ body.is-playing .stage-target::after {
   width: min(calc(100% - 2rem), 70rem);
   max-height: 100vh;
   overflow: auto;
-  border: 1px solid color-mix(in srgb, var(--album-b) 34%, transparent);
+  border: 1px solid var(--panel-border);
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--album-a) 26%, transparent), transparent 54%),
     linear-gradient(210deg, color-mix(in srgb, var(--album-b) 15%, transparent), transparent 48%),
-    rgba(9, 11, 12, 0.9);
+    color-mix(in srgb, var(--panel-bg) 88%, #000);
   box-shadow:
     0 20px 80px rgba(0, 0, 0, 0.42),
     0 0 7rem color-mix(in srgb, var(--album-a) 28%, transparent);
@@ -735,7 +764,7 @@ body.is-playing .stage-target::after {
 .track-list span,
 .track-list a {
   padding: 0.28rem 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--album-b) 16%, rgba(245, 241, 234, 0.08));
+  border: 1px solid var(--panel-border);
   background: color-mix(in srgb, var(--album-a) 34%, var(--soft));
 }
 
@@ -759,7 +788,7 @@ body.is-playing .stage-target::after {
   place-items: center;
   width: 2.2rem;
   aspect-ratio: 1;
-  border: 1px solid color-mix(in srgb, var(--album-b) 34%, rgba(245, 241, 234, 0.1));
+  border: 1px solid var(--panel-border);
   background: color-mix(in srgb, var(--album-a) 26%, rgba(245, 241, 234, 0.04));
   color: var(--ink);
   transition:
@@ -813,7 +842,7 @@ body.is-playing .stage-target::after {
   gap: 1rem;
   margin-top: auto;
   padding-top: 1rem;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--panel-border);
   font-size: 0.95rem;
 }
 
@@ -868,6 +897,11 @@ body.is-playing .stage-target::after {
     padding-top: 2rem;
   }
 
+  .info-shell {
+    grid-template-columns: minmax(16rem, 0.82fr) minmax(0, 1.18fr);
+    align-items: center;
+  }
+
   .modal-card {
     grid-template-columns: minmax(16rem, 0.82fr) minmax(0, 1.18fr);
     max-height: 90vh;
@@ -899,18 +933,32 @@ body.is-playing .stage-target::after {
     left: auto;
     right: auto;
     top: auto;
-    width: clamp(5.8rem, 23vw, 7rem);
+    width: 5.8rem;
+    flex-basis: 5.8rem;
   }
 
   .stage-focus {
     top: auto;
     right: 0.8rem;
     bottom: 0.8rem;
+    min-width: calc(100% - 1.6rem);
+    max-width: calc(100% - 1.6rem);
     width: calc(100% - 1.6rem);
-    grid-template-columns: auto minmax(0, 1fr);
+    min-height: 10.8rem;
+    max-height: 10.8rem;
+    height: 10.8rem;
+    grid-template-columns: 5.8rem minmax(0, 1fr);
     padding: 0.9rem;
     border-width: 1px;
     background: rgba(9, 11, 12, 0.72);
+  }
+
+  .stage-focus h2 {
+    font-size: clamp(1.5rem, 8vw, 2.2rem);
+  }
+
+  .focus-tracks {
+    display: none;
   }
 
   .cover-token {
