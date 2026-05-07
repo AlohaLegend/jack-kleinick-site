@@ -70,8 +70,7 @@ img {
 }
 
 .name-button,
-.info-button,
-.work-link {
+.info-button {
   position: relative;
   z-index: 1;
   font-size: clamp(1.18rem, 2vw, 1.45rem);
@@ -81,8 +80,7 @@ img {
 
 .hover-glow,
 .name-button,
-.info-button,
-.work-link {
+.info-button {
   transition:
     opacity 220ms ease,
     text-shadow 220ms ease,
@@ -91,8 +89,7 @@ img {
 
 .hover-glow:hover,
 .name-button:hover,
-.info-button:hover,
-.work-link:hover {
+.info-button:hover {
   text-shadow: 0 0 15px rgba(126, 178, 173, 0.5);
 }
 
@@ -100,10 +97,6 @@ img {
   display: flex;
   align-items: center;
   gap: 1rem;
-}
-
-.work-link {
-  color: var(--muted);
 }
 
 .entry-screen {
