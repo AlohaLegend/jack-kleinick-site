@@ -25,6 +25,8 @@ body {
   --modal-backdrop: rgba(0, 0, 0, 0.86);
   --accent: #7eb2ad;
   --amber: #d8a55b;
+  --album-a: #b96a3d;
+  --album-b: #7eb2ad;
   background: var(--page);
   color: var(--ink);
   font-family: "Local Serif", Georgia, "Times New Roman", serif;
@@ -227,10 +229,23 @@ img {
   overflow: hidden;
   padding: 5.9rem 1rem 0.9rem;
   background:
-    radial-gradient(circle at 50% 74%, rgba(126, 178, 173, 0.14), transparent 18rem),
-    radial-gradient(circle at 14% 18%, rgba(216, 165, 91, 0.1), transparent 18rem),
+    radial-gradient(circle at 76% 24%, color-mix(in srgb, var(--album-a) 22%, transparent), transparent 22rem),
+    radial-gradient(circle at 16% 78%, color-mix(in srgb, var(--album-b) 16%, transparent), transparent 20rem),
     linear-gradient(180deg, rgba(245, 241, 234, 0.035), transparent 42%),
     var(--page);
+  transition: background 700ms ease;
+}
+
+.gravity-stage::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(120deg, color-mix(in srgb, var(--album-a) 9%, transparent), transparent 34%),
+    radial-gradient(circle at 50% 50%, transparent 0 48%, rgba(0, 0, 0, 0.22) 100%);
+  pointer-events: none;
+  transition: background 700ms ease;
 }
 
 .stage-copy {
@@ -260,7 +275,7 @@ img {
 }
 
 .cover-field {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 3;
   overflow: hidden;
@@ -318,10 +333,10 @@ img {
 }
 
 .cover-token.is-focused {
-  border-color: rgba(126, 178, 173, 0.8);
+  border-color: color-mix(in srgb, var(--album-b) 78%, white 12%);
   box-shadow:
     0 1.4rem 3.5rem rgba(0, 0, 0, 0.48),
-    0 0 2.2rem rgba(126, 178, 173, 0.26);
+    0 0 2.4rem color-mix(in srgb, var(--album-b) 36%, transparent);
 }
 
 .stage-target {
@@ -336,8 +351,11 @@ img {
   transform: translateY(-50%);
   pointer-events: none;
   box-shadow:
-    inset 0 0 3rem rgba(126, 178, 173, 0.12),
-    0 0 3rem rgba(126, 178, 173, 0.08);
+    inset 0 0 3rem color-mix(in srgb, var(--album-b) 18%, transparent),
+    0 0 3rem color-mix(in srgb, var(--album-a) 16%, transparent);
+  transition:
+    border-color 700ms ease,
+    box-shadow 700ms ease;
 }
 
 .stage-target::after {
@@ -348,7 +366,7 @@ img {
   width: 0.35rem;
   aspect-ratio: 1;
   border-radius: 50%;
-  background: rgba(245, 241, 234, 0.38);
+  background: color-mix(in srgb, var(--album-b) 62%, var(--ink));
   transform: translate(-50%, -50%);
 }
 
@@ -360,7 +378,7 @@ img {
   z-index: 2;
   height: 1px;
   background: linear-gradient(90deg, transparent, rgba(245, 241, 234, 0.28), transparent);
-  box-shadow: 0 1.4rem 5rem rgba(126, 178, 173, 0.16);
+  box-shadow: 0 1.4rem 5rem color-mix(in srgb, var(--album-b) 22%, transparent);
 }
 
 .stage-focus {
@@ -378,6 +396,7 @@ img {
   background: transparent;
   backdrop-filter: blur(18px);
   box-shadow: none;
+  text-shadow: 0 0 1.5rem color-mix(in srgb, var(--album-a) 14%, transparent);
 }
 
 .stage-focus p:first-child {
@@ -409,7 +428,7 @@ img {
 .focus-tracks a,
 .focus-tracks span {
   padding: 0.2rem 0.45rem;
-  background: var(--soft);
+  background: color-mix(in srgb, var(--album-a) 18%, var(--soft));
   font-size: 0.86rem;
 }
 

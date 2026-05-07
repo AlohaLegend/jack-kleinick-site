@@ -223,6 +223,23 @@ let activeProject = 0;
 let focusedProject = 0;
 let lastFrame = 0;
 const bodies = [];
+const albumMoods = [
+  ["#b96a3d", "#7eb2ad"],
+  ["#6d4430", "#e0b885"],
+  ["#1f4b36", "#c8ead1"],
+  ["#a9c3e5", "#d64b4b"],
+  ["#101010", "#c9c0b5"],
+  ["#7aa5d8", "#d44338"],
+  ["#74301f", "#d29d6b"],
+  ["#d7c46e", "#8fb66c"],
+  ["#d9a65d", "#f1d9b3"],
+  ["#7ca252", "#ead8a8"],
+  ["#8394a8", "#e6d1b1"],
+  ["#b26d4c", "#6898a6"],
+  ["#b6aba0", "#6e7f75"],
+  ["#274264", "#e36d5a"],
+  ["#0f1618", "#7eb2ad"],
+];
 
 function viewportBounds() {
   return {
@@ -249,8 +266,14 @@ function focusTargetPosition(size = 0) {
   };
 }
 
-function edgeBleed(size) {
-  return Math.min(34, size * 0.28);
+function edgeBleed() {
+  return 0;
+}
+
+function applyAlbumMood(index) {
+  const mood = albumMoods[index % albumMoods.length];
+  document.body.style.setProperty("--album-a", mood[0]);
+  document.body.style.setProperty("--album-b", mood[1]);
 }
 
 function renderGrid() {
@@ -284,8 +307,8 @@ function setupBodies() {
       token,
       x: -bleed + ((index * 173 + lane * 41) % spread),
       y: -bleed + ((index * 67 + lane * 29) % Math.max(120, bounds.height - size + bleed * 2)),
-      vx: ((index % 7) - 3) * 0.055,
-      vy: ((index % 5) - 2) * 0.025,
+      vx: ((index % 7) - 3) * 0.085,
+      vy: ((index % 5) - 2) * 0.04,
       drift: index * 1.73,
       rotation: (index % 2 === 0 ? -1 : 1) * (2 + (index % 5)),
       dragging: false,
@@ -369,6 +392,7 @@ function endDrag(event, index) {
 function focusProject(index, options = {}) {
   focusedProject = index;
   const project = projects[index];
+  applyAlbumMood(index);
   focusTitle.textContent = project.album;
   focusMeta.textContent = `${project.artist} / ${project.year}`;
   focusRole.textContent = project.role;
@@ -403,51 +427,54 @@ function focusProject(index, options = {}) {
 
 function clampBodyToViewport(body, bounds, floor) {
   const size = body.token.offsetWidth || 116;
-  const bleed = edgeBleed(size);
+  const bleed = edgeBleed();
   const leftEdge = -bleed;
   const rightEdge = bounds.width - size + bleed;
   const topEdge = -bleed;
 
   if (body.x < leftEdge) {
     body.x = leftEdge;
-    body.vx = Math.abs(body.vx) * 0.58 + 0.02;
+    body.vx = Math.abs(body.vx) * 0.72 + 0.035;
   }
 
   if (body.x > rightEdge) {
     body.x = rightEdge;
-    body.vx = -Math.abs(body.vx) * 0.58 - 0.02;
+    body.vx = -Math.abs(body.vx) * 0.72 - 0.035;
   }
 
   if (body.y < topEdge) {
     body.y = topEdge;
-    body.vy = Math.abs(body.vy) * 0.5 + 0.015;
+    body.vy = Math.abs(body.vy) * 0.62 + 0.025;
   }
 
   if (body.y + size > floor) {
     body.y = floor - size;
-    body.vy = Math.abs(body.vy) > 0.12 ? -Math.abs(body.vy) * 0.32 : -0.035;
-    body.vx *= 0.96;
-    body.rotation *= 0.96;
-
-    if (Math.abs(body.vx) < 0.01 && Math.abs(body.vy) < 0.045) {
-      body.vx = 0;
-      body.vy = -0.02;
-      body.rotation *= 0.86;
-    }
+    body.vy = Math.abs(body.vy) > 0.08 ? -Math.abs(body.vy) * 0.48 : -0.055;
+    body.vx *= 0.985;
+    body.rotation *= 0.985;
   }
 }
 
 function applySeparation(body, axis, amount) {
   if (axis === "x") {
     body.x += amount;
-    body.vx *= -0.08;
+    body.vx = body.vx * -0.18 + Math.sign(amount) * 0.012;
     return;
   }
 
   body.y += amount;
-  body.vy = amount < 0 ? -Math.abs(body.vy) * 0.18 - 0.025 : Math.abs(body.vy) * 0.12;
-  body.vx *= 0.9;
-  body.rotation *= 0.96;
+  body.vy = amount < 0 ? -Math.abs(body.vy) * 0.24 - 0.035 : Math.abs(body.vy) * 0.16;
+  body.vx *= 0.94;
+  body.rotation *= 0.98;
+}
+
+function keepBodyMoving(body, timestamp, delta) {
+  const speed = Math.hypot(body.vx, body.vy);
+  if (speed > 0.09) return;
+
+  const driftTime = timestamp * 0.00022 + body.drift;
+  body.vx += Math.sin(driftTime * 1.7) * 0.01 * delta;
+  body.vy += Math.cos(driftTime * 1.3) * 0.006 * delta;
 }
 
 function separatePair(a, b) {
@@ -506,16 +533,17 @@ function resolveCoverCollisions(bounds, floor) {
 function updateStage(timestamp) {
   const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
-  const floor = bounds.height + 10;
+  const floor = bounds.height;
   lastFrame = timestamp;
 
   bodies.forEach((body) => {
     if (!body.dragging && !body.pinned) {
-      const driftTime = timestamp * 0.00018 + body.drift;
-      body.vx += Math.sin(driftTime) * 0.0022 * delta;
-      body.vy += (0.006 + Math.cos(driftTime * 0.8) * 0.0014) * delta;
-      body.vx *= 0.997;
-      body.vy *= 0.997;
+      const driftTime = timestamp * 0.00022 + body.drift;
+      body.vx += Math.sin(driftTime) * 0.0048 * delta;
+      body.vy += (0.004 + Math.cos(driftTime * 0.8) * 0.0022) * delta;
+      keepBodyMoving(body, timestamp, delta);
+      body.vx *= 0.999;
+      body.vy *= 0.999;
       body.x += body.vx * delta;
       body.y += body.vy * delta;
       body.rotation += body.vx * 0.008;
@@ -544,6 +572,7 @@ function showView(view) {
 function openProject(index) {
   activeProject = index;
   const project = projects[index];
+  applyAlbumMood(index);
   modalTitle.innerHTML = `<em>${project.album}</em><br>${project.artist}`;
   modalYear.textContent = project.year;
   modalRole.textContent = project.role;
@@ -607,7 +636,7 @@ window.addEventListener("resize", () => {
   const bounds = viewportBounds();
   bodies.forEach((body) => {
     const size = body.token.offsetWidth || 116;
-    const bleed = edgeBleed(size);
+    const bleed = edgeBleed();
     body.x = Math.min(Math.max(-bleed, body.x), bounds.width - size + bleed);
     body.y = Math.min(Math.max(-bleed, body.y), bounds.height - size + bleed);
   });
