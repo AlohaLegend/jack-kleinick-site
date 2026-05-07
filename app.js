@@ -299,7 +299,7 @@ function stageFloor(bounds) {
   const panel = stageFocus.getBoundingClientRect();
   if (!panel.height) return bounds.height;
 
-  return Math.max(160, panel.top - 8);
+  return Math.max(160, panel.top - 22);
 }
 
 function tossCovers(force = 1) {
@@ -634,9 +634,9 @@ function clampBodyToViewport(body, bounds, floor) {
   if (!body.dragging && body.y + size > floor) {
     body.y = floor - size;
     if (softFloor) {
-      body.vy = -0.012;
-      body.vx *= 0.996;
-      body.rotation *= 0.996;
+      body.vy = 0;
+      body.vx *= 0.965;
+      body.rotation *= 0.985;
     } else {
       body.vy = Math.abs(body.vy) > 0.08 ? -Math.abs(body.vy) * 0.48 : -0.055;
       body.vx *= 0.985;
@@ -722,6 +722,7 @@ function resolveCoverCollisions(bounds, floor) {
 
 function resolveRecordCollision(body) {
   if (body.dragging || body.pinned) return;
+  if (window.innerWidth <= 560) return;
 
   const record = recordObstacle();
   if (!record) return;
