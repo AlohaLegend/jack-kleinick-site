@@ -223,6 +223,13 @@ let focusedProject = 0;
 let lastFrame = 0;
 const bodies = [];
 
+function viewportBounds() {
+  return {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  };
+}
+
 function renderGrid() {
   grid.innerHTML = projects
     .map(
@@ -241,18 +248,18 @@ function renderGrid() {
 }
 
 function setupBodies() {
-  const rect = stage.getBoundingClientRect();
+  const bounds = viewportBounds();
   const tokens = [...grid.querySelectorAll(".cover-token")];
   bodies.length = 0;
 
   tokens.forEach((token, index) => {
     const size = token.offsetWidth || 116;
     const lane = index % 5;
-    const spread = Math.max(1, rect.width - size - 32);
+    const spread = Math.max(1, bounds.width - size - 32);
     bodies.push({
       token,
       x: 16 + ((index * 173 + lane * 41) % spread),
-      y: 76 + ((index * 67 + lane * 29) % Math.max(120, rect.height - size - 170)),
+      y: 76 + ((index * 67 + lane * 29) % Math.max(120, bounds.height - size - 170)),
       vx: ((index % 7) - 3) * 0.09,
       vy: 0,
       rotation: (index % 2 === 0 ? -1 : 1) * (2 + (index % 5)),
@@ -275,10 +282,9 @@ function setupBodies() {
 }
 
 function stagePoint(event) {
-  const rect = stage.getBoundingClientRect();
   return {
-    x: event.clientX - rect.left,
-    y: event.clientY - rect.top,
+    x: event.clientX,
+    y: event.clientY,
   };
 }
 
@@ -324,13 +330,13 @@ function endDrag(event, index) {
   body.token.releasePointerCapture(event.pointerId);
   body.token.style.zIndex = "";
 
-  const rect = stage.getBoundingClientRect();
+  const bounds = viewportBounds();
   const size = body.token.offsetWidth || 116;
-  const centerX = rect.width * 0.5 - size * 0.5;
-  const centerY = rect.height * 0.52 - size * 0.5;
+  const centerX = bounds.width * 0.5 - size * 0.5;
+  const centerY = bounds.height * 0.52 - size * 0.5;
   const distance = Math.hypot(body.x - centerX, body.y - centerY);
 
-  if (distance < Math.max(118, rect.width * 0.12)) {
+  if (distance < Math.max(118, bounds.width * 0.12)) {
     focusProject(index, { snap: true });
   } else {
     focusProject(index);
@@ -359,11 +365,11 @@ function focusProject(index, options = {}) {
   });
 
   if (options.snap && bodies[index]) {
-    const rect = stage.getBoundingClientRect();
+    const bounds = viewportBounds();
     const body = bodies[index];
     const size = body.token.offsetWidth || 116;
-    body.x = rect.width * 0.5 - size * 0.5;
-    body.y = rect.height * 0.52 - size * 0.5;
+    body.x = bounds.width * 0.5 - size * 0.5;
+    body.y = bounds.height * 0.52 - size * 0.5;
     body.vx = 0;
     body.vy = 0;
     body.rotation = 0;
@@ -373,9 +379,9 @@ function focusProject(index, options = {}) {
 }
 
 function updateStage(timestamp) {
-  const rect = stage.getBoundingClientRect();
+  const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
-  const floor = rect.height - 28;
+  const floor = bounds.height - 28;
   lastFrame = timestamp;
 
   bodies.forEach((body) => {
@@ -394,8 +400,8 @@ function updateStage(timestamp) {
         body.vx = Math.abs(body.vx) * 0.65;
       }
 
-      if (body.x + size > rect.width - 12) {
-        body.x = rect.width - size - 12;
+      if (body.x + size > bounds.width - 12) {
+        body.x = bounds.width - size - 12;
         body.vx = -Math.abs(body.vx) * 0.65;
       }
 
@@ -526,11 +532,11 @@ document.addEventListener("keydown", (event) => {
 });
 
 window.addEventListener("resize", () => {
-  const rect = stage.getBoundingClientRect();
+  const bounds = viewportBounds();
   bodies.forEach((body) => {
     const size = body.token.offsetWidth || 116;
-    body.x = Math.min(Math.max(12, body.x), rect.width - size - 12);
-    body.y = Math.min(Math.max(68, body.y), rect.height - size - 12);
+    body.x = Math.min(Math.max(12, body.x), bounds.width - size - 12);
+    body.y = Math.min(Math.max(68, body.y), bounds.height - size - 12);
   });
 });
 
