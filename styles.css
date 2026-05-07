@@ -225,7 +225,7 @@ img {
   min-height: 100vh;
   margin-top: -3.8rem;
   overflow: hidden;
-  padding: 4.8rem 1rem 1rem;
+  padding: 6.25rem clamp(1rem, 3vw, 3rem) 1.5rem;
   background:
     radial-gradient(circle at 50% 74%, rgba(126, 178, 173, 0.14), transparent 18rem),
     radial-gradient(circle at 14% 18%, rgba(216, 165, 91, 0.1), transparent 18rem),
@@ -236,26 +236,27 @@ img {
 .stage-copy {
   position: relative;
   z-index: 4;
-  display: flex;
-  justify-content: space-between;
-  gap: 1rem;
-  align-items: flex-end;
-  max-width: 96rem;
-  margin: 0 auto;
-  padding-top: 8rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: clamp(1.2rem, 4vw, 3rem);
+  align-items: center;
+  width: min(62rem, calc(100vw - 2rem));
+  margin: 0;
+  padding-top: clamp(3.25rem, 8vh, 6rem);
   border-bottom: 1px solid rgba(245, 241, 234, 0.14);
 }
 
 .stage-copy p {
   max-width: 7ch;
-  font-size: clamp(3.6rem, 11vw, 10rem);
+  font-size: clamp(3.4rem, 8vw, 7.6rem);
   line-height: 0.82;
 }
 
 .stage-copy span {
+  align-self: end;
   color: var(--muted);
   font-size: clamp(0.96rem, 2vw, 1.2rem);
-  padding-bottom: 0.5rem;
+  padding-bottom: clamp(0.7rem, 1.4vw, 1.15rem);
 }
 
 .cover-field {
@@ -325,10 +326,10 @@ img {
 
 .stage-target {
   position: absolute;
-  left: clamp(21rem, 36vw, 40rem);
-  top: clamp(10.5rem, 26vh, 16rem);
+  left: clamp(21rem, 29vw, 31rem);
+  top: clamp(11.4rem, 22vh, 15rem);
   z-index: 5;
-  width: clamp(7rem, 12vw, 10rem);
+  width: clamp(6.5rem, 9vw, 8.8rem);
   aspect-ratio: 1;
   border: 1px solid rgba(245, 241, 234, 0.24);
   border-radius: 50%;
@@ -353,8 +354,8 @@ img {
 
 .stage-floor {
   position: absolute;
-  left: 1rem;
-  right: 1rem;
+  left: clamp(1rem, 3vw, 3rem);
+  right: clamp(1rem, 3vw, 3rem);
   bottom: 1.6rem;
   z-index: 2;
   height: 1px;
@@ -364,17 +365,19 @@ img {
 
 .stage-focus {
   position: absolute;
-  right: 1rem;
-  bottom: 1rem;
+  top: clamp(9rem, 18vh, 13rem);
+  right: clamp(1rem, 3vw, 3rem);
+  bottom: auto;
   z-index: 6;
   display: grid;
   gap: 0.45rem;
-  width: min(27rem, calc(100% - 2rem));
-  padding: 1rem;
+  width: min(24rem, 31vw);
+  padding: 1rem 0 0;
   border: 1px solid rgba(245, 241, 234, 0.14);
-  background: rgba(9, 11, 12, 0.72);
+  border-width: 1px 0 0;
+  background: transparent;
   backdrop-filter: blur(18px);
-  box-shadow: 0 1rem 4rem rgba(0, 0, 0, 0.32);
+  box-shadow: none;
 }
 
 .stage-focus p:first-child {
@@ -610,7 +613,7 @@ img {
   .gravity-stage {
     min-height: 100vh;
     margin-top: -4rem;
-    padding-top: 5rem;
+    padding-top: 5.6rem;
   }
 
   .info-view {
@@ -635,9 +638,10 @@ img {
   }
 
   .stage-copy {
-    display: grid;
+    grid-template-columns: 1fr auto;
     gap: 0.8rem;
     padding-top: 5rem;
+    width: 100%;
   }
 
   .stage-copy span {
@@ -647,18 +651,22 @@ img {
   .stage-target {
     left: auto;
     right: 1rem;
-    top: 8.4rem;
+    top: 8.8rem;
     width: clamp(5.8rem, 24vw, 7rem);
+  }
+
+  .stage-focus {
+    top: auto;
+    right: 0.8rem;
+    bottom: 0.8rem;
+    width: calc(100% - 1.6rem);
+    padding: 0.9rem;
+    border-width: 1px;
+    background: rgba(9, 11, 12, 0.72);
   }
 
   .cover-token {
     width: clamp(4rem, 18vw, 5.4rem);
-  }
-
-  .stage-focus {
-    right: 0.8rem;
-    bottom: 0.8rem;
-    width: calc(100% - 1.6rem);
   }
 
   .stage-floor {

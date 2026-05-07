@@ -401,28 +401,28 @@ function clampBodyToViewport(body, bounds, floor) {
 
   if (body.x < 12) {
     body.x = 12;
-    body.vx = Math.abs(body.vx) * 0.45;
+    body.vx = Math.abs(body.vx) * 0.58 + 0.02;
   }
 
   if (body.x + size > bounds.width - 12) {
     body.x = bounds.width - size - 12;
-    body.vx = -Math.abs(body.vx) * 0.45;
+    body.vx = -Math.abs(body.vx) * 0.58 - 0.02;
   }
 
   if (body.y < 68) {
     body.y = 68;
-    body.vy = Math.abs(body.vy) * 0.35;
+    body.vy = Math.abs(body.vy) * 0.5 + 0.015;
   }
 
   if (body.y + size > floor) {
     body.y = floor - size;
-    body.vy = Math.abs(body.vy) > 0.7 ? -Math.abs(body.vy) * 0.08 : 0;
-    body.vx *= 0.9;
-    body.rotation *= 0.92;
+    body.vy = Math.abs(body.vy) > 0.12 ? -Math.abs(body.vy) * 0.32 : -0.035;
+    body.vx *= 0.96;
+    body.rotation *= 0.96;
 
-    if (Math.abs(body.vx) < 0.018 && Math.abs(body.vy) < 0.018) {
+    if (Math.abs(body.vx) < 0.01 && Math.abs(body.vy) < 0.045) {
       body.vx = 0;
-      body.vy = 0;
+      body.vy = -0.02;
       body.rotation *= 0.86;
     }
   }
@@ -436,9 +436,9 @@ function applySeparation(body, axis, amount) {
   }
 
   body.y += amount;
-  body.vy = 0;
-  body.vx *= 0.82;
-  body.rotation *= 0.94;
+  body.vy = amount < 0 ? -Math.abs(body.vy) * 0.18 - 0.025 : Math.abs(body.vy) * 0.12;
+  body.vx *= 0.9;
+  body.rotation *= 0.96;
 }
 
 function separatePair(a, b) {
