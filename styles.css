@@ -221,99 +221,65 @@ img {
   display: block;
 }
 
-.work-browser {
+.works-ledger {
   display: grid;
   gap: 1rem;
-  max-width: 92rem;
+  max-width: 88rem;
   margin: 0 auto;
   padding: 1rem 1rem 4rem;
 }
 
-.work-preview {
-  position: relative;
-  display: grid;
+.ledger-heading {
+  display: flex;
+  justify-content: space-between;
   gap: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--line);
-  background:
-    linear-gradient(145deg, rgba(245, 241, 234, 0.055), transparent 44%),
-    #0e1111;
-  min-height: 24rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
 }
 
-.preview-kicker {
-  color: var(--muted);
-  font-size: 0.92rem;
+.ledger-heading p {
+  font-size: clamp(1.3rem, 3vw, 2rem);
 }
 
-.work-preview img {
-  width: min(18rem, 72%);
-  aspect-ratio: 1;
-  object-fit: cover;
-  justify-self: end;
-  align-self: center;
-  box-shadow: 0 22px 52px rgba(0, 0, 0, 0.42);
-  transition:
-    opacity 180ms ease,
-    transform 220ms ease;
-}
-
-.work-preview.is-swapping img {
-  opacity: 0.35;
-  transform: translateY(0.35rem) scale(0.98);
-}
-
-.preview-copy {
+.ledger-heading span {
   align-self: end;
-  display: grid;
-  gap: 0.15rem;
-}
-
-.preview-copy h2 {
-  max-width: 9ch;
-  font-size: clamp(3.4rem, 12vw, 8.5rem);
-  font-weight: 500;
-  line-height: 0.82;
-}
-
-.preview-copy p,
-.preview-copy span {
   color: var(--muted);
-  font-size: 1.05rem;
 }
 
-.work-index {
+.work-grid {
   display: grid;
-  gap: 0;
-  border-top: 1px solid var(--line);
+  gap: 0.85rem;
 }
 
 .work-card {
   position: relative;
   display: grid;
-  grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+  grid-template-columns: 4.8rem minmax(0, 1fr);
   gap: 1rem;
-  align-items: center;
-  min-height: 5.35rem;
-  padding: 0.9rem 0;
+  align-items: end;
+  min-height: 10.5rem;
+  padding: 1rem;
   overflow: clip;
   text-align: left;
-  border-bottom: 1px solid var(--line);
-  background: transparent;
-  box-shadow: none;
+  border: 1px solid var(--line);
+  background:
+    linear-gradient(110deg, rgba(245, 241, 234, 0.055), transparent 56%),
+    var(--soft);
 }
 
 .work-card:hover {
-  transform: translateX(0.35rem);
+  transform: translateY(-3px);
+  border-color: rgba(245, 241, 234, 0.26);
 }
 
 .work-card > img {
-  width: 3.2rem;
+  width: 4.8rem;
   aspect-ratio: 1;
   object-fit: cover;
   justify-self: start;
-  opacity: 0.48;
-  box-shadow: none;
+  align-self: start;
+  opacity: 0.84;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.3);
 }
 
 .work-overlay {
@@ -347,8 +313,9 @@ img {
 
 .work-card::after {
   content: "open";
-  position: static;
-  align-self: center;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
   color: var(--muted);
   font-size: 0.9rem;
   padding-right: 0.35rem;
@@ -357,11 +324,11 @@ img {
 .work-card::before {
   content: attr(data-number);
   position: static;
-  align-self: center;
+  grid-column: 1 / -1;
+  align-self: start;
   color: var(--muted);
   font-size: 0.9rem;
 }
-
 .info-view {
   max-width: 64rem;
   margin: 0 auto;
@@ -548,19 +515,45 @@ img {
     padding-bottom: 5rem;
   }
 
-  .work-browser {
-    grid-template-columns: minmax(22rem, 0.88fr) minmax(0, 1fr);
-    align-items: start;
-    gap: 2rem;
+  .works-ledger {
     padding: 4.75rem 1.25rem 5rem;
   }
 
-  .work-preview {
-    position: sticky;
-    top: 4.75rem;
-    min-height: calc(100vh - 6rem);
+  .work-grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: stretch;
   }
 
+  .work-card {
+    grid-column: span 4;
+    grid-template-columns: 5.75rem minmax(0, 1fr);
+    min-height: 13.5rem;
+  }
+
+  .work-card:nth-child(1),
+  .work-card:nth-child(5),
+  .work-card:nth-child(11) {
+    grid-column: span 8;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+  }
+
+  .work-card:nth-child(3),
+  .work-card:nth-child(8),
+  .work-card:nth-child(14) {
+    grid-column: span 6;
+  }
+
+  .work-card:nth-child(1) .work-overlay p:first-child,
+  .work-card:nth-child(5) .work-overlay p:first-child,
+  .work-card:nth-child(11) .work-overlay p:first-child {
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+  }
+
+  .work-card:nth-child(1) > img,
+  .work-card:nth-child(5) > img,
+  .work-card:nth-child(11) > img {
+    width: 7.5rem;
+  }
   .info-view {
     padding-top: 2rem;
   }
@@ -577,7 +570,7 @@ img {
 
 @media (max-width: 560px) {
   .work-card {
-    grid-template-columns: 2.6rem minmax(0, 1fr);
+    grid-template-columns: 4rem minmax(0, 1fr);
   }
 
   .work-card::after {
@@ -585,6 +578,8 @@ img {
   }
 
   .work-card > img {
-    display: none;
+    width: 4rem;
   }
 }
+
+
