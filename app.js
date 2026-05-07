@@ -410,7 +410,9 @@ function endDrag(event, index) {
   const distance = Math.hypot(body.x - target.x, body.y - target.y);
 
   if (distance < target.radius) {
-    focusProject(index, { snap: true });
+    focusProject(index, { play: true });
+    body.vx = body.x < target.x ? -0.38 : 0.38;
+    body.vy = -0.18;
   } else {
     focusProject(index);
   }
@@ -429,12 +431,17 @@ function releaseFocusedProject(options = {}) {
     body.vy = -0.22;
     body.rotation = direction * 3.5;
   }
+
+  body.token.classList.remove("is-focused", "is-intro-focused");
+  document.body.classList.remove("is-playing");
+  focusedProject = -1;
 }
 
 function focusProject(index, options = {}) {
   focusedProject = index;
   const project = projects[index];
   applyAlbumMood(index);
+  document.body.classList.add("is-playing");
   focusTitle.textContent = project.album;
   focusMeta.textContent = `${project.artist} / ${project.year}`;
   focusRole.textContent = project.role;
@@ -691,6 +698,7 @@ document.addEventListener("click", (event) => {
 });
 
 focusOpen.addEventListener("click", () => {
+  if (focusedProject < 0) return;
   openProject(focusedProject);
 });
 

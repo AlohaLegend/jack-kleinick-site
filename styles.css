@@ -319,13 +319,17 @@ img {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: -1.45rem;
+  bottom: 0;
   overflow: hidden;
-  color: var(--muted);
-  font-size: 0.72rem;
+  padding: 0.42rem 0.48rem;
+  color: rgba(245, 241, 234, 0.82);
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.72));
+  font-size: 0.68rem;
+  line-height: 1.05;
   text-overflow: ellipsis;
   white-space: nowrap;
-  opacity: 0;
+  opacity: 0.62;
+  pointer-events: none;
   transition: opacity 180ms ease;
 }
 
@@ -349,19 +353,15 @@ img {
 }
 
 .stage-target {
-  position: fixed;
-  left: 50%;
-  top: 50%;
-  z-index: 5;
-  width: clamp(9rem, 18vw, 16rem);
+  position: relative;
+  z-index: 1;
+  width: clamp(8.2rem, 12vw, 11rem);
   aspect-ratio: 1;
   border: 1px solid rgba(245, 241, 234, 0.18);
   border-radius: 50%;
-  overflow: hidden;
   background:
     radial-gradient(circle at 50% 50%, transparent 0 14%, rgba(245, 241, 234, 0.12) 14.4% 15.2%, transparent 15.6%),
     repeating-radial-gradient(circle at 50% 50%, #111 0 0.38rem, #171717 0.42rem 0.5rem);
-  transform: translate(-50%, -50%);
   pointer-events: none;
   box-shadow:
     inset 0 0 1.8rem rgba(255, 255, 255, 0.04),
@@ -380,6 +380,21 @@ img {
   border-radius: 50%;
 }
 
+.stage-target::after {
+  content: "";
+  position: absolute;
+  top: 9%;
+  right: -10%;
+  width: 48%;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(245, 241, 234, 0.12), rgba(245, 241, 234, 0.74));
+  box-shadow: 0 0 1rem color-mix(in srgb, var(--album-b) 35%, transparent);
+  transform: rotate(-35deg);
+  transform-origin: right center;
+  transition: transform 700ms ease;
+}
+
 .record-grooves {
   position: absolute;
   inset: 0;
@@ -388,6 +403,18 @@ img {
     conic-gradient(from 35deg, rgba(255, 255, 255, 0.05), transparent 18%, rgba(255, 255, 255, 0.035) 28%, transparent 46%, rgba(255, 255, 255, 0.04) 61%, transparent 82%),
     repeating-radial-gradient(circle, transparent 0 0.55rem, rgba(245, 241, 234, 0.035) 0.58rem 0.62rem);
   mix-blend-mode: screen;
+}
+
+body.is-playing .record-label {
+  animation: recordLabelSpin 4200ms linear infinite;
+}
+
+body.is-playing .record-grooves {
+  animation: recordSpin 4200ms linear infinite;
+}
+
+body.is-playing .stage-target::after {
+  transform: rotate(-14deg);
 }
 
 .record-label {
@@ -418,8 +445,10 @@ img {
   bottom: auto;
   z-index: 6;
   display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
   gap: 0.45rem;
-  width: min(22rem, 28vw);
+  width: min(40rem, 48vw);
   padding: 0.8rem;
   border: 1px solid color-mix(in srgb, var(--album-b) 22%, transparent);
   background:
@@ -428,6 +457,12 @@ img {
   backdrop-filter: blur(14px);
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18);
   text-shadow: 0 0 1.7rem color-mix(in srgb, var(--album-a) 26%, transparent);
+}
+
+.focus-copy {
+  display: grid;
+  gap: 0.45rem;
+  min-width: 0;
 }
 
 .stage-focus p:first-child {
@@ -469,6 +504,18 @@ img {
   color: var(--ink);
   text-decoration: underline;
   text-underline-offset: 0.25rem;
+}
+
+@keyframes recordSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes recordLabelSpin {
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
 }
 
 .modal-copy em {
@@ -694,10 +741,10 @@ img {
   }
 
   .stage-target {
-    left: 50%;
+    left: auto;
     right: auto;
-    top: 45%;
-    width: clamp(7.2rem, 34vw, 9.5rem);
+    top: auto;
+    width: clamp(5.8rem, 23vw, 7rem);
   }
 
   .stage-focus {
@@ -705,6 +752,7 @@ img {
     right: 0.8rem;
     bottom: 0.8rem;
     width: calc(100% - 1.6rem);
+    grid-template-columns: auto minmax(0, 1fr);
     padding: 0.9rem;
     border-width: 1px;
     background: rgba(9, 11, 12, 0.72);
