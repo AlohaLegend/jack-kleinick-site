@@ -227,7 +227,7 @@ img {
   min-height: 100vh;
   margin-top: -3.8rem;
   overflow: hidden;
-  padding: 5.9rem 1rem 0.9rem;
+  padding: 0;
   background:
     radial-gradient(circle at 76% 24%, color-mix(in srgb, var(--album-a) 22%, transparent), transparent 22rem),
     radial-gradient(circle at 16% 78%, color-mix(in srgb, var(--album-b) 16%, transparent), transparent 20rem),
@@ -249,29 +249,29 @@ img {
 }
 
 .stage-copy {
-  position: relative;
-  z-index: 4;
+  position: fixed;
+  left: 1rem;
+  top: 5.4rem;
+  z-index: 6;
   display: grid;
-  grid-template-columns: auto 1fr;
-  gap: clamp(1.2rem, 4vw, 3rem);
-  align-items: center;
-  width: min(62rem, calc(100vw - 2rem));
-  margin: 0;
-  padding-top: clamp(3.25rem, 8vh, 6rem);
-  border-bottom: 1px solid rgba(245, 241, 234, 0.14);
+  gap: 0.35rem;
+  width: auto;
+  max-width: min(22rem, calc(100vw - 2rem));
+  padding: 0;
+  border: 0;
+  pointer-events: none;
 }
 
 .stage-copy p {
-  max-width: 7ch;
-  font-size: clamp(3.4rem, 8vw, 7.6rem);
-  line-height: 0.82;
+  max-width: none;
+  font-size: clamp(2rem, 4vw, 4.2rem);
+  line-height: 0.88;
 }
 
 .stage-copy span {
-  align-self: end;
   color: var(--muted);
-  font-size: clamp(0.96rem, 2vw, 1.2rem);
-  padding-bottom: clamp(0.7rem, 1.4vw, 1.15rem);
+  font-size: clamp(0.82rem, 1.4vw, 1rem);
+  padding-bottom: 0;
 }
 
 .cover-field {
@@ -340,11 +340,11 @@ img {
 }
 
 .stage-target {
-  position: absolute;
-  left: clamp(21rem, 29vw, 31rem);
-  top: clamp(11.4rem, 22vh, 15rem);
+  position: fixed;
+  left: clamp(18rem, 32vw, 34rem);
+  top: clamp(6.4rem, 18vh, 12rem);
   z-index: 5;
-  width: clamp(6.5rem, 9vw, 8.8rem);
+  width: clamp(5.6rem, 8vw, 8rem);
   aspect-ratio: 1;
   border: 1px solid rgba(245, 241, 234, 0.24);
   border-radius: 50%;
@@ -370,32 +370,20 @@ img {
   transform: translate(-50%, -50%);
 }
 
-.stage-floor {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 2;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(245, 241, 234, 0.28), transparent);
-  box-shadow: 0 1.4rem 5rem color-mix(in srgb, var(--album-b) 22%, transparent);
-}
-
 .stage-focus {
-  position: absolute;
-  top: clamp(9rem, 18vh, 13rem);
+  position: fixed;
+  top: clamp(5.4rem, 14vh, 9rem);
   right: 1rem;
   bottom: auto;
   z-index: 6;
   display: grid;
   gap: 0.45rem;
-  width: min(24rem, 31vw);
-  padding: 1rem 0 0;
-  border: 1px solid rgba(245, 241, 234, 0.14);
-  border-width: 1px 0 0;
-  background: transparent;
-  backdrop-filter: blur(18px);
-  box-shadow: none;
+  width: min(22rem, 28vw);
+  padding: 0.8rem;
+  border: 1px solid color-mix(in srgb, var(--album-b) 22%, transparent);
+  background: rgba(9, 11, 12, 0.36);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18);
   text-shadow: 0 0 1.5rem color-mix(in srgb, var(--album-a) 14%, transparent);
 }
 
@@ -632,7 +620,7 @@ img {
   .gravity-stage {
     min-height: 100vh;
     margin-top: -4rem;
-    padding-top: 5.6rem;
+    padding: 0;
   }
 
   .info-view {
@@ -652,26 +640,21 @@ img {
 @media (max-width: 560px) {
   .gravity-stage {
     min-height: 100vh;
-    padding: 0.8rem;
-    padding-top: 4.6rem;
+    padding: 0;
   }
 
   .stage-copy {
-    grid-template-columns: 1fr auto;
-    gap: 0.8rem;
-    padding-top: 5rem;
-    width: 100%;
-  }
-
-  .stage-copy span {
-    padding-bottom: 0.8rem;
+    left: 0.8rem;
+    top: 4.8rem;
+    gap: 0.2rem;
+    width: auto;
   }
 
   .stage-target {
     left: auto;
-    right: 1rem;
-    top: 8.8rem;
-    width: clamp(5.8rem, 24vw, 7rem);
+    right: 0.8rem;
+    top: 6.1rem;
+    width: clamp(4.8rem, 20vw, 6.2rem);
   }
 
   .stage-focus {
@@ -686,12 +669,6 @@ img {
 
   .cover-token {
     width: clamp(4rem, 18vw, 5.4rem);
-  }
-
-  .stage-floor {
-    left: 0;
-    right: 0;
-    bottom: 0;
   }
 }
 
