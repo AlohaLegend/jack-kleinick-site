@@ -264,6 +264,13 @@ img {
   pointer-events: none;
 }
 
+body.is-info-view .gravity-stage::before,
+body.is-info-view .stage-copy,
+body.is-info-view .stage-focus,
+body.is-info-view .cover-field {
+  display: none;
+}
+
 .stage-copy p {
   max-width: none;
   font-size: clamp(2rem, 4vw, 4.2rem);

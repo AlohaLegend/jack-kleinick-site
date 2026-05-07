@@ -693,6 +693,7 @@ function showView(view) {
   const showInfo = view === "info";
   workView.classList.toggle("is-active", !showInfo);
   infoView.classList.toggle("is-active", showInfo);
+  document.body.classList.toggle("is-info-view", showInfo);
   closeModal();
 }
 
