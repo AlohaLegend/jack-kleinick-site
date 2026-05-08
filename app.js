@@ -558,6 +558,8 @@ function setupBodies() {
       lastX: 0,
       lastY: 0,
       lastMove: 0,
+      dragVx: 0,
+      dragVy: 0,
     });
 
     token.addEventListener("pointerdown", (event) => beginDrag(event, index));
@@ -587,6 +589,8 @@ function beginDrag(event, index) {
   body.lastX = point.x;
   body.lastY = point.y;
   body.lastMove = performance.now();
+  body.dragVx = body.vx;
+  body.dragVy = body.vy;
   body.token.setPointerCapture(event.pointerId);
   body.dragClone = body.token.cloneNode(true);
   body.dragClone.classList.add("drag-proxy");
@@ -604,9 +608,17 @@ function dragToken(event, index) {
   const elapsed = Math.max(16, now - body.lastMove);
   body.x = point.x - body.offsetX;
   body.y = point.y - body.offsetY;
-  body.vx = ((point.x - body.lastX) / elapsed) * 16;
-  body.vy = ((point.y - body.lastY) / elapsed) * 16;
-  body.rotation = Math.max(-9, Math.min(9, body.vx * 2.4));
+  const rawVx = ((point.x - body.lastX) / elapsed) * 16;
+  const rawVy = ((point.y - body.lastY) / elapsed) * 16;
+  body.dragVx += (rawVx - body.dragVx) * 0.28;
+  body.dragVy += (rawVy - body.dragVy) * 0.28;
+  body.vx = body.dragVx;
+  body.vy = body.dragVy;
+
+  const speed = Math.hypot(body.dragVx, body.dragVy);
+  const tiltSource = Math.abs(body.dragVx) < 0.018 && speed < 0.045 ? 0 : body.dragVx;
+  const targetRotation = Math.max(-7.5, Math.min(7.5, tiltSource * 1.85));
+  body.rotation += (targetRotation - body.rotation) * 0.18;
   body.lastX = point.x;
   body.lastY = point.y;
   body.lastMove = now;
