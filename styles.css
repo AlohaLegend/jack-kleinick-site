@@ -1351,29 +1351,7 @@ body.motion-enabled .motion-button {
   }
 
   .modal-nav {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.6rem;
-    padding-top: 0.75rem;
-    font-size: 0.9rem;
-  }
-
-  .modal-back {
-    width: 100%;
-  }
-
-  .modal-transport {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  .transport-button {
-    flex: 1 1 0;
-    min-width: 0;
-  }
-
-  .transport-button span {
-    display: inline;
+    display: none;
   }
 }
 
