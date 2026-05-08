@@ -220,9 +220,6 @@ const modalTracks = document.querySelector("#modal-tracks");
 const modalPlatforms = document.querySelector("#modal-platforms");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
-const modalCurrent = document.querySelector("#modal-current");
-const modalTotal = document.querySelector("#modal-total");
-const modalProgress = document.querySelector("#modal-progress");
 const entryScreen = document.querySelector("#entry-screen");
 
 let activeProject = 0;
@@ -235,6 +232,7 @@ let sensorsActive = false;
 let lastShakeAt = 0;
 let lastMotionMagnitude = 0;
 let modalSwipe = null;
+let lastWheelNavAt = 0;
 const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
 const albumMoods = [
@@ -873,9 +871,6 @@ function openProject(index) {
   modalImage.alt = project.album;
   prevButton.disabled = index === 0;
   nextButton.disabled = index === projects.length - 1;
-  modalCurrent.textContent = String(index + 1).padStart(2, "0");
-  modalTotal.textContent = String(projects.length).padStart(2, "0");
-  modalProgress.style.transform = `scaleX(${(index + 1) / projects.length})`;
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
@@ -962,6 +957,21 @@ modal.addEventListener("pointerup", (event) => {
 modal.addEventListener("pointercancel", () => {
   modalSwipe = null;
 });
+
+modal.addEventListener(
+  "wheel",
+  (event) => {
+    if (!modal.classList.contains("is-open")) return;
+    if (Math.abs(event.deltaX) < 42 || Math.abs(event.deltaX) < Math.abs(event.deltaY) * 1.2) return;
+
+    const now = performance.now();
+    if (now - lastWheelNavAt < 650) return;
+    lastWheelNavAt = now;
+    event.preventDefault();
+    shiftProject(event.deltaX > 0 ? 1 : -1);
+  },
+  { passive: false },
+);
 
 window.addEventListener("resize", () => {
   const bounds = viewportBounds();

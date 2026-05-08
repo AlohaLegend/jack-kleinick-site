@@ -988,7 +988,7 @@ body.motion-enabled .motion-button {
 .modal-transport {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.42rem;
   padding: 0.28rem;
   border: 1px solid color-mix(in srgb, var(--album-a) 26%, var(--panel-border));
   background: color-mix(in srgb, var(--page) 70%, rgba(0, 0, 0, 0.42));
@@ -999,9 +999,9 @@ body.motion-enabled .motion-button {
 
 .transport-button {
   gap: 0.3rem;
-  min-width: 4.15rem;
+  min-width: 5.25rem;
   min-height: 2.25rem;
-  padding: 0.45rem 0.58rem;
+  padding: 0.45rem 0.72rem;
   text-transform: lowercase;
 }
 
@@ -1022,34 +1022,6 @@ body.motion-enabled .motion-button {
   background: color-mix(in srgb, var(--album-b) 22%, rgba(245, 241, 234, 0.06));
   box-shadow: 0 0 1.4rem color-mix(in srgb, var(--album-b) 26%, transparent);
   transform: translateY(-0.06rem);
-}
-
-.transport-meter {
-  display: grid;
-  grid-template-columns: auto minmax(3rem, 5.2rem) auto;
-  align-items: center;
-  gap: 0.55rem;
-  min-width: 8.5rem;
-  color: color-mix(in srgb, var(--ink) 78%, var(--album-b));
-  font-size: 0.78rem;
-}
-
-.transport-meter i {
-  position: relative;
-  display: block;
-  height: 1px;
-  overflow: hidden;
-  background: color-mix(in srgb, var(--ink) 20%, transparent);
-}
-
-.transport-meter b {
-  position: absolute;
-  inset: 0;
-  display: block;
-  background: color-mix(in srgb, var(--album-b) 72%, var(--ink));
-  transform: scaleX(0.06);
-  transform-origin: left center;
-  transition: transform 280ms ease;
 }
 
 .modal-nav button:disabled {
@@ -1315,14 +1287,7 @@ body.motion-enabled .motion-button {
   }
 
   .transport-button span {
-    display: none;
-  }
-
-  .transport-meter {
-    flex: 0 0 auto;
-    min-width: 6.8rem;
-    grid-template-columns: auto minmax(2rem, 3rem) auto;
-    gap: 0.42rem;
+    display: inline;
   }
 }
 
