@@ -393,11 +393,6 @@ function handleDeviceOrientation(event) {
     const targetX = clamp(event.gamma / 34, -1, 1);
     deviceGravity.x += (targetX - deviceGravity.x) * 0.08;
   }
-
-  if (typeof event.beta === "number") {
-    const targetY = clamp((event.beta - 22) / 42, -1, 1);
-    deviceGravity.y += (targetY - deviceGravity.y) * 0.06;
-  }
 }
 
 function handleDeviceMotion(event) {
@@ -550,9 +545,9 @@ function setupBodies() {
       token,
       index,
       x: -bleed + ((index * 173 + lane * 41) % spread),
-      y: -bleed + ((index * 67 + lane * 29) % Math.max(120, bounds.height - size + bleed * 2)),
+      y: -bleed + ((index * 211 + lane * 83) % Math.max(120, bounds.height - size + bleed * 2)),
       vx: ((index % 7) - 3) * 0.052,
-      vy: ((index % 5) - 2) * 0.026,
+      vy: ((index % 5) - 2) * 0.038,
       drift: index * 1.73,
       rotation: (index % 2 === 0 ? -1 : 1) * (2 + (index % 5)),
       dragging: false,
@@ -788,7 +783,7 @@ function keepBodyMoving(body, timestamp, delta) {
 
   const driftTime = timestamp * 0.00016 + body.drift;
   body.vx += Math.sin(driftTime * 1.7) * 0.0055 * delta;
-  body.vy += Math.cos(driftTime * 1.3) * 0.0038 * delta;
+  body.vy += Math.sin(driftTime * 2.1) * 0.0046 * delta;
 }
 
 function separatePair(a, b) {
@@ -905,13 +900,16 @@ function updateStage(timestamp) {
         const driftTime = timestamp * 0.00016 + body.drift;
         const size = body.token.offsetWidth || 116;
         const centerX = (bounds.width - size) * 0.5;
-        const centerY = (bounds.height - size) * 0.5;
+        const floatTargetY = (bounds.height - size) * (0.18 + 0.64 * (0.5 + Math.sin(driftTime * 0.72) * 0.5));
+        const lowerBand = bounds.height * 0.62;
         body.vx += Math.sin(driftTime) * 0.0029 * driftPower * delta;
         body.vx += deviceGravity.x * 0.0015 * driftPower * delta;
         body.vx += (centerX - body.x) * 0.0000022 * driftPower * delta;
-        body.vy += Math.cos(driftTime * 0.8) * 0.0026 * driftPower * delta;
-        body.vy += deviceGravity.y * 0.0015 * driftPower * delta;
-        body.vy += (centerY - body.y) * 0.0000022 * driftPower * delta;
+        body.vy += Math.sin(driftTime * 1.35) * 0.0034 * driftPower * delta;
+        body.vy += (floatTargetY - body.y) * 0.0000065 * driftPower * delta;
+        if (body.y > lowerBand) {
+          body.vy -= ((body.y - lowerBand) / bounds.height) * 0.010 * driftPower * delta;
+        }
         if (lite) {
           const speed = Math.hypot(body.vx, body.vy);
           if (speed < 0.025) {
