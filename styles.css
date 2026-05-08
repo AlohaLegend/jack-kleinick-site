@@ -16,7 +16,7 @@ body {
 
 body {
   --page-tint: #7eb2ad;
-  --page: color-mix(in srgb, var(--page-tint) 24%, #070909);
+  --page: color-mix(in srgb, var(--page-tint) 31%, #070909);
   --ink: #f5f1ea;
   --muted: #b8b0a6;
   --line: #2a3030;
