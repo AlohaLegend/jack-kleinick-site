@@ -207,6 +207,7 @@ const focusTitle = document.querySelector("#focus-title");
 const focusMeta = document.querySelector("#focus-meta");
 const focusRole = document.querySelector("#focus-role");
 const focusTracks = document.querySelector("#focus-tracks");
+const focusPlatforms = document.querySelector("#focus-platforms");
 const focusOpen = document.querySelector("#focus-open");
 const motionEnable = document.querySelector("#motion-enable");
 const workView = document.querySelector("#work-view");
@@ -625,7 +626,6 @@ function focusProject(index, options = {}) {
   focusMeta.textContent = `${project.artist} / ${project.year}`;
   focusRole.textContent = project.role;
   focusTracks.innerHTML = project.tracks
-    .slice(0, 4)
     .map((track) => {
       const item = typeof track === "string" ? { title: track, url: "" } : track;
       return item.url
@@ -633,6 +633,7 @@ function focusProject(index, options = {}) {
         : `<span>${item.title}</span>`;
     })
     .join("");
+  focusPlatforms.innerHTML = renderPlatformLinks(project);
 
   bodies.forEach((body, bodyIndex) => {
     body.token.classList.toggle("is-focused", bodyIndex === index);
@@ -917,6 +918,11 @@ focusOpen.addEventListener("click", () => {
 });
 
 stageFocus?.addEventListener("click", (event) => {
+  if (window.matchMedia("(max-width: 560px)").matches && displayedProject >= 0) {
+    openProject(displayedProject);
+    return;
+  }
+
   event.stopPropagation();
 });
 
