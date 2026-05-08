@@ -588,6 +588,43 @@ body.motion-enabled .motion-button {
   }
 }
 
+body.is-lite-mode .cover-token {
+  box-shadow: 0 0.7rem 1.45rem rgba(0, 0, 0, 0.32);
+  transition-duration: 120ms;
+  will-change: auto;
+}
+
+body.is-lite-mode .cover-token.is-focused {
+  filter: none;
+  box-shadow:
+    0 0.85rem 1.8rem rgba(0, 0, 0, 0.36),
+    0 0 1.7rem color-mix(in srgb, var(--album-b) 30%, transparent);
+}
+
+body.is-lite-mode .cover-token.is-intro-focused {
+  box-shadow:
+    0 0.9rem 1.9rem rgba(0, 0, 0, 0.38),
+    0 0 1.8rem color-mix(in srgb, var(--album-a) 26%, transparent);
+}
+
+body.is-lite-mode .stage-target,
+body.is-lite-mode .stage-focus,
+body.is-lite-mode .info-shell,
+body.is-lite-mode .modal-card {
+  box-shadow: 0 0.75rem 1.65rem rgba(0, 0, 0, 0.32);
+}
+
+body.is-lite-mode .stage-focus,
+body.is-lite-mode .info-shell,
+body.is-lite-mode .modal-backdrop {
+  backdrop-filter: none;
+}
+
+body.is-lite-mode.is-playing .record-label,
+body.is-lite-mode.is-playing .record-grooves {
+  animation-duration: 9000ms;
+}
+
 #focus-open svg {
   width: 1rem;
   height: 1rem;

@@ -234,6 +234,9 @@ let lastShakeAt = 0;
 let lastMotionMagnitude = 0;
 let modalSwipe = null;
 let lastWheelNavAt = 0;
+let liteMode = false;
+let lastFpsSample = 0;
+const fpsSamples = [];
 const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
 const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -303,12 +306,69 @@ function edgeBleed() {
   return 0;
 }
 
+function storedLitePreference() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("lite") === "1") return true;
+    if (params.get("lite") === "0") {
+      window.localStorage.setItem("jackLiteMode", "0");
+      return false;
+    }
+    if (params.get("lite") === "save") {
+      window.localStorage.setItem("jackLiteMode", "1");
+      return true;
+    }
+    return window.localStorage.getItem("jackLiteMode") === "1";
+  } catch {
+    return false;
+  }
+}
+
+function enableLiteMode(reason = "adaptive") {
+  if (liteMode) return;
+  liteMode = true;
+  document.body.classList.add("is-lite-mode");
+  document.body.dataset.liteReason = reason;
+  fpsSamples.length = 0;
+  bodies.forEach((body) => {
+    body.vx *= 0.35;
+    body.vy *= 0.35;
+    body.rotation *= 0.6;
+  });
+}
+
+function prefersLiteMode() {
+  return liteMode || reduceMotionQuery.matches;
+}
+
+function sampleFrameRate(timestamp) {
+  if (liteMode || document.hidden || !workView.classList.contains("is-active") || modal.classList.contains("is-open")) {
+    lastFpsSample = timestamp;
+    return;
+  }
+
+  if (lastFpsSample) {
+    const frameMs = timestamp - lastFpsSample;
+    if (frameMs > 0 && frameMs < 250) {
+      fpsSamples.push(1000 / frameMs);
+      if (fpsSamples.length > 90) fpsSamples.shift();
+      if (fpsSamples.length === 90) {
+        const averageFps = fpsSamples.reduce((sum, fps) => sum + fps, 0) / fpsSamples.length;
+        if (averageFps < 42) enableLiteMode("low-fps");
+      }
+    }
+  }
+
+  lastFpsSample = timestamp;
+}
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
 }
 
 function bodyScale(body) {
   if (body.index !== focusedProject) return 1;
+  if (prefersLiteMode()) return body.pinned ? 1.16 : 1.08;
   return body.pinned ? 1.28 : 1.16;
 }
 
@@ -325,10 +385,11 @@ function tossCovers(force = 1) {
   bodies.forEach((body, index) => {
     if (body.dragging || body.pinned) return;
 
+    const adjustedForce = prefersLiteMode() ? force * 0.35 : force;
     const phase = performance.now() * 0.003 + index * 1.91;
-    body.vx += Math.cos(phase) * 0.72 * force + deviceGravity.x * 0.6;
-    body.vy += Math.sin(phase * 1.23) * 0.55 * force - 0.28 * force;
-    body.rotation += Math.sin(phase) * 5.5 * force;
+    body.vx += Math.cos(phase) * 0.72 * adjustedForce + deviceGravity.x * 0.6;
+    body.vy += Math.sin(phase * 1.23) * 0.55 * adjustedForce - 0.28 * adjustedForce;
+    body.rotation += Math.sin(phase) * 5.5 * adjustedForce;
   });
 }
 
@@ -459,6 +520,10 @@ function renderGrid() {
     .join("");
 
   setupBodies();
+  const manualLite = storedLitePreference();
+  if (manualLite || reduceMotionQuery.matches) {
+    enableLiteMode(manualLite ? "manual" : "reduced-motion");
+  }
   startIntroSelection();
   window.requestAnimationFrame(updateStage);
 }
@@ -466,7 +531,7 @@ function renderGrid() {
 function startIntroSelection() {
   const index = randomProjectIndex();
   focusProject(index, { snap: true, intro: true });
-  if (reduceMotionQuery.matches) {
+  if (prefersLiteMode()) {
     releaseFocusedProject();
     return;
   }
@@ -785,7 +850,8 @@ function resolveCoverCollisions(bounds, floor) {
     bodies.forEach((body) => pushBodyFromDrag(dragged, body));
   });
 
-  for (let pass = 0; pass < 3; pass += 1) {
+  const passes = prefersLiteMode() ? 1 : 3;
+  for (let pass = 0; pass < passes; pass += 1) {
     for (let first = 0; first < bodies.length; first += 1) {
       for (let second = first + 1; second < bodies.length; second += 1) {
         separatePair(bodies[first], bodies[second]);
@@ -831,10 +897,13 @@ function updateStage(timestamp) {
     return;
   }
 
+  sampleFrameRate(timestamp);
+
   const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
   const floor = stageFloor(bounds);
   const reducedMotion = reduceMotionQuery.matches || document.hidden;
+  const lite = prefersLiteMode();
   lastFrame = timestamp;
 
   bodies.forEach((body) => {
@@ -844,13 +913,22 @@ function updateStage(timestamp) {
         body.vy *= 0.82;
         body.rotation *= 0.96;
       } else {
+        const driftPower = lite ? 0.34 : 1;
         const driftTime = timestamp * 0.00016 + body.drift;
-        body.vx += Math.sin(driftTime) * 0.0029 * delta;
-        body.vx += deviceGravity.x * 0.0052 * delta;
-        body.vy += (0.0026 + deviceGravity.y * 0.0048 + Math.cos(driftTime * 0.8) * 0.0014) * delta;
-        keepBodyMoving(body, timestamp, delta);
-        body.vx *= 0.994;
-        body.vy *= 0.994;
+        body.vx += Math.sin(driftTime) * 0.0029 * driftPower * delta;
+        body.vx += deviceGravity.x * 0.0052 * driftPower * delta;
+        body.vy += (0.0026 + deviceGravity.y * 0.0048 + Math.cos(driftTime * 0.8) * 0.0014) * driftPower * delta;
+        if (lite) {
+          const speed = Math.hypot(body.vx, body.vy);
+          if (speed < 0.025) {
+            body.vx += Math.sin(driftTime * 1.7) * 0.0012;
+            body.vy += Math.cos(driftTime * 1.3) * 0.001;
+          }
+        } else {
+          keepBodyMoving(body, timestamp, delta);
+        }
+        body.vx *= lite ? 0.982 : 0.994;
+        body.vy *= lite ? 0.982 : 0.994;
       }
 
       body.x += body.vx * delta;
@@ -1026,4 +1104,10 @@ window.addEventListener("resize", () => {
     body.y = Math.min(Math.max(-bleed + scaleInset, body.y), floor - size + bleed - scaleInset);
   });
 });
+
+if (typeof reduceMotionQuery.addEventListener === "function") {
+  reduceMotionQuery.addEventListener("change", (event) => {
+    if (event.matches) enableLiteMode("reduced-motion");
+  });
+}
 
