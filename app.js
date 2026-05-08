@@ -195,7 +195,7 @@ const projects = [
     year: "Listen",
     role: "Playlist reel",
     tracks: [{ title: "Open playlist", url: "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp" }],
-    image: "assets/studio-hero.png",
+    image: "assets/studio-hero.jpg",
   },
 ];
 
@@ -236,6 +236,7 @@ let modalSwipe = null;
 let lastWheelNavAt = 0;
 const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
+const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const albumMoods = [
   ["#802812", "#b07a6c"],
   ["#3b281c", "#857a72"],
@@ -264,7 +265,7 @@ function viewportBounds() {
     panel.height > window.innerHeight * 0.75;
 
   return {
-    width: panelIsRightRail ? Math.max(240, panel.left) : window.innerWidth,
+    width: panelIsRightRail ? Math.max(240, panel.left - 2) : window.innerWidth,
     height: window.innerHeight,
     windowWidth: window.innerWidth,
   };
@@ -304,6 +305,11 @@ function edgeBleed() {
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function bodyScale(body) {
+  if (body.index !== focusedProject) return 1;
+  return body.pinned ? 1.28 : 1.16;
 }
 
 function stageFloor(bounds) {
@@ -392,7 +398,7 @@ async function enableDeviceSensors() {
 
 function applyAlbumMood(index) {
   const mood = albumMoods[index % albumMoods.length];
-  const image = projects[index]?.image || "assets/studio-hero.png";
+  const image = projects[index]?.image || "assets/studio-hero.jpg";
   document.body.style.setProperty("--album-a", mood[0]);
   document.body.style.setProperty("--album-b", mood[1]);
   document.body.style.setProperty("--page-tint", mood[1]);
@@ -445,7 +451,7 @@ function renderGrid() {
     .map(
       (project, index) => `
         <button class="cover-token" type="button" data-token="${index}" aria-label="Focus ${project.album} by ${project.artist}">
-          <img src="${project.image}" alt="${project.album} cover" loading="lazy">
+          <img src="${project.image}" alt="${project.album} cover" loading="lazy" decoding="async">
           <span><strong>${project.album}</strong><small>${project.artist}</small></span>
         </button>
       `,
@@ -460,6 +466,11 @@ function renderGrid() {
 function startIntroSelection() {
   const index = randomProjectIndex();
   focusProject(index, { snap: true, intro: true });
+  if (reduceMotionQuery.matches) {
+    releaseFocusedProject();
+    return;
+  }
+
   introReleaseTimer = window.setTimeout(() => {
     releaseFocusedProject({ toss: true });
   }, 3600);
@@ -477,6 +488,7 @@ function setupBodies() {
     const spread = Math.max(1, bounds.width - size + bleed * 2);
     bodies.push({
       token,
+      index,
       x: -bleed + ((index * 173 + lane * 41) % spread),
       y: -bleed + ((index * 67 + lane * 29) % Math.max(120, bounds.height - size + bleed * 2)),
       vx: ((index % 7) - 3) * 0.052,
@@ -667,10 +679,12 @@ function focusProject(index, options = {}) {
 
 function clampBodyToViewport(body, bounds, floor) {
   const size = body.token.offsetWidth || 116;
+  const scale = bodyScale(body);
+  const scaleInset = (size * (scale - 1)) / 2;
   const bleed = edgeBleed();
-  const leftEdge = -bleed;
-  const rightEdge = bounds.width - size + bleed;
-  const topEdge = -bleed;
+  const leftEdge = -bleed + scaleInset;
+  const rightEdge = bounds.width - size + bleed - scaleInset;
+  const topEdge = -bleed + scaleInset;
   const softFloor = floor < bounds.height - 1;
 
   if (body.x < leftEdge) {
@@ -688,8 +702,8 @@ function clampBodyToViewport(body, bounds, floor) {
     body.vy = Math.abs(body.vy) * 0.62 + 0.025;
   }
 
-  if (!body.dragging && body.y + size > floor) {
-    body.y = floor - size;
+  if (!body.dragging && body.y + size + scaleInset > floor) {
+    body.y = floor - size - scaleInset;
     if (softFloor) {
       body.vy = 0;
       body.vx *= 0.965;
@@ -811,20 +825,34 @@ function resolveRecordCollision(body) {
 }
 
 function updateStage(timestamp) {
+  if (!workView.classList.contains("is-active") || modal.classList.contains("is-open")) {
+    lastFrame = timestamp;
+    window.requestAnimationFrame(updateStage);
+    return;
+  }
+
   const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
   const floor = stageFloor(bounds);
+  const reducedMotion = reduceMotionQuery.matches || document.hidden;
   lastFrame = timestamp;
 
   bodies.forEach((body) => {
     if (!body.dragging && !body.pinned) {
-      const driftTime = timestamp * 0.00016 + body.drift;
-      body.vx += Math.sin(driftTime) * 0.0029 * delta;
-      body.vx += deviceGravity.x * 0.0052 * delta;
-      body.vy += (0.0026 + deviceGravity.y * 0.0048 + Math.cos(driftTime * 0.8) * 0.0014) * delta;
-      keepBodyMoving(body, timestamp, delta);
-      body.vx *= 0.994;
-      body.vy *= 0.994;
+      if (reducedMotion) {
+        body.vx *= 0.82;
+        body.vy *= 0.82;
+        body.rotation *= 0.96;
+      } else {
+        const driftTime = timestamp * 0.00016 + body.drift;
+        body.vx += Math.sin(driftTime) * 0.0029 * delta;
+        body.vx += deviceGravity.x * 0.0052 * delta;
+        body.vy += (0.0026 + deviceGravity.y * 0.0048 + Math.cos(driftTime * 0.8) * 0.0014) * delta;
+        keepBodyMoving(body, timestamp, delta);
+        body.vx *= 0.994;
+        body.vy *= 0.994;
+      }
+
       body.x += body.vx * delta;
       body.y += body.vy * delta;
       body.rotation += body.vx * 0.008;
@@ -840,7 +868,7 @@ function updateStage(timestamp) {
   });
 
   bodies.forEach((body, index) => {
-    const scale = index === focusedProject ? (body.pinned ? 1.28 : 1.16) : 1;
+    const scale = bodyScale(body);
     const transform = `translate3d(${body.x}px, ${body.y}px, 0) rotate(${body.rotation}deg) scale(${scale})`;
     body.token.style.transform = transform;
     body.token.style.zIndex = body.pinned ? "7" : String(3 + (index % 3));
@@ -992,9 +1020,10 @@ window.addEventListener("resize", () => {
   const floor = stageFloor(bounds);
   bodies.forEach((body) => {
     const size = body.token.offsetWidth || 116;
+    const scaleInset = (size * (bodyScale(body) - 1)) / 2;
     const bleed = edgeBleed();
-    body.x = Math.min(Math.max(-bleed, body.x), bounds.width - size + bleed);
-    body.y = Math.min(Math.max(-bleed, body.y), floor - size + bleed);
+    body.x = Math.min(Math.max(-bleed + scaleInset, body.x), bounds.width - size + bleed - scaleInset);
+    body.y = Math.min(Math.max(-bleed + scaleInset, body.y), floor - size + bleed - scaleInset);
   });
 });
 

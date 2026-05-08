@@ -36,7 +36,7 @@ ipconfig
 
 ## Notes
 
-- `assets/studio-hero.png` is a generated placeholder hero image and should be replaced with approved Jack/studio photography when available.
-- The Spotify playlist is embedded from the supplied playlist URL.
-- The contact form currently uses a placeholder `mailto:hello@example.com`; update it before launch.
-- The selected-work cards are structured placeholders until final credit metadata is verified.
+- `assets/studio-hero.jpg` is a compressed placeholder image used for the playlist/selected-works card.
+- The site is static and deploys through GitHub Pages from `main`.
+- The Info page links to Jack's Instagram handle, Spotify playlist, Apple Music search, and YouTube Music search.
+- Before final launch, re-check the credit metadata and replace placeholder/playlist artwork if Jack supplies approved assets.

@@ -28,7 +28,7 @@ body {
   --amber: #d8a55b;
   --album-a: #b96a3d;
   --album-b: #7eb2ad;
-  --record-art: url("assets/studio-hero.png");
+  --record-art: url("assets/studio-hero.jpg");
   --panel-bg: rgba(9, 11, 12, 0.52);
   --panel-border: color-mix(in srgb, var(--album-b) 30%, rgba(245, 241, 234, 0.12));
   background: var(--page);
@@ -565,6 +565,27 @@ body.is-playing .stage-target::after {
 
 body.motion-enabled .motion-button {
   display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 1ms !important;
+  }
+
+  .entry-screen {
+    display: none;
+  }
+
+  .cover-token,
+  .record-label,
+  .record-grooves {
+    will-change: auto;
+  }
 }
 
 #focus-open svg {
