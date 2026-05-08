@@ -373,12 +373,7 @@ function bodyScale(body) {
 }
 
 function stageFloor(bounds) {
-  if (!stageFocus || window.innerWidth > 560) return bounds.height;
-
-  const panel = stageFocus.getBoundingClientRect();
-  if (!panel.height) return bounds.height;
-
-  return Math.max(160, panel.top - 22);
+  return bounds.height;
 }
 
 function tossCovers(force = 1) {
@@ -387,8 +382,8 @@ function tossCovers(force = 1) {
 
     const adjustedForce = prefersLiteMode() ? force * 0.35 : force;
     const phase = performance.now() * 0.003 + index * 1.91;
-    body.vx += Math.cos(phase) * 0.72 * adjustedForce + deviceGravity.x * 0.6;
-    body.vy += Math.sin(phase * 1.23) * 0.55 * adjustedForce - 0.28 * adjustedForce;
+    body.vx += Math.cos(phase) * 0.72 * adjustedForce;
+    body.vy += Math.sin(phase * 1.23) * 0.55 * adjustedForce;
     body.rotation += Math.sin(phase) * 5.5 * adjustedForce;
   });
 }
@@ -400,7 +395,7 @@ function handleDeviceOrientation(event) {
   }
 
   if (typeof event.beta === "number") {
-    const targetY = clamp((event.beta - 22) / 42, -0.85, 1);
+    const targetY = clamp((event.beta - 22) / 42, -1, 1);
     deviceGravity.y += (targetY - deviceGravity.y) * 0.06;
   }
 }
@@ -750,7 +745,6 @@ function clampBodyToViewport(body, bounds, floor) {
   const leftEdge = -bleed + scaleInset;
   const rightEdge = bounds.width - size + bleed - scaleInset;
   const topEdge = -bleed + scaleInset;
-  const softFloor = floor < bounds.height - 1;
 
   if (body.x < leftEdge) {
     body.x = leftEdge;
@@ -769,15 +763,9 @@ function clampBodyToViewport(body, bounds, floor) {
 
   if (!body.dragging && body.y + size + scaleInset > floor) {
     body.y = floor - size - scaleInset;
-    if (softFloor) {
-      body.vy = 0;
-      body.vx *= 0.965;
-      body.rotation *= 0.985;
-    } else {
-      body.vy = Math.abs(body.vy) > 0.08 ? -Math.abs(body.vy) * 0.48 : -0.055;
-      body.vx *= 0.985;
-      body.rotation *= 0.985;
-    }
+    body.vy = Math.abs(body.vy) > 0.08 ? -Math.abs(body.vy) * 0.58 : -0.07;
+    body.vx *= 0.99;
+    body.rotation *= 0.985;
   }
 }
 
@@ -915,9 +903,15 @@ function updateStage(timestamp) {
       } else {
         const driftPower = lite ? 0.34 : 1;
         const driftTime = timestamp * 0.00016 + body.drift;
+        const size = body.token.offsetWidth || 116;
+        const centerX = (bounds.width - size) * 0.5;
+        const centerY = (bounds.height - size) * 0.5;
         body.vx += Math.sin(driftTime) * 0.0029 * driftPower * delta;
-        body.vx += deviceGravity.x * 0.0052 * driftPower * delta;
-        body.vy += (0.0026 + deviceGravity.y * 0.0048 + Math.cos(driftTime * 0.8) * 0.0014) * driftPower * delta;
+        body.vx += deviceGravity.x * 0.0015 * driftPower * delta;
+        body.vx += (centerX - body.x) * 0.0000022 * driftPower * delta;
+        body.vy += Math.cos(driftTime * 0.8) * 0.0026 * driftPower * delta;
+        body.vy += deviceGravity.y * 0.0015 * driftPower * delta;
+        body.vy += (centerY - body.y) * 0.0000022 * driftPower * delta;
         if (lite) {
           const speed = Math.hypot(body.vx, body.vy);
           if (speed < 0.025) {
