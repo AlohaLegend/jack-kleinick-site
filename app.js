@@ -383,6 +383,7 @@ function applyAlbumMood(index) {
   const image = projects[index]?.image || "assets/studio-hero.png";
   document.body.style.setProperty("--album-a", mood[0]);
   document.body.style.setProperty("--album-b", mood[1]);
+  document.body.style.setProperty("--page-tint", mood[1]);
   document.body.style.setProperty("--record-art", `url("${image}")`);
 }
 

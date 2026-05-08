@@ -15,11 +15,12 @@ body {
 }
 
 body {
-  --page: #090b0c;
+  --page-tint: #7eb2ad;
+  --page: color-mix(in srgb, var(--page-tint) 24%, #070909);
   --ink: #f5f1ea;
   --muted: #b8b0a6;
   --line: #2a3030;
-  --header: rgba(9, 11, 12, 0.84);
+  --header: color-mix(in srgb, var(--page) 86%, rgba(9, 11, 12, 0.88));
   --card: #121617;
   --soft: #1d2324;
   --modal-backdrop: rgba(0, 0, 0, 0.86);
@@ -106,11 +107,7 @@ img {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 34%),
-    radial-gradient(circle at 78% 28%, rgba(216, 165, 91, 0.1), transparent 21rem),
-    radial-gradient(circle at 18% 75%, rgba(126, 178, 173, 0.08), transparent 20rem),
-    var(--page);
+  background: var(--page);
   transition:
     opacity 900ms ease,
     visibility 900ms ease;
@@ -225,11 +222,7 @@ img {
   margin-top: -3.8rem;
   overflow: hidden;
   padding: 0;
-  background:
-    radial-gradient(circle at 76% 24%, color-mix(in srgb, var(--album-a) 58%, transparent), transparent 27rem),
-    radial-gradient(circle at 16% 78%, color-mix(in srgb, var(--album-b) 42%, transparent), transparent 24rem),
-    linear-gradient(180deg, color-mix(in srgb, var(--album-a) 14%, transparent), transparent 42%),
-    var(--page);
+  background: var(--page);
   transition: background 700ms ease;
 }
 
@@ -238,9 +231,7 @@ img {
   position: fixed;
   inset: 0;
   z-index: 1;
-  background:
-    linear-gradient(120deg, color-mix(in srgb, var(--album-a) 26%, transparent), transparent 36%),
-    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--album-b) 16%, transparent), transparent 42%, rgba(0, 0, 0, 0.24) 100%);
+  background: transparent;
   pointer-events: none;
   transition: background 700ms ease;
 }
@@ -592,9 +583,7 @@ body.motion-enabled .motion-button {
   max-width: 82rem;
   margin: 0 auto;
   padding: clamp(3rem, 7vw, 5.2rem) 1rem 4rem;
-  background:
-    radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--album-a) 34%, transparent), transparent 23rem),
-    radial-gradient(circle at 10% 84%, color-mix(in srgb, var(--album-b) 26%, transparent), transparent 22rem);
+  background: var(--page);
 }
 
 .info-shell {
@@ -796,10 +785,7 @@ body.motion-enabled .motion-button {
 .modal-backdrop {
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(circle at 32% 34%, color-mix(in srgb, var(--album-a) 28%, transparent), transparent 28rem),
-    radial-gradient(circle at 72% 70%, color-mix(in srgb, var(--album-b) 24%, transparent), transparent 26rem),
-    var(--modal-backdrop);
+  background: color-mix(in srgb, var(--page) 38%, var(--modal-backdrop));
   backdrop-filter: blur(12px);
 }
 
