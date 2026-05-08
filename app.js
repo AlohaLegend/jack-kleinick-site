@@ -539,6 +539,7 @@ function pushBodyFromDrag(dragged, target) {
   const targetSize = target.token.offsetWidth || 116;
   const draggedRadius = draggedSize * 0.5;
   const targetRadius = targetSize * 0.5;
+  const dragSpeed = Math.min(1.8, Math.hypot(dragged.vx, dragged.vy));
   const draggedCenterX = dragged.x + draggedRadius;
   const draggedCenterY = dragged.y + draggedRadius;
   const targetCenterX = target.x + targetRadius;
@@ -546,20 +547,22 @@ function pushBodyFromDrag(dragged, target) {
   const dx = targetCenterX - draggedCenterX;
   const dy = targetCenterY - draggedCenterY;
   const distance = Math.max(1, Math.hypot(dx, dy));
-  const cushion = (draggedRadius + targetRadius) * 1.42;
+  const collisionRange = draggedRadius + targetRadius;
+  const cushion = collisionRange * (1.72 + dragSpeed * 0.06);
 
   if (distance >= cushion) return;
 
   const nx = dx / distance;
   const ny = dy / distance;
   const pressure = (cushion - distance) / cushion;
-  const push = pressure * pressure * 8.2;
+  const nearContact = Math.max(0, (collisionRange - distance) / collisionRange);
+  const push = pressure * pressure * 14 + nearContact * 6;
 
   target.x += nx * push;
   target.y += ny * push;
-  target.vx += nx * (0.028 + pressure * 0.06) + dragged.vx * 0.018;
-  target.vy += ny * (0.028 + pressure * 0.06) + dragged.vy * 0.018;
-  target.rotation += nx * pressure * 0.32;
+  target.vx += nx * (0.045 + pressure * 0.1) + dragged.vx * 0.024;
+  target.vy += ny * (0.045 + pressure * 0.1) + dragged.vy * 0.024;
+  target.rotation += nx * pressure * 0.42;
 }
 
 function endDrag(event, index) {
