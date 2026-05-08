@@ -220,6 +220,9 @@ const modalTracks = document.querySelector("#modal-tracks");
 const modalPlatforms = document.querySelector("#modal-platforms");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
+const modalCurrent = document.querySelector("#modal-current");
+const modalTotal = document.querySelector("#modal-total");
+const modalProgress = document.querySelector("#modal-progress");
 const entryScreen = document.querySelector("#entry-screen");
 
 let activeProject = 0;
@@ -231,6 +234,7 @@ let sensorPermissionAsked = false;
 let sensorsActive = false;
 let lastShakeAt = 0;
 let lastMotionMagnitude = 0;
+let modalSwipe = null;
 const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
 const albumMoods = [
@@ -869,6 +873,9 @@ function openProject(index) {
   modalImage.alt = project.album;
   prevButton.disabled = index === 0;
   nextButton.disabled = index === projects.length - 1;
+  modalCurrent.textContent = String(index + 1).padStart(2, "0");
+  modalTotal.textContent = String(projects.length).padStart(2, "0");
+  modalProgress.style.transform = `scaleX(${(index + 1) / projects.length})`;
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
@@ -878,6 +885,13 @@ function closeModal() {
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+  modalSwipe = null;
+}
+
+function shiftProject(direction) {
+  const nextIndex = activeProject + direction;
+  if (nextIndex < 0 || nextIndex >= projects.length) return;
+  openProject(nextIndex);
 }
 
 renderGrid();
@@ -912,18 +926,41 @@ stageFocus?.addEventListener("click", (event) => {
 });
 
 prevButton.addEventListener("click", () => {
-  if (activeProject > 0) openProject(activeProject - 1);
+  shiftProject(-1);
 });
 
 nextButton.addEventListener("click", () => {
-  if (activeProject < projects.length - 1) openProject(activeProject + 1);
+  shiftProject(1);
 });
 
 document.addEventListener("keydown", (event) => {
   if (!modal.classList.contains("is-open")) return;
   if (event.key === "Escape") closeModal();
-  if (event.key === "ArrowLeft" && activeProject > 0) openProject(activeProject - 1);
-  if (event.key === "ArrowRight" && activeProject < projects.length - 1) openProject(activeProject + 1);
+  if (event.key === "ArrowLeft") shiftProject(-1);
+  if (event.key === "ArrowRight") shiftProject(1);
+});
+
+modal.addEventListener("pointerdown", (event) => {
+  if (!modal.classList.contains("is-open")) return;
+  if (event.target.closest("button, a")) return;
+  modalSwipe = {
+    id: event.pointerId,
+    x: event.clientX,
+    y: event.clientY,
+  };
+});
+
+modal.addEventListener("pointerup", (event) => {
+  if (!modalSwipe || modalSwipe.id !== event.pointerId) return;
+  const dx = event.clientX - modalSwipe.x;
+  const dy = event.clientY - modalSwipe.y;
+  modalSwipe = null;
+  if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy) * 1.25) return;
+  shiftProject(dx < 0 ? 1 : -1);
+});
+
+modal.addEventListener("pointercancel", () => {
+  modalSwipe = null;
 });
 
 window.addEventListener("resize", () => {
