@@ -325,6 +325,12 @@ function edgeBleed() {
   return 0;
 }
 
+function topPlayEdge() {
+  if (window.innerWidth > 560) return 0;
+  const header = document.querySelector(".site-header")?.getBoundingClientRect();
+  return header?.height ? header.bottom + 8 : 0;
+}
+
 function storedLitePreference() {
   try {
     const params = new URLSearchParams(window.location.search);
@@ -657,6 +663,7 @@ function dragToken(event, index) {
   const tiltSource = Math.abs(body.dragVx) < 0.018 && speed < 0.045 ? 0 : body.dragVx;
   const targetRotation = Math.max(-7.5, Math.min(7.5, tiltSource * 1.85));
   body.rotation += (targetRotation - body.rotation) * 0.18;
+  resolveHeaderCollision(body, { includeDragging: true });
   body.lastX = point.x;
   body.lastY = point.y;
   body.lastMove = now;
@@ -810,7 +817,7 @@ function clampBodyToViewport(body, bounds, floor) {
   const bleed = edgeBleed();
   const leftEdge = -bleed + scaleInset;
   const rightEdge = bounds.width - size + bleed - scaleInset;
-  const topEdge = -bleed + scaleInset;
+  const topEdge = topPlayEdge() - bleed + scaleInset;
 
   if (body.x < leftEdge) {
     body.x = leftEdge;
@@ -944,8 +951,8 @@ function resolveRecordCollision(body) {
   body.rotation += nx * 0.55;
 }
 
-function resolveRectCollision(body, rect) {
-  if (body.dragging || body.pinned) return;
+function resolveRectCollision(body, rect, options = {}) {
+  if ((body.dragging && !options.includeDragging) || body.pinned) return;
   if (!rect) return;
 
   const size = body.token.offsetWidth || 116;
@@ -990,8 +997,8 @@ function resolvePanelCollision(body) {
   resolveRectCollision(body, panelObstacle());
 }
 
-function resolveHeaderCollision(body) {
-  resolveRectCollision(body, headerObstacle());
+function resolveHeaderCollision(body, options = {}) {
+  resolveRectCollision(body, headerObstacle(), options);
 }
 
 function updateStage(timestamp) {
@@ -1055,7 +1062,7 @@ function updateStage(timestamp) {
   resolveCoverCollisions(bounds, floor);
   bodies.forEach((body) => {
     resolveRecordCollision(body);
-    resolveHeaderCollision(body);
+    resolveHeaderCollision(body, { includeDragging: true });
     resolvePanelCollision(body);
     clampBodyToViewport(body, bounds, floor);
   });
@@ -1218,7 +1225,7 @@ window.addEventListener("resize", () => {
     const scaleInset = (size * (bodyScale(body) - 1)) / 2;
     const bleed = edgeBleed();
     body.x = Math.min(Math.max(-bleed + scaleInset, body.x), bounds.width - size + bleed - scaleInset);
-    body.y = Math.min(Math.max(-bleed + scaleInset, body.y), floor - size + bleed - scaleInset);
+    body.y = Math.min(Math.max(topPlayEdge() - bleed + scaleInset, body.y), floor - size + bleed - scaleInset);
   });
 });
 
