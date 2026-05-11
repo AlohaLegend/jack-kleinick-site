@@ -234,6 +234,7 @@ let lastShakeAt = 0;
 let lastMotionMagnitude = 0;
 let modalSwipe = null;
 let lastWheelNavAt = 0;
+let lastCoverTap = { index: -1, time: 0 };
 let liteMode = false;
 let lastFpsSample = 0;
 const fpsSamples = [];
@@ -563,6 +564,9 @@ function setupBodies() {
       lastX: 0,
       lastY: 0,
       lastMove: 0,
+      startX: 0,
+      startY: 0,
+      lastTapMovement: Infinity,
       dragVx: 0,
       dragVy: 0,
     });
@@ -571,6 +575,7 @@ function setupBodies() {
     token.addEventListener("pointermove", (event) => dragToken(event, index));
     token.addEventListener("pointerup", (event) => endDrag(event, index));
     token.addEventListener("pointercancel", (event) => endDrag(event, index));
+    token.addEventListener("click", (event) => handleCoverClick(event, index));
     token.addEventListener("dblclick", () => openProject(index));
   });
 }
@@ -585,6 +590,19 @@ function stagePoint(event) {
 function beginDrag(event, index) {
   const body = bodies[index];
   const point = stagePoint(event);
+  const now = performance.now();
+  const isMobileTap = window.matchMedia("(max-width: 560px)").matches;
+  if (isMobileTap && lastCoverTap.index === index && now - lastCoverTap.time < 420) {
+    lastCoverTap = { index: -1, time: 0 };
+    openProject(index);
+    event.preventDefault();
+    return;
+  }
+
+  if (isMobileTap) {
+    lastCoverTap = { index, time: now };
+  }
+
   body.dragging = true;
   body.pinned = false;
   window.clearTimeout(introReleaseTimer);
@@ -594,6 +612,8 @@ function beginDrag(event, index) {
   body.lastX = point.x;
   body.lastY = point.y;
   body.lastMove = performance.now();
+  body.startX = point.x;
+  body.startY = point.y;
   body.dragVx = body.vx;
   body.dragVy = body.vy;
   body.token.setPointerCapture(event.pointerId);
@@ -665,6 +685,8 @@ function pushBodyFromDrag(dragged, target) {
 function endDrag(event, index) {
   const body = bodies[index];
   if (!body.dragging || body.pointerId !== event.pointerId) return;
+  const point = stagePoint(event);
+  const moved = Math.hypot(point.x - body.startX, point.y - body.startY);
 
   body.dragging = false;
   body.pointerId = null;
@@ -674,6 +696,7 @@ function endDrag(event, index) {
   body.token.classList.remove("is-drag-source");
   body.token.style.zIndex = "";
   body.introPinned = false;
+  body.lastTapMovement = moved;
 
   const size = body.token.offsetWidth || 116;
   const target = focusTargetPosition(size);
@@ -687,6 +710,24 @@ function endDrag(event, index) {
     focusProject(index);
   }
 
+}
+
+function handleCoverClick(event, index) {
+  if (!window.matchMedia("(max-width: 560px)").matches) return;
+
+  const body = bodies[index];
+  if (!body || body.lastTapMovement > 12) return;
+
+  const now = performance.now();
+  const isDoubleTap = lastCoverTap.index === index && now - lastCoverTap.time < 420;
+  if (isDoubleTap) {
+    lastCoverTap = { index: -1, time: 0 };
+    openProject(index);
+    event.preventDefault();
+    return;
+  }
+
+  lastCoverTap = { index, time: now };
 }
 
 function releaseFocusedProject(options = {}) {
@@ -1042,12 +1083,14 @@ function openProject(index) {
   nextButton.disabled = index === projects.length - 1;
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
+  document.body.classList.add("is-modal-open");
   document.body.style.overflow = "hidden";
 }
 
 function closeModal() {
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
+  document.body.classList.remove("is-modal-open");
   document.body.style.overflow = "";
   modalSwipe = null;
 }
