@@ -260,15 +260,8 @@ const albumMoods = [
 ];
 
 function viewportBounds() {
-  const panel = stageFocus?.getBoundingClientRect();
-  const panelIsRightRail =
-    window.innerWidth > 560 &&
-    panel?.width &&
-    panel.left > window.innerWidth * 0.55 &&
-    panel.height > window.innerHeight * 0.75;
-
   return {
-    width: panelIsRightRail ? Math.max(240, panel.left - 2) : window.innerWidth,
+    width: window.innerWidth,
     height: window.innerHeight,
     windowWidth: window.innerWidth,
   };

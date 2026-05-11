@@ -1161,44 +1161,6 @@ body.is-lite-mode.is-playing .record-grooves {
     padding: 0;
   }
 
-  .stage-focus {
-    top: 0;
-    right: 0;
-    bottom: 0;
-    width: min(33.333vw, 31rem);
-    min-width: min(33.333vw, 31rem);
-    max-width: 31rem;
-    min-height: 100vh;
-    max-height: none;
-    grid-template-columns: 7.8rem minmax(0, 1fr);
-    align-content: center;
-    padding: clamp(4.6rem, 7vh, 6rem) 1.2rem 1.4rem;
-    border-width: 0 0 0 1px;
-    background:
-      linear-gradient(180deg, rgba(245, 241, 234, 0.035), transparent 38%),
-      color-mix(in srgb, var(--page) 64%, rgba(0, 0, 0, 0.72));
-    box-shadow: -2rem 0 5rem rgba(0, 0, 0, 0.18);
-  }
-
-  .stage-target {
-    width: 7.8rem;
-    flex-basis: 7.8rem;
-    align-self: start;
-    margin-top: 0.2rem;
-  }
-
-  .focus-copy {
-    max-height: calc(100vh - 7.2rem);
-  }
-
-  .stage-focus h2 {
-    font-size: clamp(2.1rem, 3.2vw, 4.1rem);
-  }
-
-  .focus-actions {
-    display: none;
-  }
-
   .info-view {
     max-width: min(82rem, calc(100vw - 2rem));
     min-height: 100dvh;
