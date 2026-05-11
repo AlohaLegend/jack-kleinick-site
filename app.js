@@ -308,6 +308,19 @@ function panelObstacle() {
   };
 }
 
+function headerObstacle() {
+  if (window.innerWidth > 560) return null;
+  const header = document.querySelector(".site-header")?.getBoundingClientRect();
+  if (!header?.height) return null;
+  const padding = 8;
+  return {
+    left: header.left - padding,
+    right: header.right + padding,
+    top: header.top - padding,
+    bottom: header.bottom + padding,
+  };
+}
+
 function edgeBleed() {
   return 0;
 }
@@ -931,11 +944,9 @@ function resolveRecordCollision(body) {
   body.rotation += nx * 0.55;
 }
 
-function resolvePanelCollision(body) {
+function resolveRectCollision(body, rect) {
   if (body.dragging || body.pinned) return;
-
-  const panel = panelObstacle();
-  if (!panel) return;
+  if (!rect) return;
 
   const size = body.token.offsetWidth || 116;
   const scale = bodyScale(body);
@@ -945,15 +956,15 @@ function resolvePanelCollision(body) {
   const top = body.y - inset;
   const bottom = body.y + size + inset;
 
-  if (right <= panel.left || left >= panel.right || bottom <= panel.top || top >= panel.bottom) return;
+  if (right <= rect.left || left >= rect.right || bottom <= rect.top || top >= rect.bottom) return;
 
   const maxX = window.innerWidth - size - inset;
   const maxY = window.innerHeight - size - inset;
   const pushes = [
-    { axis: "x", amount: panel.left - right, next: body.x + panel.left - right },
-    { axis: "x", amount: panel.right - left, next: body.x + panel.right - left },
-    { axis: "y", amount: panel.top - bottom, next: body.y + panel.top - bottom },
-    { axis: "y", amount: panel.bottom - top, next: body.y + panel.bottom - top },
+    { axis: "x", amount: rect.left - right, next: body.x + rect.left - right },
+    { axis: "x", amount: rect.right - left, next: body.x + rect.right - left },
+    { axis: "y", amount: rect.top - bottom, next: body.y + rect.top - bottom },
+    { axis: "y", amount: rect.bottom - top, next: body.y + rect.bottom - top },
   ]
     .map((push) => ({
       ...push,
@@ -973,6 +984,14 @@ function resolvePanelCollision(body) {
     body.vy = push.amount < 0 ? -Math.abs(body.vy) * 0.58 - 0.05 : Math.abs(body.vy) * 0.58 + 0.05;
   }
   body.rotation *= 0.97;
+}
+
+function resolvePanelCollision(body) {
+  resolveRectCollision(body, panelObstacle());
+}
+
+function resolveHeaderCollision(body) {
+  resolveRectCollision(body, headerObstacle());
 }
 
 function updateStage(timestamp) {
@@ -1036,6 +1055,7 @@ function updateStage(timestamp) {
   resolveCoverCollisions(bounds, floor);
   bodies.forEach((body) => {
     resolveRecordCollision(body);
+    resolveHeaderCollision(body);
     resolvePanelCollision(body);
     clampBodyToViewport(body, bounds, floor);
   });
