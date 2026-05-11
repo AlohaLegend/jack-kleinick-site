@@ -478,9 +478,9 @@ body.is-playing .stage-target::after {
 
 .focus-copy {
   display: grid;
-  grid-template-rows: auto auto auto;
+  grid-template-rows: minmax(0, 1fr) auto auto;
   align-content: center;
-  gap: 0.38rem;
+  gap: 0.32rem;
   min-width: 0;
   height: 100%;
   overflow: hidden;
@@ -497,14 +497,23 @@ body.is-playing .stage-target::after {
   font-style: italic;
   font-weight: 500;
   line-height: 0.96;
+  display: -webkit-box;
+  max-height: 5.1rem;
+  overflow: hidden;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .stage-focus span,
 #focus-role {
   color: var(--muted);
   font-size: 0.92rem;
+  min-width: 0;
+  overflow: hidden;
   overflow-wrap: anywhere;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .focus-tracks {
@@ -546,6 +555,7 @@ body.is-playing .stage-target::after {
   gap: 0.45rem;
   align-items: center;
   justify-self: start;
+  align-self: end;
   margin-top: 0;
 }
 
@@ -1320,6 +1330,10 @@ body.is-lite-mode.is-playing .record-grooves {
     grid-template-rows: auto auto;
     align-content: center;
     gap: 0.12rem;
+  }
+
+  .stage-focus h2 {
+    max-height: 2.85rem;
   }
 
   .focus-tracks {
