@@ -295,6 +295,18 @@ function recordObstacle() {
   };
 }
 
+function panelObstacle() {
+  if (!stageFocus) return null;
+  const panel = stageFocus.getBoundingClientRect();
+  const padding = 8;
+  return {
+    left: panel.left - padding,
+    right: panel.right + padding,
+    top: panel.top - padding,
+    bottom: panel.bottom + padding,
+  };
+}
+
 function edgeBleed() {
   return 0;
 }
@@ -878,6 +890,50 @@ function resolveRecordCollision(body) {
   body.rotation += nx * 0.55;
 }
 
+function resolvePanelCollision(body) {
+  if (body.dragging || body.pinned) return;
+
+  const panel = panelObstacle();
+  if (!panel) return;
+
+  const size = body.token.offsetWidth || 116;
+  const scale = bodyScale(body);
+  const inset = (size * (scale - 1)) / 2;
+  const left = body.x - inset;
+  const right = body.x + size + inset;
+  const top = body.y - inset;
+  const bottom = body.y + size + inset;
+
+  if (right <= panel.left || left >= panel.right || bottom <= panel.top || top >= panel.bottom) return;
+
+  const maxX = window.innerWidth - size - inset;
+  const maxY = window.innerHeight - size - inset;
+  const pushes = [
+    { axis: "x", amount: panel.left - right, next: body.x + panel.left - right },
+    { axis: "x", amount: panel.right - left, next: body.x + panel.right - left },
+    { axis: "y", amount: panel.top - bottom, next: body.y + panel.top - bottom },
+    { axis: "y", amount: panel.bottom - top, next: body.y + panel.bottom - top },
+  ]
+    .map((push) => ({
+      ...push,
+      valid: push.axis === "x" ? push.next >= 0 && push.next <= maxX : push.next >= 0 && push.next <= maxY,
+    }))
+    .sort((a, b) => {
+      if (a.valid !== b.valid) return a.valid ? -1 : 1;
+      return Math.abs(a.amount) - Math.abs(b.amount);
+    });
+
+  const push = pushes[0];
+  if (push.axis === "x") {
+    body.x += push.amount;
+    body.vx = push.amount < 0 ? -Math.abs(body.vx) * 0.58 - 0.05 : Math.abs(body.vx) * 0.58 + 0.05;
+  } else {
+    body.y += push.amount;
+    body.vy = push.amount < 0 ? -Math.abs(body.vy) * 0.58 - 0.05 : Math.abs(body.vy) * 0.58 + 0.05;
+  }
+  body.rotation *= 0.97;
+}
+
 function updateStage(timestamp) {
   if (!workView.classList.contains("is-active") || modal.classList.contains("is-open")) {
     lastFrame = timestamp;
@@ -939,6 +995,7 @@ function updateStage(timestamp) {
   resolveCoverCollisions(bounds, floor);
   bodies.forEach((body) => {
     resolveRecordCollision(body);
+    resolvePanelCollision(body);
     clampBodyToViewport(body, bounds, floor);
   });
 
