@@ -1258,28 +1258,31 @@ body.is-lite-mode.is-playing .record-grooves {
     left: auto;
     right: auto;
     top: auto;
-    width: 3.6rem;
-    flex-basis: 3.6rem;
+    width: 2.9rem;
+    flex-basis: 2.9rem;
   }
 
   .stage-focus {
     top: auto;
-    right: 0.8rem;
-    bottom: 0.8rem;
-    min-width: calc(100% - 1.6rem);
-    max-width: calc(100% - 1.6rem);
-    width: calc(100% - 1.6rem);
-    min-height: 6.8rem;
-    max-height: 6.8rem;
-    height: 6.8rem;
-    grid-template-columns: 3.6rem minmax(0, 1fr);
-    padding: 0.72rem;
-    border-width: 1px;
-    background: rgba(9, 11, 12, 0.78);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    min-width: 100%;
+    max-width: 100%;
+    width: 100%;
+    min-height: 4.9rem;
+    max-height: 4.9rem;
+    height: 4.9rem;
+    grid-template-columns: 2.9rem minmax(0, 1fr);
+    gap: 0.62rem;
+    padding: 0.48rem 0.72rem calc(0.48rem + env(safe-area-inset-bottom));
+    border-width: 1px 0 0;
+    background: rgba(9, 11, 12, 0.86);
   }
 
   .stage-focus h2 {
-    font-size: clamp(1.2rem, 6.8vw, 1.75rem);
+    font-size: clamp(1rem, 5.6vw, 1.42rem);
+    line-height: 0.98;
   }
 
   .stage-focus p:first-child,
@@ -1289,8 +1292,9 @@ body.is-lite-mode.is-playing .record-grooves {
   }
 
   .focus-copy {
-    grid-template-rows: auto auto auto;
-    gap: 0.22rem;
+    grid-template-rows: auto auto;
+    align-content: center;
+    gap: 0.12rem;
   }
 
   .focus-tracks {
@@ -1368,10 +1372,11 @@ body.is-lite-mode.is-playing .record-grooves {
     width: clamp(4rem, 18vw, 5.4rem);
   }
 
+  .cover-token::after,
   .cover-token span,
   .cover-token:hover span,
   .cover-token.is-focused span {
-    opacity: 0.86;
+    display: none;
   }
 
   .modal {
