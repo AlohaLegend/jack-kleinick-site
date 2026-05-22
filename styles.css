@@ -854,25 +854,13 @@ body.is-lite-mode .modal-backdrop {
   padding: clamp(1rem, 4vw, 3rem);
 }
 
-.modal-art-shell::before {
-  content: "";
-  position: absolute;
-  width: min(68%, 20rem);
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 50% 50%, transparent 0 13%, rgba(245, 241, 234, 0.09) 13.5% 14.4%, transparent 15%),
-    repeating-radial-gradient(circle, #111 0 0.45rem, #181818 0.48rem 0.56rem);
-  box-shadow: 0 0 4rem color-mix(in srgb, var(--album-b) 22%, transparent);
-  transform: translate(12%, 5%);
-}
-
 .modal-art-shell img {
   position: relative;
   z-index: 1;
-  width: min(72%, 20rem);
+  width: min(74%, 21rem);
   aspect-ratio: 1;
   object-fit: cover;
+  border: 1px solid color-mix(in srgb, var(--album-b) 34%, rgba(245, 241, 234, 0.1));
   box-shadow:
     0 1.5rem 4rem rgba(0, 0, 0, 0.48),
     0 0 2.5rem color-mix(in srgb, var(--album-a) 28%, transparent);
@@ -1381,13 +1369,8 @@ body.is-lite-mode .modal-backdrop {
     padding: 1rem 1rem 0.35rem;
   }
 
-  .modal-art-shell::before {
-    width: min(58%, 12rem);
-    transform: translate(16%, 7%);
-  }
-
   .modal-art-shell img {
-    width: min(66%, 13.5rem);
+    width: min(68%, 13.75rem);
   }
 
   .modal-copy {
