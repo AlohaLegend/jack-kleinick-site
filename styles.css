@@ -402,45 +402,6 @@ body.is-info-view .cover-field {
   pointer-events: none;
 }
 
-.record-grooves {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background:
-    conic-gradient(from 35deg, rgba(255, 255, 255, 0.05), transparent 18%, rgba(255, 255, 255, 0.035) 28%, transparent 46%, rgba(255, 255, 255, 0.04) 61%, transparent 82%),
-    repeating-radial-gradient(circle, transparent 0 0.55rem, rgba(245, 241, 234, 0.035) 0.58rem 0.62rem);
-  mix-blend-mode: screen;
-}
-
-body.is-playing .record-label {
-  animation: recordLabelSpin 4200ms linear infinite;
-}
-
-body.is-playing .record-grooves {
-  animation: recordSpin 4200ms linear infinite;
-}
-
-.record-label {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 42%;
-  aspect-ratio: 1;
-  overflow: hidden;
-  border: 2px solid rgba(245, 241, 234, 0.28);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle, transparent 0 7%, rgba(0, 0, 0, 0.44) 7.4% 9.2%, transparent 9.6%),
-    var(--record-art) center / cover;
-  box-shadow:
-    0 0 1.4rem color-mix(in srgb, var(--album-b) 26%, transparent),
-    inset 0 0 0 999px rgba(0, 0, 0, 0.05);
-  transform: translate(-50%, -50%);
-  transition:
-    background 500ms ease,
-    box-shadow 500ms ease;
-}
-
 .stage-focus {
   position: fixed;
   top: clamp(5.4rem, 14vh, 9rem);
@@ -466,6 +427,12 @@ body.is-playing .record-grooves {
   backdrop-filter: blur(14px);
   box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.18);
   text-shadow: 0 0 1.7rem color-mix(in srgb, var(--album-a) 26%, transparent);
+}
+
+.stage-focus .stage-target {
+  width: 8rem;
+  height: auto;
+  flex-basis: auto;
 }
 
 .focus-copy {
@@ -599,9 +566,7 @@ body.motion-enabled .motion-button {
     display: none;
   }
 
-  .cover-token,
-  .record-label,
-  .record-grooves {
+  .cover-token {
     will-change: auto;
   }
 }
@@ -638,11 +603,6 @@ body.is-lite-mode .modal-backdrop {
   backdrop-filter: none;
 }
 
-body.is-lite-mode.is-playing .record-label,
-body.is-lite-mode.is-playing .record-grooves {
-  animation-duration: 9000ms;
-}
-
 #focus-open svg {
   width: 1rem;
   height: 1rem;
@@ -651,18 +611,6 @@ body.is-lite-mode.is-playing .record-grooves {
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 1.8;
-}
-
-@keyframes recordSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes recordLabelSpin {
-  to {
-    transform: translate(-50%, -50%) rotate(360deg);
-  }
 }
 
 .modal-copy em {
@@ -1289,6 +1237,12 @@ body.is-lite-mode.is-playing .record-grooves {
     flex-basis: 2.9rem;
   }
 
+  .stage-focus .stage-target {
+    width: 2.9rem;
+    height: auto;
+    flex-basis: 2.9rem;
+  }
+
   .stage-focus {
     top: auto;
     left: 0;
@@ -1319,6 +1273,7 @@ body.is-lite-mode.is-playing .record-grooves {
   }
 
   .focus-copy {
+    display: grid;
     grid-template-rows: auto auto;
     align-content: center;
     gap: 0.12rem;
