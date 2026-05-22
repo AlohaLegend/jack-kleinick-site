@@ -368,42 +368,38 @@ body.is-info-view .cover-field {
   width: 8rem;
   flex: 0 0 8rem;
   aspect-ratio: 1;
-  border: 1px solid rgba(245, 241, 234, 0.18);
-  border-radius: 50%;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--album-b) 42%, rgba(245, 241, 234, 0.14));
+  border-radius: 0.22rem;
   background:
-    radial-gradient(circle at 50% 50%, transparent 0 14%, rgba(245, 241, 234, 0.12) 14.4% 15.2%, transparent 15.6%),
-    repeating-radial-gradient(circle at 50% 50%, #111 0 0.38rem, #171717 0.42rem 0.5rem);
+    linear-gradient(145deg, rgba(255, 255, 255, 0.08), transparent 44%),
+    var(--record-art) center / cover;
   pointer-events: none;
   box-shadow:
-    inset 0 0 1.8rem rgba(255, 255, 255, 0.04),
-    inset 0 0 3.4rem rgba(0, 0, 0, 0.52),
-    0 0 4rem color-mix(in srgb, var(--album-a) 28%, transparent);
+    inset 0 0 0 1px rgba(255, 255, 255, 0.05),
+    inset 0 -2rem 3rem rgba(0, 0, 0, 0.12),
+    0 1rem 2.2rem rgba(0, 0, 0, 0.34),
+    0 0 3.2rem color-mix(in srgb, var(--album-a) 30%, transparent);
   transition:
     border-color 700ms ease,
+    background 500ms ease,
     box-shadow 700ms ease;
 }
 
 .stage-target::before {
   content: "";
   position: absolute;
-  inset: 8%;
+  inset: 0;
   border: 1px solid rgba(245, 241, 234, 0.08);
-  border-radius: 50%;
+  pointer-events: none;
 }
 
 .stage-target::after {
   content: "";
   position: absolute;
-  top: 9%;
-  right: -10%;
-  width: 48%;
-  height: 2px;
-  border-radius: 999px;
-  background: linear-gradient(90deg, rgba(245, 241, 234, 0.12), rgba(245, 241, 234, 0.74));
-  box-shadow: 0 0 1rem color-mix(in srgb, var(--album-b) 35%, transparent);
-  transform: rotate(-35deg);
-  transform-origin: right center;
-  transition: transform 700ms ease;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 58%, rgba(0, 0, 0, 0.18));
+  pointer-events: none;
 }
 
 .record-grooves {
@@ -422,10 +418,6 @@ body.is-playing .record-label {
 
 body.is-playing .record-grooves {
   animation: recordSpin 4200ms linear infinite;
-}
-
-body.is-playing .stage-target::after {
-  transform: rotate(-14deg);
 }
 
 .record-label {
