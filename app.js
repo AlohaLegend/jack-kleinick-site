@@ -272,22 +272,26 @@ const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
 const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 const albumMoods = [
-  ["#802812", "#b07a6c"],
-  ["#3b281c", "#857a72"],
-  ["#102212", "#687a74"],
-  ["#b3cae7", "#d0def0"],
-  ["#3e3838", "#878484"],
-  ["#f8cb9c", "#fbdfc2"],
-  ["#ccb883", "#dfd3b2"],
-  ["#825141", "#b29389"],
-  ["#825141", "#b29389"],
-  ["#6c6a4e", "#a4a391"],
-  ["#e8ca85", "#f1deb3"],
-  ["#02427f", "#628ab0"],
-  ["#396896", "#84a1be"],
-  ["#088453", "#66b394"],
-  ["#dfce9a", "#ebe1c0"],
-  ["#3a271c", "#857972"],
+  ["#46190c", "#a56b55"], // 12065
+  ["#18120c", "#716455"], // The Man
+  ["#04120c", "#5a6455"], // die in the hills
+  ["#2e5d78", "#a8c7d7"], // Cosmic Wink
+  ["#7b614e", "#e0bda0"], // Breakfast Song
+  ["#40332d", "#9d897b"], // Fucking You To Death
+  ["#120c0c", "#695d55"], // hotel room
+  ["#5f7865", "#b8c9b4"], // When We Were Young
+  ["#824e12", "#e8a75d"], // Luckyman
+  ["#787a55", "#d8d49a"], // Honeydew Moon
+  ["#88825d", "#ead795"], // Eating & Drinking & Being in Love
+  ["#393a26", "#969173"], // The Tallest Child in New York
+  ["#3d2924", "#937468"], // Nose Job
+  ["#042647", "#5a7a98"], // A Sensitive Subject
+  ["#6f1e18", "#c47b68"], // Red Velvet
+  ["#04333a", "#5a8989"], // Traces
+  ["#1f3a54", "#7891a7"], // To Let Go Your Hand
+  ["#666277", "#c9c3dc"], // Madeline
+  ["#7b755b", "#e0d4af"], // HEAT
+  ["#6d4227", "#c69a76"], // Selected Works
 ];
 
 function viewportBounds() {
@@ -503,7 +507,7 @@ async function enableDeviceSensors() {
 }
 
 function applyAlbumMood(index) {
-  const mood = albumMoods[index % albumMoods.length];
+  const mood = albumMoods[index] || albumMoods[index % albumMoods.length] || ["#6d4227", "#c69a76"];
   const image = projects[index]?.image || "assets/studio-hero.jpg";
   document.body.style.setProperty("--album-a", mood[0]);
   document.body.style.setProperty("--album-b", mood[1]);
