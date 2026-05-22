@@ -415,9 +415,9 @@ body.is-info-view .cover-field {
   min-width: min(31rem, calc(100vw - 2rem));
   max-width: min(31rem, calc(100vw - 2rem));
   width: min(31rem, calc(100vw - 2rem));
-  min-height: 9.8rem;
-  max-height: 9.8rem;
-  height: 9.8rem;
+  min-height: 10.2rem;
+  max-height: 10.2rem;
+  height: 10.2rem;
   padding: 0.72rem;
   overflow: hidden;
   border: 1px solid var(--panel-border);
@@ -455,13 +455,11 @@ body.is-info-view .cover-field {
   font-size: clamp(1.65rem, 2.7vw, 2.65rem);
   font-style: italic;
   font-weight: 500;
-  line-height: 0.96;
-  display: -webkit-box;
-  max-height: 5.1rem;
-  overflow: hidden;
+  line-height: 1.12;
+  display: block;
+  max-height: none;
+  overflow: visible;
   overflow-wrap: anywhere;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
 }
 
 .stage-focus span,
@@ -1239,9 +1237,9 @@ body.is-lite-mode .modal-backdrop {
     min-width: 100%;
     max-width: 100%;
     width: 100%;
-    min-height: 4.9rem;
-    max-height: 4.9rem;
-    height: 4.9rem;
+    min-height: 5.25rem;
+    max-height: 5.25rem;
+    height: 5.25rem;
     grid-template-columns: 2.9rem minmax(0, 1fr);
     gap: 0.62rem;
     padding: 0.48rem 0.72rem calc(0.48rem + env(safe-area-inset-bottom));
@@ -1250,8 +1248,8 @@ body.is-lite-mode .modal-backdrop {
   }
 
   .stage-focus h2 {
-    font-size: clamp(1rem, 5.6vw, 1.42rem);
-    line-height: 0.98;
+    font-size: clamp(0.95rem, 5vw, 1.28rem);
+    line-height: 1.08;
   }
 
   .stage-focus p:first-child,
@@ -1268,7 +1266,7 @@ body.is-lite-mode .modal-backdrop {
   }
 
   .stage-focus h2 {
-    max-height: 2.85rem;
+    max-height: none;
   }
 
   .focus-tracks {
