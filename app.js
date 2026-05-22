@@ -2,11 +2,11 @@ const projects = [
   {
     album: "12065",
     artist: "grentperez",
-    year: "2025",
-    role: "Producer",
+    year: "Fast Friends",
+    role: "12065: co-writer, producer, engineer, guitar, bass, keys, drum programming. Day by Day: co-writer, producer, drum programming, guitar.",
     tracks: [
       { title: "12065", url: "https://open.spotify.com/track/0wwA0ZXgJTcuIWZrBP6G96" },
-      { title: "Day By Day", url: "https://open.spotify.com/track/79oft65PDY4LL7MoLQ6Nxp" },
+      { title: "Day by Day", url: "https://open.spotify.com/track/79oft65PDY4LL7MoLQ6Nxp" },
     ],
     image: "assets/covers/grentperez-12065.jpg",
   },
@@ -27,17 +27,31 @@ const projects = [
     image: "assets/covers/abi-carter-die-in-the-hills.jpg",
   },
   {
-    album: "SOS 2001",
+    album: "Cosmic Wink",
     artist: "Juliet Ivy",
-    year: "2025",
-    role: "Writing / production playlist credit",
+    year: "AWAL",
+    role: "SOS 2001: co-writer, producer, engineer, guitar, bass, synths. Here We Go Again: additional production.",
     tracks: [
       { title: "SOS 2001", url: "https://open.spotify.com/track/7izGUWUtK1kSKLIPPKO4fS" },
-      { title: "here we go again!", url: "https://open.spotify.com/track/59FlFzfREVZFYmeDxC7oOm" },
-      { title: "breakfast song", url: "https://open.spotify.com/track/35zp82N1DNlCLD5Rdzn0gr" },
-      { title: "sweet dreams", url: "https://open.spotify.com/track/2Ryg8Y4vcClhXTsTkHD5TE" },
+      { title: "Here We Go Again", url: "https://open.spotify.com/track/59FlFzfREVZFYmeDxC7oOm" },
     ],
     image: "assets/covers/juliet-ivy-sos-2001.jpg",
+  },
+  {
+    album: "Breakfast Song",
+    artist: "Juliet Ivy",
+    year: "AWAL",
+    role: "Co-writer, producer, engineer, guitar, bass, drum programming, mixing, mastering.",
+    tracks: [{ title: "Breakfast Song", url: "https://open.spotify.com/track/35zp82N1DNlCLD5Rdzn0gr" }],
+    image: "assets/covers/juliet-ivy-breakfast-song.jpg",
+  },
+  {
+    album: "Fucking You To Death",
+    artist: "LAUREL",
+    year: "Single",
+    role: "Co-writer, producer, engineer, guitar, drum programming.",
+    tracks: [{ title: "Fucking You To Death", url: "https://open.spotify.com/search/Fucking%20You%20To%20Death%20LAUREL" }],
+    image: "assets/studio-hero.jpg",
   },
   {
     album: "hotel room",
@@ -50,16 +64,16 @@ const projects = [
   {
     album: "When We Were Young",
     artist: "Mia Wray",
-    year: "2025",
-    role: "Writing / production playlist credit",
+    year: "Mushroom Music",
+    role: "Co-writer.",
     tracks: [{ title: "When We Were Young", url: "https://open.spotify.com/track/3Up4Umt7RGaKsmU6aUpAlR" }],
     image: "assets/covers/mia-wray-when-we-were-young.jpg",
   },
   {
-    album: "Bloodstream",
+    album: "Luckyman",
     artist: "Wingtip",
-    year: "Playlist album block",
-    role: "Producer",
+    year: "Nettwerk",
+    role: "Executive producer on all songs. Co-writer, guitar, bass, drum programming, synthesizers, engineering.",
     tracks: [
       { title: "Bloodstream", url: "https://open.spotify.com/track/5Ytz1w8uqBoKpkyxJXZV19" },
       { title: "Talk", url: "https://open.spotify.com/track/1stp4ryfwcvCX1ChH9yJZN" },
@@ -87,8 +101,8 @@ const projects = [
   {
     album: "Eating & Drinking & Being in Love",
     artist: "Theo Kandel",
-    year: "Playlist LP block",
-    role: "Deep collaborator block across the playlist",
+    year: "Nettwerk",
+    role: "Executive producer on all songs. Guitar, bass, synths, engineering, mixing on all songs.",
     tracks: [
       { title: "Eating & Drinking & Being in Love (Intro)", url: "https://open.spotify.com/track/4c7NRJlgVAQBVzyvNFNUBh" },
       { title: "Lunch", url: "https://open.spotify.com/track/6rGbrQBd60SdCc4xBZBTwa" },
@@ -103,10 +117,10 @@ const projects = [
     image: "assets/covers/theo-kandel-eating-drinking.jpg",
   },
   {
-    album: "Bugs",
+    album: "The Tallest Child in New York",
     artist: "Farrah Hanna",
-    year: "2025",
-    role: "Writing / production playlist credit",
+    year: "Mendel Records",
+    role: "Producer, guitar, bass, synths, mixing and mastering engineer on all 5 songs.",
     tracks: [
       { title: "Bugs", url: "https://open.spotify.com/track/3tm1vp2RPx8BMlxB3Al7oP" },
       { title: "Everybody Who Prayed", url: "https://open.spotify.com/track/1GZd6nsSJ6yMOuASM0kJ8v" },
@@ -117,10 +131,10 @@ const projects = [
     image: "assets/covers/farrah-hanna-bugs.jpg",
   },
   {
-    album: "Some Great Stadium",
+    album: "Nose Job",
     artist: "Caity Krone",
-    year: "Playlist EP block",
-    role: "Writing / production playlist credit",
+    year: "EP",
+    role: "Producer, engineer, guitar, bass, synths on Some Great Stadium, Nose Job, Camera Man, Angry Little Fish, At Least, Villain.",
     tracks: [
       { title: "Some Great Stadium", url: "https://open.spotify.com/track/0wTUFDeJNbTaRZtt2QCxsS" },
       { title: "Nose Job", url: "https://open.spotify.com/track/6Qpg65XGgw9LQSOVM5hmu8" },
@@ -134,8 +148,8 @@ const projects = [
   {
     album: "A Sensitive Subject",
     artist: "Jack Rabbit",
-    year: "Playlist album block",
-    role: "Producer, Songwriter",
+    year: "Album",
+    role: "Producer, engineer, mixing, guitar, bass, synths, drum programming on That's All, Right?, Amor, The Wedding Song, Texas Sky, Good Girl, and Fall. This Again: producer, guitars, bass, mellotron, drums, engineer, mix.",
     tracks: [
       { title: "Tu Con El", url: "https://open.spotify.com/track/79cT5SZjsXBBCFTtURNyxL" },
       { title: "The Wedding Song", url: "https://open.spotify.com/track/2f4c6QmK9z7zmCzX2ZNHsX" },
@@ -149,6 +163,22 @@ const projects = [
       { title: "This Again", url: "https://open.spotify.com/track/6UoOZHWuhtcJL1WOZ1ITCY" },
     ],
     image: "assets/covers/jack-rabbit-tu-con-el.jpg",
+  },
+  {
+    album: "Red Velvet",
+    artist: "Maeve",
+    year: "Single",
+    role: "Co-writer, producer, engineer, mix, master, electric guitar, bass.",
+    tracks: [{ title: "Red Velvet", url: "https://open.spotify.com/search/Red%20Velvet%20Maeve" }],
+    image: "assets/studio-hero.jpg",
+  },
+  {
+    album: "Traces",
+    artist: "girli",
+    year: "Believe UK",
+    role: "Co-writer, producer, drum programming, synths, e-bow.",
+    tracks: [{ title: "Traces", url: "https://open.spotify.com/search/Traces%20girli" }],
+    image: "assets/studio-hero.jpg",
   },
   {
     album: "To Let Go Your Hand",
