@@ -51,7 +51,7 @@ const projects = [
     year: "Single",
     role: "Co-writer, producer, engineer, guitar, drum programming.",
     tracks: [{ title: "Fucking You To Death", url: "https://open.spotify.com/search/Fucking%20You%20To%20Death%20LAUREL" }],
-    image: "assets/studio-hero.jpg",
+    image: "assets/covers/laurel-fucking-you-to-death.jpg",
   },
   {
     album: "hotel room",
@@ -170,7 +170,7 @@ const projects = [
     year: "Single",
     role: "Co-writer, producer, engineer, mix, master, electric guitar, bass.",
     tracks: [{ title: "Red Velvet", url: "https://open.spotify.com/search/Red%20Velvet%20Maeve" }],
-    image: "assets/studio-hero.jpg",
+    image: "assets/covers/maeve-red-velvet.jpg",
   },
   {
     album: "Traces",
@@ -178,7 +178,7 @@ const projects = [
     year: "Believe UK",
     role: "Co-writer, producer, drum programming, synths, e-bow.",
     tracks: [{ title: "Traces", url: "https://open.spotify.com/search/Traces%20girli" }],
-    image: "assets/studio-hero.jpg",
+    image: "assets/covers/girli-traces.jpg",
   },
   {
     album: "To Let Go Your Hand",
