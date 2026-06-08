@@ -11,6 +11,8 @@ Use this file to continue the build from another computer or another Codex sessi
 - Live test site: `https://alohalegend.github.io/jack-kleinick-site/`
 - Current style direction: dark, editorial, simple, music-credit portfolio, with floating draggable album covers and a record/player focus area.
 - Main files: `index.html`, `styles.css`, `app.js`.
+- Managed work data: `content/works.js`.
+- Admin backend/UI: `admin-server.mjs`, `admin/index.html`, `admin/styles.css`, `admin/admin.js`.
 - Local server script: `start-site.cmd`, backed by `server.ps1`.
 
 ## Run Locally
@@ -29,6 +31,31 @@ http://127.0.0.1:4173/
 ```
 
 For another computer on the same network, use this computer's LAN IP with port `4173`.
+
+## Admin Editor
+
+From PowerShell:
+
+```powershell
+cd D:\LOOMSWEBSITE
+.\start-admin.cmd
+```
+
+Then open:
+
+```text
+http://127.0.0.1:4184/admin/
+```
+
+The admin backend creates a local `.admin-password` file on first run unless `JACK_ADMIN_PASSWORD` is set. `.admin-password` is ignored by git.
+
+Admin flow:
+
+- Paste a Spotify link to import metadata and cover art.
+- The browser samples the Spotify thumbnail and fills dark/pastel colors.
+- Edit credits and tracks manually.
+- Save writes `content/works.js`.
+- Publish runs fixed git commands to commit content changes and push `HEAD:main`.
 
 ## Verify
 
@@ -59,7 +86,7 @@ When changes are ready:
 
 ```powershell
 git status --short
-git add index.html styles.css app.js RESPAWN.md
+git add index.html styles.css app.js content/works.js admin-server.mjs admin start-admin.cmd start-admin.ps1 README.md RESPAWN.md
 git commit -m "Describe the change"
 git push origin HEAD:main
 ```
@@ -72,3 +99,4 @@ GitHub Pages can take a short moment to update after push.
 - Info page contact includes Instagram handle `@jackkleinick`.
 - The homepage has a soft physics field around the dragged cover so nearby works repel before hard collision.
 - Keep the design close in spirit to the inspiration site: minimal, typographic, music-forward. Keep enough difference through the floating album-cover interaction, record player focus area, and darker album-reactive palette.
+- The live GitHub Pages site remains static; the admin backend is for editing/publishing and should not be replaced with a client-side password on GitHub Pages.

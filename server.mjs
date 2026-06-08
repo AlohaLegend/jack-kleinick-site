@@ -8,7 +8,10 @@ const port = Number(process.env.PORT || 4173);
 const types = {
   ".css": "text/css; charset=utf-8",
   ".html": "text/html; charset=utf-8",
+  ".jpeg": "image/jpeg",
+  ".jpg": "image/jpeg",
   ".js": "text/javascript; charset=utf-8",
+  ".json": "application/json; charset=utf-8",
   ".png": "image/png",
   ".svg": "image/svg+xml",
   ".webp": "image/webp",
@@ -17,6 +20,9 @@ const types = {
 function resolvePath(url) {
   const pathname = decodeURIComponent(new URL(url, `http://localhost:${port}`).pathname);
   const requested = normalize(join(root, pathname === "/" ? "index.html" : pathname));
+  if (requested.startsWith(root) && existsSync(requested) && statSync(requested).isDirectory()) {
+    return join(requested, "index.html");
+  }
   return requested.startsWith(root) ? requested : join(root, "index.html");
 }
 

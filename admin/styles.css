@@ -1,0 +1,272 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: #090b0c;
+  color: #f5f1ea;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 1px solid rgba(245, 241, 234, 0.18);
+  background: rgba(245, 241, 234, 0.08);
+  color: inherit;
+  cursor: pointer;
+  padding: 0.72rem 0.95rem;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    transform 180ms ease;
+}
+
+button:hover {
+  background: rgba(245, 241, 234, 0.14);
+  border-color: rgba(245, 241, 234, 0.32);
+  transform: translateY(-1px);
+}
+
+input,
+textarea {
+  width: 100%;
+  border: 1px solid rgba(245, 241, 234, 0.16);
+  background: rgba(245, 241, 234, 0.07);
+  color: inherit;
+  padding: 0.72rem 0.78rem;
+  outline: none;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 6rem;
+  line-height: 1.35;
+}
+
+label {
+  display: grid;
+  gap: 0.45rem;
+  color: rgba(245, 241, 234, 0.64);
+  font-size: 0.88rem;
+}
+
+.admin-shell {
+  width: min(86rem, calc(100vw - 2rem));
+  margin: 0 auto;
+  padding: 1rem 0 2rem;
+}
+
+.login-card {
+  display: grid;
+  gap: 1rem;
+  width: min(28rem, 100%);
+  margin: 18vh auto 0;
+  border: 1px solid rgba(245, 241, 234, 0.12);
+  background: rgba(245, 241, 234, 0.05);
+  padding: 1.2rem;
+}
+
+.login-card h1,
+.admin-header h1 {
+  font-size: clamp(2.4rem, 7vw, 5rem);
+  font-weight: 500;
+  line-height: 0.9;
+}
+
+.login-card form,
+.import-panel form {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.login-card form {
+  display: grid;
+}
+
+.kicker,
+.small {
+  color: rgba(245, 241, 234, 0.58);
+}
+
+.kicker {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.small {
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+.admin-app {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-header,
+.import-panel,
+.workspace,
+.editor,
+.work-list-shell {
+  border: 1px solid rgba(245, 241, 234, 0.12);
+  background: rgba(245, 241, 234, 0.045);
+}
+
+.admin-header,
+.import-panel {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.header-actions,
+.editor-actions,
+.list-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(16rem, 0.34fr) minmax(0, 0.66fr);
+  min-height: 39rem;
+}
+
+.work-list-shell {
+  border-width: 0 1px 0 0;
+}
+
+.list-title {
+  justify-content: space-between;
+  padding: 0.75rem;
+  border-bottom: 1px solid rgba(245, 241, 234, 0.1);
+  color: rgba(245, 241, 234, 0.64);
+}
+
+.work-list {
+  display: grid;
+  max-height: 42rem;
+  overflow: auto;
+}
+
+.work-item {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(0, 1fr);
+  gap: 0.7rem;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid rgba(245, 241, 234, 0.08);
+  background: transparent;
+  padding: 0.65rem 0.75rem;
+  text-align: left;
+  transform: none;
+}
+
+.work-item.is-active {
+  background: rgba(245, 241, 234, 0.1);
+}
+
+.work-item img {
+  width: 3.25rem;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border: 1px solid rgba(245, 241, 234, 0.12);
+}
+
+.work-item span,
+.editor-preview span {
+  display: block;
+  color: rgba(245, 241, 234, 0.58);
+  font-size: 0.86rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor {
+  gap: 1rem;
+  border: 0;
+  padding: 1rem;
+}
+
+.editor-preview {
+  display: grid;
+  grid-template-columns: 6.8rem minmax(0, 1fr);
+  gap: 1rem;
+  align-items: center;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(245, 241, 234, 0.1);
+}
+
+.editor-preview img {
+  width: 6.8rem;
+  aspect-ratio: 1;
+  object-fit: cover;
+}
+
+.editor-preview strong {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: clamp(1.6rem, 4vw, 3.3rem);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.editor-actions {
+  justify-content: space-between;
+  min-height: 2.6rem;
+  color: rgba(245, 241, 234, 0.64);
+}
+
+#delete-button {
+  border-color: rgba(220, 90, 78, 0.28);
+  color: #ffc5bc;
+}
+
+#status {
+  text-align: right;
+}
+
+@media (max-width: 820px) {
+  .admin-header,
+  .import-panel,
+  .login-card form,
+  .import-panel form {
+    display: grid;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .work-list-shell {
+    border-width: 0 0 1px;
+  }
+
+  .work-list {
+    max-height: 18rem;
+  }
+
+  .field-grid {
+    grid-template-columns: 1fr;
+  }
+}

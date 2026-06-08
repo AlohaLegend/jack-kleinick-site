@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jack Kleinick Admin</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="admin.js" defer></script>
+  </head>
+  <body>
+    <main class="admin-shell">
+      <section class="login-card" id="login-card">
+        <p class="kicker">Private editor</p>
+        <h1>Jack Kleinick</h1>
+        <form id="login-form">
+          <label>
+            Password
+            <input id="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit">Log in</button>
+        </form>
+        <p class="small" id="login-note">Run the admin server, then use the password from `.admin-password`.</p>
+      </section>
+
+      <section class="admin-app" id="admin-app" hidden>
+        <header class="admin-header">
+          <div>
+            <p class="kicker">Catalog editor</p>
+            <h1>Selected works</h1>
+          </div>
+          <div class="header-actions">
+            <button id="save-button" type="button">Save</button>
+            <button id="publish-button" type="button">Publish</button>
+          </div>
+        </header>
+
+        <section class="import-panel">
+          <div>
+            <p class="kicker">Add work</p>
+            <h2>Paste a Spotify link</h2>
+            <p class="small">The title, artist, year, cover art, and background color will fill in automatically. Credits stay editable.</p>
+          </div>
+          <form id="import-form">
+            <input id="spotify-url" type="url" placeholder="https://open.spotify.com/track/..." required />
+            <button type="submit">Import</button>
+          </form>
+        </section>
+
+        <section class="workspace">
+          <aside class="work-list-shell">
+            <div class="list-title">
+              <span id="work-count">0 works</span>
+              <button id="new-button" type="button">Blank</button>
+            </div>
+            <div class="work-list" id="work-list"></div>
+          </aside>
+
+          <form class="editor" id="editor">
+            <div class="editor-preview">
+              <img id="preview-image" src="/assets/studio-hero.jpg" alt="" />
+              <div>
+                <p class="kicker">Preview</p>
+                <strong id="preview-title">Select a work</strong>
+                <span id="preview-meta"></span>
+              </div>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                Work / release name
+                <input id="field-album" name="album" required />
+              </label>
+              <label>
+                Artist
+                <input id="field-artist" name="artist" />
+              </label>
+              <label>
+                Year / label
+                <input id="field-year" name="year" />
+              </label>
+              <label>
+                Cover path
+                <input id="field-image" name="image" />
+              </label>
+              <label>
+                Dark color
+                <input id="field-dark" name="dark" type="color" />
+              </label>
+              <label>
+                Pastel color
+                <input id="field-pastel" name="pastel" type="color" />
+              </label>
+            </div>
+
+            <label>
+              Credits
+              <textarea id="field-role" name="role" rows="4"></textarea>
+            </label>
+
+            <label>
+              Tracks
+              <textarea id="field-tracks" name="tracks" rows="8" placeholder="Track title | Spotify URL"></textarea>
+            </label>
+
+            <div class="editor-actions">
+              <button id="delete-button" type="button">Delete work</button>
+              <span id="status" role="status"></span>
+            </div>
+          </form>
+        </section>
+      </section>
+    </main>
+  </body>
+</html>

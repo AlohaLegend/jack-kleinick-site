@@ -1,234 +1,5 @@
-const projects = [
-  {
-    album: "12065",
-    artist: "grentperez",
-    year: "Fast Friends",
-    role: "12065: co-writer, producer, engineer, guitar, bass, keys, drum programming. Day by Day: co-writer, producer, drum programming, guitar.",
-    tracks: [
-      { title: "12065", url: "https://open.spotify.com/track/0wwA0ZXgJTcuIWZrBP6G96" },
-      { title: "Day by Day", url: "https://open.spotify.com/track/79oft65PDY4LL7MoLQ6Nxp" },
-    ],
-    image: "assets/covers/grentperez-12065.jpg",
-  },
-  {
-    album: "The Man",
-    artist: "Gigi Perez",
-    year: "Playlist credit",
-    role: "Writing / production playlist credit",
-    tracks: [{ title: "The Man", url: "https://open.spotify.com/track/5nhEyOUHbPrKfjOGpadH9M" }],
-    image: "assets/covers/gigi-perez-the-man.jpg",
-  },
-  {
-    album: "die in the hills",
-    artist: "Abi Carter",
-    year: "Playlist credit",
-    role: "Writing / production playlist credit",
-    tracks: [{ title: "die in the hills", url: "https://open.spotify.com/track/6WlqETbhcWgkf2F2cvXHB8" }],
-    image: "assets/covers/abi-carter-die-in-the-hills.jpg",
-  },
-  {
-    album: "Cosmic Wink",
-    artist: "Juliet Ivy",
-    year: "AWAL",
-    role: "SOS 2001: co-writer, producer, engineer, guitar, bass, synths. Here We Go Again: additional production.",
-    tracks: [
-      { title: "SOS 2001", url: "https://open.spotify.com/track/7izGUWUtK1kSKLIPPKO4fS" },
-      { title: "Here We Go Again", url: "https://open.spotify.com/track/59FlFzfREVZFYmeDxC7oOm" },
-    ],
-    image: "assets/covers/juliet-ivy-sos-2001.jpg",
-  },
-  {
-    album: "Breakfast Song",
-    artist: "Juliet Ivy",
-    year: "AWAL",
-    role: "Co-writer, producer, engineer, guitar, bass, drum programming, mixing, mastering.",
-    tracks: [{ title: "Breakfast Song", url: "https://open.spotify.com/track/35zp82N1DNlCLD5Rdzn0gr" }],
-    image: "assets/covers/juliet-ivy-breakfast-song.jpg",
-  },
-  {
-    album: "Fucking You To Death",
-    artist: "LAUREL",
-    year: "Single",
-    role: "Co-writer, producer, engineer, guitar, drum programming.",
-    tracks: [{ title: "Fucking You To Death", url: "https://open.spotify.com/search/Fucking%20You%20To%20Death%20LAUREL" }],
-    image: "assets/covers/laurel-fucking-you-to-death.jpg",
-  },
-  {
-    album: "hotel room",
-    artist: "Puma Blue",
-    year: "Playlist credit",
-    role: "Writing / production playlist credit",
-    tracks: [{ title: "hotel room", url: "https://open.spotify.com/track/490p30LgARk2RgAIc6aOt0" }],
-    image: "assets/covers/puma-blue-hotel-room.jpg",
-  },
-  {
-    album: "When We Were Young",
-    artist: "Mia Wray",
-    year: "Mushroom Music",
-    role: "Co-writer.",
-    tracks: [{ title: "When We Were Young", url: "https://open.spotify.com/track/3Up4Umt7RGaKsmU6aUpAlR" }],
-    image: "assets/covers/mia-wray-when-we-were-young.jpg",
-  },
-  {
-    album: "Luckyman",
-    artist: "Wingtip",
-    year: "Nettwerk",
-    role: "Executive producer on all songs. Co-writer, guitar, bass, drum programming, synthesizers, engineering.",
-    tracks: [
-      { title: "Bloodstream", url: "https://open.spotify.com/track/5Ytz1w8uqBoKpkyxJXZV19" },
-      { title: "Talk", url: "https://open.spotify.com/track/1stp4ryfwcvCX1ChH9yJZN" },
-      { title: "There You Are", url: "https://open.spotify.com/track/4fjye91impDIMhHZIhxLVp" },
-      { title: "Last to Know", url: "https://open.spotify.com/track/2z0wDJGfSCpAaFqqTe5ckD" },
-      { title: "Luckyman", url: "https://open.spotify.com/track/1W5A5PV8OKxoVmCPNMAE9g" },
-      { title: "You, Me, and the Flood", url: "https://open.spotify.com/track/0kNT4nT6tF15t7Hj28XBNp" },
-      { title: "Satellites", url: "https://open.spotify.com/track/3BBlpTncx0oKQm7IOnwlaO" },
-      { title: "Borderline", url: "https://open.spotify.com/track/3RNTAMEJtACFxg74tQbGdR" },
-      { title: "Think About", url: "https://open.spotify.com/track/5Dk4BmzAlSPLu7oOcY4Psy" },
-    ],
-    image: "assets/covers/wingtip-talk.jpg",
-  },
-  {
-    album: "Honeydew Moon",
-    artist: "Theo Kandel",
-    year: "2026",
-    role: "Writing / production playlist credit",
-    tracks: [
-      { title: "Honeydew Moon", url: "https://open.spotify.com/track/7d2gHzUINbaKaJyNUqoaWR" },
-      { title: "Flight to JFK (Alt. Version)", url: "https://open.spotify.com/track/0veWoFat2XdwUCjzXMcTQt" },
-    ],
-    image: "assets/covers/theo-kandel-honeydew-moon.jpg",
-  },
-  {
-    album: "Eating & Drinking & Being in Love",
-    artist: "Theo Kandel",
-    year: "Nettwerk",
-    role: "Executive producer on all songs. Guitar, bass, synths, engineering, mixing on all songs.",
-    tracks: [
-      { title: "Eating & Drinking & Being in Love (Intro)", url: "https://open.spotify.com/track/4c7NRJlgVAQBVzyvNFNUBh" },
-      { title: "Lunch", url: "https://open.spotify.com/track/6rGbrQBd60SdCc4xBZBTwa" },
-      { title: "On My Mind", url: "https://open.spotify.com/track/1qfLEX97vKcOs1bYIh47xt" },
-      { title: "The Painters", url: "https://open.spotify.com/track/2kwQ7tZ1Jtod2rYaEEfb2e" },
-      { title: "Fixer Upper", url: "https://open.spotify.com/track/7F1Q6Ih9d92zgSgzV3XZ7z" },
-      { title: "Nothing New", url: "https://open.spotify.com/track/2QXjZ1GgUM5WRhBvP0WVIy" },
-      { title: "One More Night (With My Friends in the City)", url: "https://open.spotify.com/track/65b8YwfRsbLnGmzQMcFEhG" },
-      { title: "Romanticizing Poets", url: "https://open.spotify.com/track/1tvBHwke78BVAJZHIpfWBY" },
-      { title: "Teeth", url: "https://open.spotify.com/track/7uF9b7nc4hbN4lgaoYCHz8" },
-    ],
-    image: "assets/covers/theo-kandel-eating-drinking.jpg",
-  },
-  {
-    album: "The Tallest Child in New York",
-    artist: "Farrah Hanna",
-    year: "Mendel Records",
-    role: "Producer, guitar, bass, synths, mixing and mastering engineer on all 5 songs.",
-    tracks: [
-      { title: "Bugs", url: "https://open.spotify.com/track/3tm1vp2RPx8BMlxB3Al7oP" },
-      { title: "Everybody Who Prayed", url: "https://open.spotify.com/track/1GZd6nsSJ6yMOuASM0kJ8v" },
-      { title: "Easy & Sweet", url: "https://open.spotify.com/track/1CDGw3jdiQqSTvVoJWe3zf" },
-      { title: "The Tallest Child in New York", url: "https://open.spotify.com/track/0VcUAMehx67KdSKTUB6gEA" },
-      { title: "The Kill", url: "https://open.spotify.com/track/4ythr94LKd36xrqdks68HK" },
-    ],
-    image: "assets/covers/farrah-hanna-bugs.jpg",
-  },
-  {
-    album: "Nose Job",
-    artist: "Caity Krone",
-    year: "EP",
-    role: "Producer, engineer, guitar, bass, synths on Some Great Stadium, Nose Job, Camera Man, Angry Little Fish, At Least, Villain.",
-    tracks: [
-      { title: "Some Great Stadium", url: "https://open.spotify.com/track/0wTUFDeJNbTaRZtt2QCxsS" },
-      { title: "Nose Job", url: "https://open.spotify.com/track/6Qpg65XGgw9LQSOVM5hmu8" },
-      { title: "Camera Man", url: "https://open.spotify.com/track/4bXOGO58ONBd5dtlMRXJuV" },
-      { title: "Angry Little Fish", url: "https://open.spotify.com/track/1O6ezd2utSShzow2YxFX1x" },
-      { title: "At Least", url: "https://open.spotify.com/track/3FkMStpMHUky7fGxhwGdk8" },
-      { title: "Villain", url: "https://open.spotify.com/track/7tbJLOSjSOeq7ZPOuclI2W" },
-    ],
-    image: "assets/covers/caity-krone-some-great-stadium.jpg",
-  },
-  {
-    album: "A Sensitive Subject",
-    artist: "Jack Rabbit",
-    year: "Album",
-    role: "Producer, engineer, mixing, guitar, bass, synths, drum programming on That's All, Right?, Amor, The Wedding Song, Texas Sky, Good Girl, and Fall. This Again: producer, guitars, bass, mellotron, drums, engineer, mix.",
-    tracks: [
-      { title: "Tu Con El", url: "https://open.spotify.com/track/79cT5SZjsXBBCFTtURNyxL" },
-      { title: "The Wedding Song", url: "https://open.spotify.com/track/2f4c6QmK9z7zmCzX2ZNHsX" },
-      { title: "Fall", url: "https://open.spotify.com/track/7iXv9DKsDwc4VhfUB369wK" },
-      { title: "That's All, Right?", url: "https://open.spotify.com/track/6Zz8d5d4GYtHD0rTBgSYWo" },
-      { title: "Easy", url: "https://open.spotify.com/track/1f1xaBFgeenQIk0IQZxFOY" },
-      { title: "Amor", url: "https://open.spotify.com/track/4ClUSNEqlGmh62GR9zyB98" },
-      { title: "Texas Sky", url: "https://open.spotify.com/track/5S3KPP70fWailO9AlbzCJq" },
-      { title: "Good Girl", url: "https://open.spotify.com/track/05HE1m7aqPnH1jHCmiHpoF" },
-      { title: "Duerme", url: "https://open.spotify.com/track/5qu7NnlgG04NohUAdnK2qp" },
-      { title: "This Again", url: "https://open.spotify.com/track/6UoOZHWuhtcJL1WOZ1ITCY" },
-    ],
-    image: "assets/covers/jack-rabbit-tu-con-el.jpg",
-  },
-  {
-    album: "Red Velvet",
-    artist: "Maeve",
-    year: "Single",
-    role: "Co-writer, producer, engineer, mix, master, electric guitar, bass.",
-    tracks: [{ title: "Red Velvet", url: "https://open.spotify.com/search/Red%20Velvet%20Maeve" }],
-    image: "assets/covers/maeve-red-velvet.jpg",
-  },
-  {
-    album: "Traces",
-    artist: "girli",
-    year: "Believe UK",
-    role: "Co-writer, producer, drum programming, synths, e-bow.",
-    tracks: [{ title: "Traces", url: "https://open.spotify.com/search/Traces%20girli" }],
-    image: "assets/covers/girli-traces.jpg",
-  },
-  {
-    album: "To Let Go Your Hand",
-    artist: "kabir",
-    year: "2026",
-    role: "Producer, Songwriter, Guitar",
-    tracks: [{ title: "To Let Go Your Hand", url: "https://open.spotify.com/track/0ybRizVTHaf4nbza8w1pqC" }],
-    image: "assets/covers/kabir-to-let-go-your-hand.jpg",
-  },
-  {
-    album: "Madeline",
-    artist: "Madeline",
-    year: "Playlist album block",
-    role: "Producer, Songwriter, Acoustic Guitar",
-    tracks: [
-      { title: "Somebody I Know", url: "https://open.spotify.com/track/0LNAyKS5FaiswCBiQCRX9W" },
-      { title: "Thought You Knew", url: "https://open.spotify.com/track/0gApnA64zqfVmApEkNjkrq" },
-      { title: "Many Thanks!", url: "https://open.spotify.com/track/5Z4pjJmCZzM1zBIwrFDwm2" },
-      { title: "Ugly Feeling", url: "https://open.spotify.com/track/5Qas541chxKAJOzCpmo0tJ" },
-      { title: "Relief", url: "https://open.spotify.com/track/1O06RitJzwO4wFBXLCP5w1" },
-      { title: "Sad Eyes", url: "https://open.spotify.com/track/1oFiyAfqKtWvfypciikTfP" },
-      { title: "Dancing in the Dark", url: "https://open.spotify.com/track/1lYcvk3x3BMKuWFXaoWwTJ" },
-      { title: "Humor in It", url: "https://open.spotify.com/track/0gR8O92taM0yCZuMzGsEVW" },
-      { title: "Wake Up", url: "https://open.spotify.com/track/50Dh6tcBoiGYu6aSSlPi3M" },
-      { title: "Guilty Conscience", url: "https://open.spotify.com/track/0Q9GHV4vReliaijBp2oSvT" },
-      { title: "Emergency Snack", url: "https://open.spotify.com/track/4AMCf4h4oFGI0TsE8D9BMp" },
-    ],
-    image: "assets/covers/madeline-thought-you-knew.jpg",
-  },
-  {
-    album: "HEAT",
-    artist: "Appleby",
-    year: "Playlist credit",
-    role: "Writing / production playlist credit",
-    tracks: [
-      { title: "HEAT", url: "https://open.spotify.com/track/78kFAIcwaR4U84jl8Z2SmK" },
-      { title: "Navy Blue", url: "https://open.spotify.com/track/5xBoZEEn0ygvVDOAtqSpWR" },
-    ],
-    image: "assets/covers/appleby-heat.jpg",
-  },
-  {
-    album: "Selected Works",
-    artist: "Spotify Playlist",
-    year: "Listen",
-    role: "Playlist reel",
-    tracks: [{ title: "Open playlist", url: "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp" }],
-    image: "assets/studio-hero.jpg",
-  },
-];
-
+const content = window.JackKleinickContent || { works: [] };
+const projects = Array.isArray(content.works) ? content.works : [];
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
 const stageFocus = document.querySelector("#stage-focus");
@@ -271,29 +42,6 @@ const fpsSamples = [];
 const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
 const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-const albumMoods = [
-  ["#46190c", "#a56b55"], // 12065
-  ["#18120c", "#716455"], // The Man
-  ["#04120c", "#5a6455"], // die in the hills
-  ["#2e5d78", "#a8c7d7"], // Cosmic Wink
-  ["#7b614e", "#e0bda0"], // Breakfast Song
-  ["#40332d", "#9d897b"], // Fucking You To Death
-  ["#120c0c", "#695d55"], // hotel room
-  ["#5f7865", "#b8c9b4"], // When We Were Young
-  ["#824e12", "#e8a75d"], // Luckyman
-  ["#787a55", "#d8d49a"], // Honeydew Moon
-  ["#88825d", "#ead795"], // Eating & Drinking & Being in Love
-  ["#393a26", "#969173"], // The Tallest Child in New York
-  ["#3d2924", "#937468"], // Nose Job
-  ["#042647", "#5a7a98"], // A Sensitive Subject
-  ["#6f1e18", "#c47b68"], // Red Velvet
-  ["#04333a", "#5a8989"], // Traces
-  ["#1f3a54", "#7891a7"], // To Let Go Your Hand
-  ["#666277", "#c9c3dc"], // Madeline
-  ["#7b755b", "#e0d4af"], // HEAT
-  ["#6d4227", "#c69a76"], // Selected Works
-];
-
 function viewportBounds() {
   return {
     width: window.innerWidth,
@@ -506,8 +254,41 @@ async function enableDeviceSensors() {
   return true;
 }
 
+function escapeHtml(value = "") {
+  return String(value).replace(/[&<>"']/g, (character) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
+}
+
+function escapeAttr(value = "") {
+  return escapeHtml(value);
+}
+
+function safeExternalUrl(value = "") {
+  const fallback = "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp";
+  try {
+    const url = new URL(String(value), window.location.href);
+    if (url.protocol === "https:" || url.protocol === "http:") return url.href;
+  } catch {
+    return fallback;
+  }
+  return fallback;
+}
+
+function projectMood(index) {
+  const colors = projects[index]?.colors || {};
+  return [colors.dark || colors.primary || "#6d4227", colors.pastel || colors.accent || "#c69a76"];
+}
+
 function applyAlbumMood(index) {
-  const mood = albumMoods[index] || albumMoods[index % albumMoods.length] || ["#6d4227", "#c69a76"];
+  const mood = projectMood(index);
   const image = projects[index]?.image || "assets/studio-hero.jpg";
   document.body.style.setProperty("--album-a", mood[0]);
   document.body.style.setProperty("--album-b", mood[1]);
@@ -516,11 +297,11 @@ function applyAlbumMood(index) {
 }
 
 function randomProjectIndex() {
-  return Math.floor(Math.random() * projects.length);
+  return projects.length ? Math.floor(Math.random() * projects.length) : 0;
 }
 
 function platformSearchQuery(project, trackTitle = "") {
-  return encodeURIComponent(`${project.artist} ${trackTitle || project.album}`);
+  return encodeURIComponent(`${project.artist || ""} ${trackTitle || project.album || ""}`.trim());
 }
 
 function platformIcon(name) {
@@ -534,10 +315,11 @@ function platformIcon(name) {
 }
 
 function renderPlatformLinks(project) {
-  const firstTrack = project.tracks.find((track) => typeof track !== "string" && track.url);
+  const tracks = Array.isArray(project.tracks) ? project.tracks : [];
+  const firstTrack = tracks.find((track) => typeof track !== "string" && track.url);
   const firstTitle = firstTrack?.title || project.album;
   const query = platformSearchQuery(project, firstTitle);
-  const spotifyHref = firstTrack?.url || "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp";
+  const spotifyHref = safeExternalUrl(firstTrack?.url);
   const platforms = [
     ["spotify", "Spotify", spotifyHref],
     ["apple", "Apple Music", `https://music.apple.com/us/search?term=${query}`],
@@ -548,7 +330,7 @@ function renderPlatformLinks(project) {
   return platforms
     .map(
       ([name, label, href]) => `
-        <a class="platform-icon ${name}" href="${href}" target="_blank" rel="noreferrer" aria-label="${label}">
+        <a class="platform-icon ${escapeAttr(name)}" href="${escapeAttr(href)}" target="_blank" rel="noreferrer" aria-label="${escapeAttr(label)}">
           ${platformIcon(name)}
         </a>
       `,
@@ -560,9 +342,9 @@ function renderGrid() {
   grid.innerHTML = projects
     .map(
       (project, index) => `
-        <button class="cover-token" type="button" data-token="${index}" aria-label="Focus ${project.album} by ${project.artist}">
-          <img src="${project.image}" alt="${project.album} cover" loading="lazy" decoding="async">
-          <span><strong>${project.album}</strong><small>${project.artist}</small></span>
+        <button class="cover-token" type="button" data-token="${index}" aria-label="Focus ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
+          <img src="${escapeAttr(project.image)}" alt="${escapeAttr(project.album)} cover" loading="lazy" decoding="async">
+          <span><strong>${escapeHtml(project.album)}</strong><small>${escapeHtml(project.artist)}</small></span>
         </button>
       `,
     )
@@ -804,6 +586,7 @@ function releaseFocusedProject(options = {}) {
 }
 
 function focusProject(index, options = {}) {
+  if (!projects[index]) return;
   focusedProject = index;
   displayedProject = index;
   const project = projects[index];
@@ -812,12 +595,12 @@ function focusProject(index, options = {}) {
   focusTitle.textContent = project.album;
   focusMeta.textContent = `${project.artist} / ${project.year}`;
   focusRole.textContent = project.role;
-  focusTracks.innerHTML = project.tracks
+  focusTracks.innerHTML = (Array.isArray(project.tracks) ? project.tracks : [])
     .map((track) => {
       const item = typeof track === "string" ? { title: track, url: "" } : track;
       return item.url
-        ? `<a href="${item.url}" target="_blank" rel="noreferrer">${item.title}</a>`
-        : `<span>${item.title}</span>`;
+        ? `<a href="${escapeAttr(safeExternalUrl(item.url))}" target="_blank" rel="noreferrer">${escapeHtml(item.title)}</a>`
+        : `<span>${escapeHtml(item.title)}</span>`;
     })
     .join("");
   focusPlatforms.innerHTML = renderPlatformLinks(project);
@@ -1123,22 +906,23 @@ function showView(view) {
 }
 
 function openProject(index) {
+  if (!projects[index]) return;
   activeProject = index;
   const project = projects[index];
   applyAlbumMood(index);
-  modalTitle.innerHTML = `<em>${project.album}</em><br>${project.artist}`;
+  modalTitle.innerHTML = `<em>${escapeHtml(project.album)}</em><br>${escapeHtml(project.artist)}`;
   modalYear.textContent = project.year;
   modalRole.textContent = project.role;
-  modalTracks.innerHTML = project.tracks
+  modalTracks.innerHTML = (Array.isArray(project.tracks) ? project.tracks : [])
     .map((track) => {
       const item = typeof track === "string" ? { title: track, url: "" } : track;
       return item.url
-        ? `<a href="${item.url}" target="_blank" rel="noreferrer">${item.title}</a>`
-        : `<span>${item.title}</span>`;
+        ? `<a href="${escapeAttr(safeExternalUrl(item.url))}" target="_blank" rel="noreferrer">${escapeHtml(item.title)}</a>`
+        : `<span>${escapeHtml(item.title)}</span>`;
     })
     .join("");
   modalPlatforms.innerHTML = renderPlatformLinks(project);
-  modalImage.src = project.image;
+  modalImage.src = project.image || "assets/studio-hero.jpg";
   modalImage.alt = project.album;
   prevButton.disabled = index === 0;
   nextButton.disabled = index === projects.length - 1;
@@ -1268,4 +1052,3 @@ if (typeof reduceMotionQuery.addEventListener === "function") {
     if (event.matches) enableLiteMode("reduced-motion");
   });
 }
-

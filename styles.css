@@ -38,6 +38,17 @@ body {
   transition: background 700ms ease;
 }
 
+body:not(.is-info-view):not(.is-modal-open) {
+  overflow: hidden;
+}
+
+body:not(.is-info-view):not(.is-modal-open) .site-main {
+  height: 100vh;
+  min-height: 100vh;
+  overflow: hidden;
+  padding-bottom: 0;
+}
+
 button,
 a {
   color: inherit;

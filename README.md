@@ -36,6 +36,20 @@ ipconfig
 
 ## Notes
 
+- The public site is static and loads editable work data from `content/works.js`.
+- To edit works with the lightweight admin backend, run:
+
+```powershell
+.\start-admin.cmd
+```
+
+Then open:
+
+```text
+http://127.0.0.1:4184/admin/
+```
+
+On first launch the admin creates a local `.admin-password` file. That file is ignored by git. The editor can import a Spotify link, download cover art, generate the pastel background color, edit credits/tracks, delete old works, save `content/works.js`, and publish content changes to GitHub Pages if git push is authenticated on the computer.
 - `assets/studio-hero.jpg` is a compressed placeholder image used for the playlist/selected-works card.
 - The site is static and deploys through GitHub Pages from `main`.
 - The Info page links to Jack's Instagram handle, Spotify playlist, Apple Music search, and YouTube Music search.
