@@ -36,20 +36,21 @@ ipconfig
 
 ## Notes
 
-- The public site is static and loads editable work data from `content/works.js`.
-- To edit works with the lightweight admin backend, run:
-
-```powershell
-.\start-admin.cmd
-```
-
-Then open:
+- The public site is static, but it reads live catalog data from the Cloudflare Worker first and falls back to `content/works.json` / `content/works.js` if the Worker is unavailable.
+- The live admin is available at:
 
 ```text
-http://127.0.0.1:4184/admin/
+https://jackkleinick.com/admin/
 ```
 
-On first launch the admin creates a local `.admin-password` file. That file is ignored by git. The editor can import a Spotify link, download cover art, generate the pastel background color, edit credits/tracks, delete old works, save `content/works.js`, and publish content changes to GitHub Pages if git push is authenticated on the computer.
+- The admin API runs at:
+
+```text
+https://jack-kleinick-cms-auth.bammediaauth.workers.dev
+```
+
+- The admin password is stored as a Cloudflare Worker secret. The local copy is in `.jack-admin-password.txt`, which is ignored by git.
+- The editor can import a Spotify link, save cover art to Worker KV, generate the pastel background color, edit credits/tracks, delete old works, and save live content without a GitHub deploy.
 - `assets/studio-hero.jpg` is a compressed placeholder image used for the playlist/selected-works card.
 - The site is static and deploys through GitHub Pages from `main`.
 - The Info page links to Jack's Instagram handle, Spotify playlist, Apple Music search, and YouTube Music search.

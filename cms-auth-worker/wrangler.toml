@@ -1,0 +1,13 @@
+name = "jack-kleinick-cms-auth"
+main = "src/index.js"
+compatibility_date = "2026-06-03"
+workers_dev = true
+preview_urls = false
+
+[vars]
+ALLOWED_ORIGINS = "https://jackkleinick.com,https://www.jackkleinick.com,https://alohalegend.github.io,http://localhost:4173,http://127.0.0.1:4173,http://127.0.0.1:4184"
+FALLBACK_CONTENT_URL = "https://jackkleinick.com/content/works.json"
+
+[[kv_namespaces]]
+binding = "JACK_CMS_CONTENT"
+id = "bf87c400024e4ea9bda2e99db925b483"

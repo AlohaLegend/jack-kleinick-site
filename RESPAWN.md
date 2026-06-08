@@ -11,8 +11,10 @@ Use this file to continue the build from another computer or another Codex sessi
 - Live test site: `https://alohalegend.github.io/jack-kleinick-site/`
 - Current style direction: dark, editorial, simple, music-credit portfolio, with floating draggable album covers and a record/player focus area.
 - Main files: `index.html`, `styles.css`, `app.js`.
-- Managed work data: `content/works.js`.
-- Admin backend/UI: `admin-server.mjs`, `admin/index.html`, `admin/styles.css`, `admin/admin.js`.
+- Managed fallback data: `content/works.json` and `content/works.js`.
+- Live content/auth backend: Cloudflare Worker in `cms-auth-worker/`.
+- Live Worker URL: `https://jack-kleinick-cms-auth.bammediaauth.workers.dev`.
+- Live admin UI: `admin/index.html`, `admin/styles.css`, `admin/admin.js`, served at `https://jackkleinick.com/admin/`.
 - Local server script: `start-site.cmd`, backed by `server.ps1`.
 
 ## Run Locally
@@ -34,28 +36,36 @@ For another computer on the same network, use this computer's LAN IP with port `
 
 ## Admin Editor
 
-From PowerShell:
-
-```powershell
-cd D:\LOOMSWEBSITE
-.\start-admin.cmd
-```
-
-Then open:
+Open:
 
 ```text
-http://127.0.0.1:4184/admin/
+https://jackkleinick.com/admin/
 ```
 
-The admin backend creates a local `.admin-password` file on first run unless `JACK_ADMIN_PASSWORD` is set. `.admin-password` is ignored by git.
+The password is stored in Cloudflare as `ADMIN_PASSWORD`. A local copy exists at `D:\LOOMSWEBSITE\.jack-admin-password.txt` and is ignored by git.
 
 Admin flow:
 
 - Paste a Spotify link to import metadata and cover art.
-- The browser samples the Spotify thumbnail and fills dark/pastel colors.
+- The Worker saves cover art to KV and the browser samples the Spotify thumbnail for dark/pastel colors.
 - Edit credits and tracks manually.
-- Save writes `content/works.js`.
-- Publish runs fixed git commands to commit content changes and push `HEAD:main`.
+- Save writes the live catalog to Cloudflare KV.
+- New public page loads fetch `https://jack-kleinick-cms-auth.bammediaauth.workers.dev/content/works.json`.
+
+## Worker
+
+Cloudflare resources:
+
+- Worker: `jack-kleinick-cms-auth`
+- KV binding: `JACK_CMS_CONTENT`
+- KV namespace id: `bf87c400024e4ea9bda2e99db925b483`
+- Secrets: `ADMIN_PASSWORD`, `SESSION_SECRET`
+
+Deploy Worker changes:
+
+```powershell
+D:\JAKESWEBSITE\cms-auth-worker\node_modules\.bin\wrangler.cmd deploy --config D:\LOOMSWEBSITE\cms-auth-worker\wrangler.toml
+```
 
 ## Verify
 
@@ -86,7 +96,7 @@ When changes are ready:
 
 ```powershell
 git status --short
-git add index.html styles.css app.js content/works.js admin-server.mjs admin start-admin.cmd start-admin.ps1 README.md RESPAWN.md
+git add index.html styles.css app.js content admin cms-auth-worker robots.txt README.md RESPAWN.md
 git commit -m "Describe the change"
 git push origin HEAD:main
 ```
@@ -99,4 +109,4 @@ GitHub Pages can take a short moment to update after push.
 - Info page contact includes Instagram handle `@jackkleinick`.
 - The homepage has a soft physics field around the dragged cover so nearby works repel before hard collision.
 - Keep the design close in spirit to the inspiration site: minimal, typographic, music-forward. Keep enough difference through the floating album-cover interaction, record player focus area, and darker album-reactive palette.
-- The live GitHub Pages site remains static; the admin backend is for editing/publishing and should not be replaced with a client-side password on GitHub Pages.
+- The live GitHub Pages site remains static. Do not put passwords or write logic into the static site; use the Cloudflare Worker.

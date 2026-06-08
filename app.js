@@ -1,5 +1,6 @@
-const content = window.JackKleinickContent || { works: [] };
-const projects = Array.isArray(content.works) ? content.works : [];
+const CONTENT_API_BASE = "https://jack-kleinick-cms-auth.bammediaauth.workers.dev";
+const fallbackContent = window.JackKleinickContent || { works: [] };
+let projects = [];
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
 const stageFocus = document.querySelector("#stage-focus");
@@ -339,6 +340,12 @@ function renderPlatformLinks(project) {
 }
 
 function renderGrid() {
+  if (!projects.length) {
+    grid.innerHTML = "";
+    entryScreen?.classList.add("is-complete");
+    return;
+  }
+
   grid.innerHTML = projects
     .map(
       (project, index) => `
@@ -946,11 +953,42 @@ function shiftProject(direction) {
   openProject(nextIndex);
 }
 
-renderGrid();
+async function loadContent() {
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 2500);
 
-window.setTimeout(() => {
-  entryScreen.classList.add("is-complete");
-}, 2600);
+  try {
+    const response = await fetch(`${CONTENT_API_BASE}/content/works.json`, {
+      cache: "no-store",
+      signal: controller.signal,
+    });
+
+    if (response.ok) {
+      const remoteContent = await response.json();
+      if (Array.isArray(remoteContent.works) && remoteContent.works.length) {
+        return remoteContent;
+      }
+    }
+  } catch {
+    return fallbackContent;
+  } finally {
+    window.clearTimeout(timeout);
+  }
+
+  return fallbackContent;
+}
+
+async function bootSite() {
+  const content = await loadContent();
+  projects = Array.isArray(content.works) ? content.works : [];
+  renderGrid();
+
+  window.setTimeout(() => {
+    entryScreen.classList.add("is-complete");
+  }, 2600);
+}
+
+bootSite();
 
 document.addEventListener("click", (event) => {
   const viewButton = event.target.closest("[data-view]");

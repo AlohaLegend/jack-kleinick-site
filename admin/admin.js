@@ -9,7 +9,7 @@ const workList = document.querySelector("#work-list");
 const workCount = document.querySelector("#work-count");
 const newButton = document.querySelector("#new-button");
 const saveButton = document.querySelector("#save-button");
-const publishButton = document.querySelector("#publish-button");
+const logoutButton = document.querySelector("#logout-button");
 const deleteButton = document.querySelector("#delete-button");
 const editor = document.querySelector("#editor");
 const statusEl = document.querySelector("#status");
@@ -31,6 +31,8 @@ const fields = {
 let works = [];
 let selectedIndex = -1;
 let dirty = false;
+const API_BASE = "https://jack-kleinick-cms-auth.bammediaauth.workers.dev";
+const sessionKey = "jackAdminSession";
 
 function setStatus(message, isError = false) {
   statusEl.textContent = message;
@@ -56,13 +58,17 @@ function assetUrl(path = "") {
 }
 
 async function api(path, options = {}) {
-  const response = await fetch(path, {
+  const session = sessionStorage.getItem(sessionKey);
+  const { headers: optionHeaders = {}, ...fetchOptions } = options;
+  const response = await fetch(`${API_BASE}${path}`, {
+    cache: "no-store",
     credentials: "include",
     headers: {
       "content-type": "application/json",
-      ...(options.headers || {}),
+      ...(session ? { Authorization: `Bearer ${session}` } : {}),
+      ...optionHeaders,
     },
-    ...options,
+    ...fetchOptions,
   });
   const text = await response.text();
   const data = text ? JSON.parse(text) : {};
@@ -246,17 +252,18 @@ async function saveWorks() {
   works = Array.isArray(data.works) ? data.works : works;
   dirty = false;
   renderList();
-  setStatus("Saved locally");
+  setStatus("Saved live. New page loads will use this catalog.");
 }
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   loginNote.textContent = "Checking password...";
   try {
-    await api("/api/login", {
+    const data = await api("/api/login", {
       method: "POST",
       body: JSON.stringify({ password: passwordInput.value }),
     });
+    if (data.session) sessionStorage.setItem(sessionKey, data.session);
     loginCard.hidden = true;
     adminApp.hidden = false;
     await loadWorks();
@@ -322,21 +329,17 @@ saveButton.addEventListener("click", async () => {
   }
 });
 
-publishButton.addEventListener("click", async () => {
-  try {
-    setStatus("Saving before publish...");
-    await saveWorks();
-    setStatus("Publishing to GitHub Pages...");
-    const result = await api("/api/publish", { method: "POST", body: "{}" });
-    setStatus(result.output || "Published");
-  } catch (error) {
-    setStatus(error.message, true);
-  }
+logoutButton.addEventListener("click", async () => {
+  await api("/api/logout", { method: "POST", body: "{}" }).catch(() => {});
+  sessionStorage.removeItem(sessionKey);
+  loginCard.hidden = false;
+  adminApp.hidden = true;
+  loginNote.textContent = "Logged out.";
 });
 
 api("/api/session")
   .then(async (session) => {
-    if (!session.ok) throw new Error("Not logged in");
+    if (!session.authenticated) throw new Error("Not logged in");
     loginCard.hidden = true;
     adminApp.hidden = false;
     await loadWorks();
