@@ -4,13 +4,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jack Kleinick Admin</title>
-    <link rel="stylesheet" href="styles.css?v=20260611-gta-simple" />
-    <script src="admin.js?v=20260611-gta-simple" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260611-admin-clean" />
+    <script src="admin.js?v=20260611-admin-clean" defer></script>
   </head>
   <body>
     <main class="admin-shell">
       <section class="login-card" id="login-card">
-        <div class="hud-strip">
+        <div class="login-strip">
           <span>Jack HQ</span>
           <span>Live catalog</span>
         </div>
@@ -34,11 +34,6 @@
             <p class="small">Import, tune, and publish selected works.</p>
           </div>
           <div class="header-actions">
-            <span class="hud-money" id="hud-work-total">$000020</span>
-            <span class="wanted-meter" aria-label="Backend heat level">
-              <span>HEAT</span>
-              <i></i><i></i><i></i><i></i><i class="is-empty"></i>
-            </span>
             <span class="live-pill">Live site</span>
             <button class="ghost-button" id="logout-button" type="button">Log out</button>
             <button class="primary-button" id="save-button" type="button">Save live</button>
@@ -111,8 +106,8 @@
           </div>
         </section>
 
-        <div class="easter-wagon-track" aria-hidden="true">
-          <div class="easter-wagon">
+        <div class="wagon-lane" aria-hidden="true">
+          <div class="wagon-runner">
             <span class="wagon-shadow"></span>
             <img src="assets/station-wagon.svg" alt="" />
           </div>

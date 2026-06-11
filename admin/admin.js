@@ -7,7 +7,6 @@ const importForm = document.querySelector("#import-form");
 const spotifyUrl = document.querySelector("#spotify-url");
 const workList = document.querySelector("#work-list");
 const workCount = document.querySelector("#work-count");
-const hudWorkTotal = document.querySelector("#hud-work-total");
 const newButton = document.querySelector("#new-button");
 const saveButton = document.querySelector("#save-button");
 const saveBottomButton = document.querySelector("#save-bottom-button");
@@ -210,7 +209,6 @@ function renderPreview() {
 
 function renderList() {
   workCount.textContent = `${works.length} ${works.length === 1 ? "work" : "works"}`;
-  if (hudWorkTotal) hudWorkTotal.textContent = `$${String(works.length).padStart(6, "0")}`;
   workList.innerHTML = works
     .map(
       (project, index) => `

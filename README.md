@@ -52,7 +52,7 @@ https://jack-kleinick-cms-auth.bammediaauth.workers.dev
 - The admin password is stored as a Cloudflare Worker secret. The local copy is in `.jack-admin-password.txt`, which is ignored by git.
 - The editor can import a Spotify link, save cover art to Worker KV, generate the pastel background color, edit credits/tracks, delete old works, and save live content without a GitHub deploy.
 - The admin also includes a lightweight analytics view for the last 30 days. It reads aggregate page views, approximate visitors, top pages, referrers, locations, devices, and browsers from the Cloudflare Worker/KV backend.
-- The admin wagon Easter egg uses a public-domain OpenClipart station wagon SVG, downloaded from OpenClipart/FreeSVG.
+- The admin wagon lane uses a public-domain OpenClipart station wagon SVG, downloaded from OpenClipart/FreeSVG.
 - `assets/studio-hero.jpg` is a compressed placeholder image used for the playlist/selected-works card.
 - The site is static and deploys through GitHub Pages from `main`.
 - The Info page links to Jack's Instagram handle, Spotify playlist, Apple Music search, and YouTube Music search.

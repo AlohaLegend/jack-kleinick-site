@@ -180,7 +180,7 @@ label {
   padding: 1.25rem;
 }
 
-.hud-strip {
+.login-strip {
   display: flex;
   justify-content: space-between;
   gap: 0.8rem;
@@ -244,8 +244,6 @@ label {
   max-width: 32rem;
 }
 
-.hud-money,
-.wanted-meter,
 .live-pill {
   display: inline-flex;
   align-items: center;
@@ -255,35 +253,6 @@ label {
   background: rgba(0, 0, 0, 0.2);
   padding: 0.58rem 0.78rem;
   white-space: nowrap;
-}
-
-.hud-money {
-  color: var(--green);
-  font-weight: 850;
-}
-
-.wanted-meter {
-  gap: 0.32rem;
-  color: var(--amber);
-}
-
-.wanted-meter span {
-  margin-right: 0.25rem;
-  color: var(--muted);
-  font-size: 0.75rem;
-  font-weight: 850;
-}
-
-.wanted-meter i {
-  width: 0.64rem;
-  height: 0.64rem;
-  display: block;
-  background: var(--amber);
-  clip-path: polygon(50% 0, 62% 34%, 98% 35%, 69% 56%, 79% 91%, 50% 70%, 21% 91%, 31% 56%, 2% 35%, 38% 34%);
-}
-
-.wanted-meter i.is-empty {
-  background: rgba(242, 199, 91, 0.22);
 }
 
 .live-pill {
@@ -419,7 +388,7 @@ label {
   color: var(--green);
 }
 
-.easter-wagon-track {
+.wagon-lane {
   position: relative;
   z-index: 1;
   height: 2.5rem;
@@ -431,7 +400,7 @@ label {
     linear-gradient(180deg, transparent 46%, rgba(255, 255, 255, 0.12) 46% 50%, transparent 50%);
 }
 
-.easter-wagon {
+.wagon-runner {
   position: absolute;
   bottom: 0.15rem;
   left: 0;
@@ -442,7 +411,7 @@ label {
   animation: wagon-drive 22s linear infinite;
 }
 
-.easter-wagon::before {
+.wagon-runner::before {
   position: absolute;
   right: 70%;
   bottom: 0.82rem;
@@ -453,7 +422,7 @@ label {
   content: "";
 }
 
-.easter-wagon img {
+.wagon-runner img {
   width: 100%;
   height: 100%;
   object-fit: contain;
@@ -694,8 +663,6 @@ label {
     align-items: stretch;
   }
 
-  .hud-money,
-  .wanted-meter,
   .live-pill {
     justify-content: center;
     min-height: 2.45rem;
@@ -720,11 +687,11 @@ label {
     text-align: left;
   }
 
-  .easter-wagon-track {
+  .wagon-lane {
     height: 2.25rem;
   }
 
-  .easter-wagon {
+  .wagon-runner {
     width: 5rem;
     height: 2rem;
   }

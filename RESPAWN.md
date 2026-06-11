@@ -115,7 +115,7 @@ GitHub Pages can take a short moment to update after push.
 
 - Info page uses `assets/jack-kleinick-portrait.jpeg`.
 - Info page contact includes Instagram handle `@jackkleinick`.
-- Admin UI uses `admin/assets/station-wagon.svg`, a public-domain OpenClipart/FreeSVG station wagon asset.
+- Admin UI keeps a small wagon lane using `admin/assets/station-wagon.svg`, a public-domain OpenClipart/FreeSVG station wagon asset.
 - The homepage has a soft physics field around the dragged cover so nearby works repel before hard collision.
 - Keep the design close in spirit to the inspiration site: minimal, typographic, music-forward. Keep enough difference through the floating album-cover interaction, record player focus area, and darker album-reactive palette.
 - The live GitHub Pages site remains static. Do not put passwords or write logic into the static site; use the Cloudflare Worker.
