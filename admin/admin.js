@@ -9,6 +9,7 @@ const workList = document.querySelector("#work-list");
 const workCount = document.querySelector("#work-count");
 const newButton = document.querySelector("#new-button");
 const saveButton = document.querySelector("#save-button");
+const saveBottomButton = document.querySelector("#save-bottom-button");
 const logoutButton = document.querySelector("#logout-button");
 const deleteButton = document.querySelector("#delete-button");
 const editor = document.querySelector("#editor");
@@ -44,11 +45,36 @@ let works = [];
 let selectedIndex = -1;
 let dirty = false;
 const API_BASE = "https://jack-kleinick-cms-auth.bammediaauth.workers.dev";
+const API_TIMEOUT_MS = 18000;
 const sessionKey = "jackAdminSession";
 
 function setStatus(message, isError = false) {
   statusEl.textContent = message;
   statusEl.style.color = isError ? "#ffc5bc" : "rgba(245, 241, 234, 0.64)";
+}
+
+function friendlyError(error) {
+  if (error?.name === "AbortError") return "Connection timed out. Refresh and try again.";
+  return error?.message || "Something went wrong.";
+}
+
+function setButtonBusy(button, isBusy, busyText = "Working...") {
+  if (!button) return;
+  if (isBusy) {
+    button.dataset.originalText = button.textContent;
+    button.textContent = busyText;
+    button.disabled = true;
+    return;
+  }
+
+  button.textContent = button.dataset.originalText || button.textContent;
+  delete button.dataset.originalText;
+  button.disabled = false;
+}
+
+function setSaveBusy(isBusy) {
+  setButtonBusy(saveButton, isBusy, "Saving...");
+  setButtonBusy(saveBottomButton, isBusy, "Saving...");
 }
 
 function escapeHtml(value = "") {
@@ -92,21 +118,29 @@ function assetUrl(path = "") {
 
 async function api(path, options = {}) {
   const session = sessionStorage.getItem(sessionKey);
-  const { headers: optionHeaders = {}, ...fetchOptions } = options;
-  const response = await fetch(`${API_BASE}${path}`, {
-    cache: "no-store",
-    credentials: "include",
-    headers: {
-      "content-type": "application/json",
-      ...(session ? { Authorization: `Bearer ${session}` } : {}),
-      ...optionHeaders,
-    },
-    ...fetchOptions,
-  });
-  const text = await response.text();
-  const data = text ? JSON.parse(text) : {};
-  if (!response.ok) throw new Error(data.error || `Request failed: ${response.status}`);
-  return data;
+  const { headers: optionHeaders = {}, timeoutMs = API_TIMEOUT_MS, ...fetchOptions } = options;
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const response = await fetch(`${API_BASE}${path}`, {
+      cache: "no-store",
+      credentials: "include",
+      headers: {
+        "content-type": "application/json",
+        ...(session ? { Authorization: `Bearer ${session}` } : {}),
+        ...optionHeaders,
+      },
+      signal: controller.signal,
+      ...fetchOptions,
+    });
+    const text = await response.text();
+    const data = text ? JSON.parse(text) : {};
+    if (!response.ok) throw new Error(data.error || `Request failed: ${response.status}`);
+    return data;
+  } finally {
+    window.clearTimeout(timeout);
+  }
 }
 
 function trackLines(project) {
@@ -273,7 +307,14 @@ function extractColors(imageUrl) {
 async function loadWorks() {
   const data = await api("/api/works");
   works = Array.isArray(data.works) ? data.works : [];
-  selectWork(0);
+  if (works.length) {
+    selectWork(0);
+    return;
+  }
+
+  selectedIndex = -1;
+  renderList();
+  renderPreview();
 }
 
 async function loadAnalytics() {
@@ -321,31 +362,54 @@ async function saveWorks() {
   setStatus("Saved live. New page loads will use this catalog.");
 }
 
+async function openAdminApp() {
+  loginCard.hidden = true;
+  adminApp.hidden = false;
+  setStatus("Loading live catalog...");
+
+  try {
+    await loadWorks();
+    setStatus("");
+  } catch (error) {
+    setStatus(`Catalog did not load: ${friendlyError(error)}`, true);
+  }
+
+  loadAnalytics();
+}
+
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   loginNote.textContent = "Checking password...";
+  const loginButton = loginForm.querySelector("button");
+  setButtonBusy(loginButton, true, "Checking...");
+
   try {
     const data = await api("/api/login", {
       method: "POST",
       body: JSON.stringify({ password: passwordInput.value }),
+      timeoutMs: 12000,
     });
     if (data.session) sessionStorage.setItem(sessionKey, data.session);
-    loginCard.hidden = true;
-    adminApp.hidden = false;
-    await loadWorks();
-    await loadAnalytics();
+    loginNote.textContent = "Access granted. Loading Jack HQ...";
+    await openAdminApp();
   } catch (error) {
-    loginNote.textContent = error.message;
+    loginNote.textContent = friendlyError(error);
+  } finally {
+    setButtonBusy(loginButton, false);
   }
 });
 
 importForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   setStatus("Importing Spotify work...");
+  const importButton = importForm.querySelector("button");
+  setButtonBusy(importButton, true, "Importing...");
+
   try {
     const imported = await api("/api/spotify/import", {
       method: "POST",
       body: JSON.stringify({ url: spotifyUrl.value }),
+      timeoutMs: 45000,
     });
     imported.project.colors = await extractColors(imported.source.thumbnailUrl);
     works.unshift(imported.project);
@@ -354,7 +418,9 @@ importForm.addEventListener("submit", async (event) => {
     selectWork(0);
     setStatus("Imported. Add credits, then save.");
   } catch (error) {
-    setStatus(error.message, true);
+    setStatus(friendlyError(error), true);
+  } finally {
+    setButtonBusy(importButton, false);
   }
 });
 
@@ -387,14 +453,20 @@ deleteButton.addEventListener("click", () => {
   setStatus("Deleted. Save to keep this change.");
 });
 
-saveButton.addEventListener("click", async () => {
+async function handleSave() {
   try {
+    setSaveBusy(true);
     setStatus("Saving...");
     await saveWorks();
   } catch (error) {
-    setStatus(error.message, true);
+    setStatus(friendlyError(error), true);
+  } finally {
+    setSaveBusy(false);
   }
-});
+}
+
+saveButton.addEventListener("click", handleSave);
+saveBottomButton?.addEventListener("click", handleSave);
 
 analyticsRefresh?.addEventListener("click", () => {
   loadAnalytics();
@@ -411,10 +483,7 @@ logoutButton.addEventListener("click", async () => {
 api("/api/session")
   .then(async (session) => {
     if (!session.authenticated) throw new Error("Not logged in");
-    loginCard.hidden = true;
-    adminApp.hidden = false;
-    await loadWorks();
-    await loadAnalytics();
+    await openAdminApp();
   })
   .catch(() => {
     loginCard.hidden = false;

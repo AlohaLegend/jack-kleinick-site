@@ -4,20 +4,32 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jack Kleinick Admin</title>
-    <link rel="stylesheet" href="styles.css" />
-    <script src="admin.js" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260611-hq2" />
+    <script src="admin.js?v=20260611-hq2" defer></script>
   </head>
   <body>
+    <div class="easter-wagon" aria-hidden="true">
+      <span class="wagon-body"></span>
+      <span class="wagon-window front"></span>
+      <span class="wagon-window back"></span>
+      <span class="wagon-wheel left"></span>
+      <span class="wagon-wheel right"></span>
+    </div>
+
     <main class="admin-shell">
       <section class="login-card" id="login-card">
+        <div class="hud-strip">
+          <span>Jack HQ</span>
+          <span>Live catalog</span>
+        </div>
         <p class="kicker">Private editor</p>
-        <h1>Jack Kleinick</h1>
+        <h1>Catalog Control</h1>
         <form id="login-form">
           <label>
             Password
             <input id="password" type="password" autocomplete="current-password" required />
           </label>
-          <button type="submit">Log in</button>
+          <button class="primary-button" type="submit">Log in</button>
         </form>
         <p class="small" id="login-note">Enter the Jack admin password to edit the live catalog.</p>
       </section>
@@ -25,35 +37,37 @@
       <section class="admin-app" id="admin-app" hidden>
         <header class="admin-header">
           <div>
-            <p class="kicker">Catalog editor</p>
-            <h1>Selected works</h1>
+            <p class="kicker">Jack HQ / Live editor</p>
+            <h1>Catalog Control</h1>
+            <p class="small">Import, tune, and publish selected works.</p>
           </div>
           <div class="header-actions">
-            <button id="logout-button" type="button">Log out</button>
-            <button id="save-button" type="button">Save live</button>
+            <span class="live-pill">Live site</span>
+            <button class="ghost-button" id="logout-button" type="button">Log out</button>
+            <button class="primary-button" id="save-button" type="button">Save live</button>
           </div>
         </header>
 
-        <section class="import-panel">
+        <section class="import-panel control-panel">
           <div>
-            <p class="kicker">Add work</p>
+            <p class="kicker">01 / Import</p>
             <h2>Paste a Spotify link</h2>
             <p class="small">The title, artist, year, cover art, and background color will fill in automatically. Credits stay editable.</p>
           </div>
           <form id="import-form">
             <input id="spotify-url" type="url" placeholder="https://open.spotify.com/track/..." required />
-            <button type="submit">Import</button>
+            <button class="primary-button" type="submit">Import</button>
           </form>
         </section>
 
-        <section class="analytics-panel" aria-labelledby="analytics-title">
+        <section class="analytics-panel control-panel" aria-labelledby="analytics-title">
           <div class="analytics-header">
             <div>
-              <p class="kicker">Last 30 days</p>
+              <p class="kicker">02 / Traffic</p>
               <h2 id="analytics-title">Website analytics</h2>
               <p class="small" id="analytics-updated">Traffic appears here after the first live visit.</p>
             </div>
-            <button id="analytics-refresh" type="button">Refresh</button>
+            <button class="ghost-button" id="analytics-refresh" type="button">Refresh</button>
           </div>
 
           <div class="analytics-metrics">
@@ -99,12 +113,17 @@
           <aside class="work-list-shell">
             <div class="list-title">
               <span id="work-count">0 works</span>
-              <button id="new-button" type="button">Blank</button>
+              <button class="ghost-button" id="new-button" type="button">Blank</button>
             </div>
             <div class="work-list" id="work-list"></div>
           </aside>
 
           <form class="editor" id="editor">
+            <div class="panel-title">
+              <p class="kicker">03 / Selected work</p>
+              <span id="status" role="status"></span>
+            </div>
+
             <div class="editor-preview">
               <img id="preview-image" src="/assets/studio-hero.jpg" alt="" />
               <div>
@@ -152,8 +171,8 @@
             </label>
 
             <div class="editor-actions">
-              <button id="delete-button" type="button">Delete work</button>
-              <span id="status" role="status"></span>
+              <button class="danger-button" id="delete-button" type="button">Delete work</button>
+              <button class="primary-button" id="save-bottom-button" type="button">Save live</button>
             </div>
           </form>
         </section>
