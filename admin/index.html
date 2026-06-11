@@ -46,6 +46,55 @@
           </form>
         </section>
 
+        <section class="analytics-panel" aria-labelledby="analytics-title">
+          <div class="analytics-header">
+            <div>
+              <p class="kicker">Last 30 days</p>
+              <h2 id="analytics-title">Website analytics</h2>
+              <p class="small" id="analytics-updated">Traffic appears here after the first live visit.</p>
+            </div>
+            <button id="analytics-refresh" type="button">Refresh</button>
+          </div>
+
+          <div class="analytics-metrics">
+            <article>
+              <span>Views</span>
+              <strong id="analytics-pageviews">--</strong>
+            </article>
+            <article>
+              <span>Visitors</span>
+              <strong id="analytics-visitors">--</strong>
+            </article>
+            <article>
+              <span>Top place</span>
+              <strong id="analytics-top-place">--</strong>
+            </article>
+            <article>
+              <span>Device</span>
+              <strong id="analytics-top-device">--</strong>
+            </article>
+          </div>
+
+          <div class="analytics-lists">
+            <div>
+              <h3>Pages</h3>
+              <ol id="analytics-paths"></ol>
+            </div>
+            <div>
+              <h3>Referrers</h3>
+              <ol id="analytics-referrers"></ol>
+            </div>
+            <div>
+              <h3>Locations</h3>
+              <ol id="analytics-locations"></ol>
+            </div>
+            <div>
+              <h3>Browsers</h3>
+              <ol id="analytics-browsers"></ol>
+            </div>
+          </div>
+        </section>
+
         <section class="workspace">
           <aside class="work-list-shell">
             <div class="list-title">

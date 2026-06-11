@@ -51,6 +51,7 @@ Admin flow:
 - Edit credits and tracks manually.
 - Save writes the live catalog to Cloudflare KV.
 - New public page loads fetch `https://jack-kleinick-cms-auth.bammediaauth.workers.dev/content/works.json`.
+- The admin dashboard also shows lightweight Worker-backed analytics for the last 30 days.
 
 ## Worker
 
@@ -60,6 +61,13 @@ Cloudflare resources:
 - KV binding: `JACK_CMS_CONTENT`
 - KV namespace id: `bf87c400024e4ea9bda2e99db925b483`
 - Secrets: `ADMIN_PASSWORD`, `SESSION_SECRET`
+- Analytics keys:
+  - `analytics:day:YYYY-MM-DD` stores aggregate daily totals.
+  - `analytics:visitor-day:YYYY-MM-DD:*` deduplicates same-day visitors.
+  - `analytics:visitor-all:*` estimates first-time visitors.
+- Analytics endpoints:
+  - `POST /analytics/collect` receives public production pageview beacons.
+  - `GET /api/analytics?days=30` returns authenticated dashboard data.
 
 Deploy Worker changes:
 
@@ -72,7 +80,7 @@ D:\JAKESWEBSITE\cms-auth-worker\node_modules\.bin\wrangler.cmd deploy --config D
 Check JavaScript syntax:
 
 ```powershell
-& "$env:LOCALAPPDATA\OpenAI\Codex\bin\node.exe" --check app.js
+& "C:\Users\LMO80\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe" --check app.js
 ```
 
 Useful responsive checks:

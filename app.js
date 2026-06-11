@@ -1,4 +1,6 @@
 const CONTENT_API_BASE = "https://jack-kleinick-cms-auth.bammediaauth.workers.dev";
+const ANALYTICS_HOSTS = new Set(["jackkleinick.com", "www.jackkleinick.com"]);
+const ANALYTICS_VISITOR_KEY = "jackAnalyticsVisitor";
 const fallbackContent = window.JackKleinickContent || { works: [] };
 let projects = [];
 const grid = document.querySelector("#work-grid");
@@ -37,6 +39,7 @@ let lastMotionMagnitude = 0;
 let modalSwipe = null;
 let lastWheelNavAt = 0;
 let lastCoverTap = { index: -1, time: 0 };
+let lastAnalyticsEvent = { path: "", time: 0 };
 let liteMode = false;
 let lastFpsSample = 0;
 const fpsSamples = [];
@@ -281,6 +284,84 @@ function safeExternalUrl(value = "") {
     return fallback;
   }
   return fallback;
+}
+
+function analyticsEnabled() {
+  return ANALYTICS_HOSTS.has(window.location.hostname);
+}
+
+function analyticsVisitorId() {
+  try {
+    const existing = window.localStorage.getItem(ANALYTICS_VISITOR_KEY);
+    if (existing) return existing;
+    const created =
+      window.crypto?.randomUUID?.() ||
+      `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+    window.localStorage.setItem(ANALYTICS_VISITOR_KEY, created);
+    return created;
+  } catch {
+    return "";
+  }
+}
+
+function analyticsDevice() {
+  if (window.matchMedia("(max-width: 560px)").matches) return "Phone";
+  if (window.matchMedia("(max-width: 1024px)").matches) return "Tablet";
+  return "Desktop";
+}
+
+function analyticsPath(value = "") {
+  const cleaned = String(value || window.location.pathname || "/").trim();
+  return cleaned.startsWith("/") ? cleaned : `/${cleaned}`;
+}
+
+function projectSlug(project = {}) {
+  return (
+    String(project.album || "work")
+      .toLowerCase()
+      .replace(/&/g, " and ")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 72) || "work"
+  );
+}
+
+function trackPageView(path) {
+  if (!analyticsEnabled()) return;
+
+  const nextPath = analyticsPath(path);
+  const now = performance.now();
+  if (lastAnalyticsEvent.path === nextPath && now - lastAnalyticsEvent.time < 5000) return;
+  lastAnalyticsEvent = { path: nextPath, time: now };
+
+  const payload = {
+    path: nextPath,
+    referrer: document.referrer,
+    title: document.title,
+    visitorId: analyticsVisitorId(),
+    device: analyticsDevice(),
+    language: navigator.language || "",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
+    screen: `${window.screen?.width || window.innerWidth}x${window.screen?.height || window.innerHeight}`,
+  };
+  const body = JSON.stringify(payload);
+  const url = `${CONTENT_API_BASE}/analytics/collect`;
+
+  try {
+    if (navigator.sendBeacon) {
+      const blob = new Blob([body], { type: "application/json" });
+      if (navigator.sendBeacon(url, blob)) return;
+    }
+  } catch {
+    // Fall through to fetch.
+  }
+
+  fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body,
+    keepalive: true,
+  }).catch(() => {});
 }
 
 function projectMood(index) {
@@ -910,6 +991,7 @@ function showView(view) {
   infoView.classList.toggle("is-active", showInfo);
   document.body.classList.toggle("is-info-view", showInfo);
   closeModal();
+  trackPageView(showInfo ? "/info" : "/");
 }
 
 function openProject(index) {
@@ -937,6 +1019,7 @@ function openProject(index) {
   modal.setAttribute("aria-hidden", "false");
   document.body.classList.add("is-modal-open");
   document.body.style.overflow = "hidden";
+  trackPageView(`/work/${projectSlug(project)}`);
 }
 
 function closeModal() {
@@ -982,6 +1065,7 @@ async function bootSite() {
   const content = await loadContent();
   projects = Array.isArray(content.works) ? content.works : [];
   renderGrid();
+  trackPageView("/");
 
   window.setTimeout(() => {
     entryScreen.classList.add("is-complete");

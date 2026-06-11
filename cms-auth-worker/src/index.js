@@ -6,6 +6,10 @@ const SESSION_COOKIE = "jack_admin_session";
 const SESSION_TTL_SECONDS = 60 * 60 * 12;
 const ASSET_KEY_PREFIX = "asset:";
 const ASSET_ROUTE_PREFIX = "/assets/uploads/";
+const ANALYTICS_DAY_PREFIX = "analytics:day:";
+const ANALYTICS_VISITOR_DAY_PREFIX = "analytics:visitor-day:";
+const ANALYTICS_VISITOR_ALL_PREFIX = "analytics:visitor-all:";
+const ANALYTICS_TTL_SECONDS = 60 * 60 * 24 * 370;
 const MAX_ASSET_BYTES = 8 * 1024 * 1024;
 const ALLOWED_ASSET_TYPES = {
   "image/jpeg": "jpg",
@@ -101,6 +105,18 @@ const readJson = async (request) => {
   }
 };
 
+const readLooseJson = async (request) => {
+  try {
+    return await request.json();
+  } catch {
+    try {
+      return JSON.parse(await request.text());
+    } catch {
+      return null;
+    }
+  }
+};
+
 const hmacKey = async (secret) =>
   crypto.subtle.importKey("raw", textEncoder.encode(secret), { name: "HMAC", hash: "SHA-256" }, false, [
     "sign",
@@ -110,6 +126,11 @@ const hmacKey = async (secret) =>
 const signPayload = async (payload, secret) => {
   const signature = await crypto.subtle.sign("HMAC", await hmacKey(secret), textEncoder.encode(payload));
   return base64UrlEncode(signature);
+};
+
+const digestValue = async (value) => {
+  const digest = await crypto.subtle.digest("SHA-256", textEncoder.encode(value));
+  return base64UrlEncode(digest).slice(0, 32);
 };
 
 const createSessionValue = async (env) => {
@@ -411,9 +432,231 @@ const handlePublicAsset = async (request, env, filename) => {
   });
 };
 
+const todayKey = () => new Date().toISOString().slice(0, 10);
+
+const dateDaysAgo = (daysAgo) => {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() - daysAgo);
+  return date.toISOString().slice(0, 10);
+};
+
+const incrementMap = (map, key, amount = 1) => {
+  const cleaned = cleanString(key, "Unknown", 180);
+  map[cleaned] = (map[cleaned] || 0) + amount;
+};
+
+const trimMap = (map, limit = 80) =>
+  Object.fromEntries(Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, limit));
+
+const normalizePath = (path) => {
+  const cleaned = cleanString(path, "/", 220);
+  if (!cleaned.startsWith("/")) return "/";
+  return cleaned.split("?")[0].split("#")[0].slice(0, 180) || "/";
+};
+
+const normalizeReferrer = (value) => {
+  if (typeof value !== "string" || !value.trim()) return "Direct";
+  try {
+    const url = new URL(value);
+    if (url.hostname.includes("jackkleinick.com")) return "Internal";
+    return url.hostname.replace(/^www\./, "");
+  } catch {
+    return "Direct";
+  }
+};
+
+const detectDevice = (userAgent = "") => {
+  if (/ipad|tablet/i.test(userAgent)) return "Tablet";
+  if (/mobi|iphone|android/i.test(userAgent)) return "Mobile";
+  return "Desktop";
+};
+
+const detectBrowser = (userAgent = "") => {
+  if (/Edg\//.test(userAgent)) return "Edge";
+  if (/Chrome\//.test(userAgent) && !/Chromium/.test(userAgent)) return "Chrome";
+  if (/Safari\//.test(userAgent) && !/Chrome\//.test(userAgent)) return "Safari";
+  if (/Firefox\//.test(userAgent)) return "Firefox";
+  return "Other";
+};
+
+const emptyAnalyticsDay = (date) => ({
+  date,
+  pageViews: 0,
+  uniqueVisitors: 0,
+  allTimeFirstVisitors: 0,
+  countries: {},
+  regions: {},
+  cities: {},
+  devices: {},
+  browsers: {},
+  referrers: {},
+  paths: {},
+  hours: {},
+  lastUpdated: new Date().toISOString(),
+});
+
+const readAnalyticsDay = async (env, date) => {
+  const stored = await env.JACK_CMS_CONTENT?.get(`${ANALYTICS_DAY_PREFIX}${date}`);
+  if (!stored) return emptyAnalyticsDay(date);
+
+  try {
+    return { ...emptyAnalyticsDay(date), ...JSON.parse(stored) };
+  } catch {
+    return emptyAnalyticsDay(date);
+  }
+};
+
+const writeAnalyticsDay = async (env, day) => {
+  await env.JACK_CMS_CONTENT.put(`${ANALYTICS_DAY_PREFIX}${day.date}`, JSON.stringify(day), {
+    expirationTtl: ANALYTICS_TTL_SECONDS,
+    metadata: { updatedAt: day.lastUpdated },
+  });
+};
+
+const handleAnalyticsCollect = async (request, env) => {
+  if (!isAllowedOrigin(request, env)) {
+    return jsonResponse(request, { error: "Origin not allowed." }, { status: 403, env });
+  }
+
+  if (!env.JACK_CMS_CONTENT) {
+    return jsonResponse(request, { error: "Analytics storage is not configured." }, { status: 500, env });
+  }
+
+  const body = (await readLooseJson(request)) || {};
+  const userAgent = request.headers.get("User-Agent") || "";
+  const cf = request.cf || {};
+  const date = todayKey();
+  const hour = new Date().toISOString().slice(11, 13);
+  const visitorId = cleanString(body.visitorId, "", 120);
+  const visitorSeed = visitorId || request.headers.get("CF-Connecting-IP") || userAgent || crypto.randomUUID();
+  const visitorHash = await digestValue(`${env.SESSION_SECRET || "jack"}:${visitorSeed}`);
+  const visitorDayKey = `${ANALYTICS_VISITOR_DAY_PREFIX}${date}:${visitorHash}`;
+  const visitorAllKey = `${ANALYTICS_VISITOR_ALL_PREFIX}${visitorHash}`;
+  const firstToday = !(await env.JACK_CMS_CONTENT.get(visitorDayKey));
+  const firstEver = !(await env.JACK_CMS_CONTENT.get(visitorAllKey));
+
+  if (firstToday) {
+    await env.JACK_CMS_CONTENT.put(visitorDayKey, "1", { expirationTtl: ANALYTICS_TTL_SECONDS });
+  }
+
+  if (firstEver) {
+    await env.JACK_CMS_CONTENT.put(visitorAllKey, "1", { expirationTtl: ANALYTICS_TTL_SECONDS });
+  }
+
+  const day = await readAnalyticsDay(env, date);
+  day.pageViews += 1;
+  if (firstToday) day.uniqueVisitors += 1;
+  if (firstEver) day.allTimeFirstVisitors += 1;
+
+  incrementMap(day.countries, cf.country || "Unknown");
+  incrementMap(day.regions, [cf.country, cf.region || cf.regionCode].filter(Boolean).join(" / ") || "Unknown");
+  incrementMap(day.cities, [cf.country, cf.city].filter(Boolean).join(" / ") || "Unknown");
+  incrementMap(day.devices, cleanString(body.device, detectDevice(userAgent), 40));
+  incrementMap(day.browsers, detectBrowser(userAgent));
+  incrementMap(day.referrers, normalizeReferrer(body.referrer || request.headers.get("Referer")));
+  incrementMap(day.paths, normalizePath(body.path));
+  incrementMap(day.hours, `${hour}:00`);
+
+  day.countries = trimMap(day.countries);
+  day.regions = trimMap(day.regions);
+  day.cities = trimMap(day.cities);
+  day.devices = trimMap(day.devices, 12);
+  day.browsers = trimMap(day.browsers, 12);
+  day.referrers = trimMap(day.referrers, 40);
+  day.paths = trimMap(day.paths, 60);
+  day.hours = trimMap(day.hours, 24);
+  day.lastUpdated = new Date().toISOString();
+
+  await writeAnalyticsDay(env, day);
+
+  return jsonResponse(request, { ok: true }, { env });
+};
+
+const mergeCounts = (target, source = {}) => {
+  Object.entries(source).forEach(([key, value]) => {
+    target[key] = (target[key] || 0) + Number(value || 0);
+  });
+};
+
+const sortedCounts = (source = {}, limit = 10) =>
+  Object.entries(source)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, limit)
+    .map(([label, value]) => ({ label, value }));
+
+const summarizeAnalytics = (days) => {
+  const totals = {
+    pageViews: 0,
+    uniqueVisitors: 0,
+    allTimeFirstVisitors: 0,
+    countries: {},
+    regions: {},
+    cities: {},
+    devices: {},
+    browsers: {},
+    referrers: {},
+    paths: {},
+  };
+
+  days.forEach((day) => {
+    totals.pageViews += Number(day.pageViews || 0);
+    totals.uniqueVisitors += Number(day.uniqueVisitors || 0);
+    totals.allTimeFirstVisitors += Number(day.allTimeFirstVisitors || 0);
+    mergeCounts(totals.countries, day.countries);
+    mergeCounts(totals.regions, day.regions);
+    mergeCounts(totals.cities, day.cities);
+    mergeCounts(totals.devices, day.devices);
+    mergeCounts(totals.browsers, day.browsers);
+    mergeCounts(totals.referrers, day.referrers);
+    mergeCounts(totals.paths, day.paths);
+  });
+
+  return {
+    pageViews: totals.pageViews,
+    uniqueVisitors: totals.uniqueVisitors,
+    allTimeFirstVisitors: totals.allTimeFirstVisitors,
+    countries: sortedCounts(totals.countries),
+    regions: sortedCounts(totals.regions),
+    cities: sortedCounts(totals.cities),
+    devices: sortedCounts(totals.devices),
+    browsers: sortedCounts(totals.browsers),
+    referrers: sortedCounts(totals.referrers),
+    paths: sortedCounts(totals.paths),
+  };
+};
+
+const handleAnalyticsRead = async (request, env) => {
+  const sessionError = await requireSession(request, env);
+  if (sessionError) return sessionError;
+
+  const url = new URL(request.url);
+  const requestedDays = Number(url.searchParams.get("days") || 30);
+  const dayCount = Math.max(1, Math.min(90, Number.isFinite(requestedDays) ? requestedDays : 30));
+  const days = [];
+
+  for (let index = dayCount - 1; index >= 0; index -= 1) {
+    days.push(await readAnalyticsDay(env, dateDaysAgo(index)));
+  }
+
+  return jsonResponse(
+    request,
+    {
+      days,
+      totals: summarizeAnalytics(days),
+      rangeDays: dayCount,
+      updatedAt: new Date().toISOString(),
+    },
+    { env },
+  );
+};
+
 export default {
   async fetch(request, env) {
     const { pathname } = new URL(request.url);
+
+    if (request.method === "POST" && pathname === "/analytics/collect") {
+      return handleAnalyticsCollect(request, env);
+    }
 
     if (request.method === "GET" && pathname === "/content/works.json") {
       return publicJsonResponse(await readContent(env));
@@ -445,6 +688,10 @@ export default {
 
     if (request.method === "POST" && pathname === "/api/logout") {
       return jsonResponse(request, { authenticated: false }, { env, headers: { "Set-Cookie": clearSessionCookie() } });
+    }
+
+    if (request.method === "GET" && pathname === "/api/analytics") {
+      return handleAnalyticsRead(request, env);
     }
 
     if (request.method === "GET" && (pathname === "/api/works" || pathname === "/api/content")) {

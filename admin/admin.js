@@ -16,6 +16,18 @@ const statusEl = document.querySelector("#status");
 const previewImage = document.querySelector("#preview-image");
 const previewTitle = document.querySelector("#preview-title");
 const previewMeta = document.querySelector("#preview-meta");
+const analyticsRefresh = document.querySelector("#analytics-refresh");
+const analyticsEls = {
+  updated: document.querySelector("#analytics-updated"),
+  pageviews: document.querySelector("#analytics-pageviews"),
+  visitors: document.querySelector("#analytics-visitors"),
+  topPlace: document.querySelector("#analytics-top-place"),
+  topDevice: document.querySelector("#analytics-top-device"),
+  paths: document.querySelector("#analytics-paths"),
+  referrers: document.querySelector("#analytics-referrers"),
+  locations: document.querySelector("#analytics-locations"),
+  browsers: document.querySelector("#analytics-browsers"),
+};
 
 const fields = {
   album: document.querySelector("#field-album"),
@@ -50,6 +62,27 @@ function escapeHtml(value = "") {
     };
     return entities[character];
   });
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("en-US").format(Number(value || 0));
+}
+
+function firstCountLabel(items = [], fallback = "--") {
+  return items[0]?.label || fallback;
+}
+
+function renderAnalyticsList(element, items = []) {
+  if (!element) return;
+  const rows = Array.isArray(items) ? items.slice(0, 6) : [];
+  if (!rows.length) {
+    element.innerHTML = `<li><b>No data yet</b><span></span></li>`;
+    return;
+  }
+
+  element.innerHTML = rows
+    .map((item) => `<li><b>${escapeHtml(item.label || "Unknown")}</b><span>${formatNumber(item.value)}</span></li>`)
+    .join("");
 }
 
 function assetUrl(path = "") {
@@ -243,6 +276,39 @@ async function loadWorks() {
   selectWork(0);
 }
 
+async function loadAnalytics() {
+  if (!analyticsEls.pageviews) return;
+  analyticsEls.updated.textContent = "Loading traffic...";
+
+  try {
+    const data = await api("/api/analytics?days=30");
+    const totals = data.totals || {};
+    const locations = totals.cities?.length ? totals.cities : totals.regions?.length ? totals.regions : totals.countries;
+
+    analyticsEls.pageviews.textContent = formatNumber(totals.pageViews);
+    analyticsEls.visitors.textContent = formatNumber(totals.uniqueVisitors);
+    analyticsEls.topPlace.textContent = firstCountLabel(locations);
+    analyticsEls.topDevice.textContent = firstCountLabel(totals.devices);
+    analyticsEls.updated.textContent = `Updated ${new Date(data.updatedAt || Date.now()).toLocaleString([], {
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+    })}`;
+
+    renderAnalyticsList(analyticsEls.paths, totals.paths);
+    renderAnalyticsList(analyticsEls.referrers, totals.referrers);
+    renderAnalyticsList(analyticsEls.locations, locations);
+    renderAnalyticsList(analyticsEls.browsers, totals.browsers);
+  } catch (error) {
+    analyticsEls.updated.textContent = error.message;
+    analyticsEls.pageviews.textContent = "--";
+    analyticsEls.visitors.textContent = "--";
+    analyticsEls.topPlace.textContent = "--";
+    analyticsEls.topDevice.textContent = "--";
+  }
+}
+
 async function saveWorks() {
   if (selectedIndex >= 0) syncCurrent();
   const data = await api("/api/works", {
@@ -267,6 +333,7 @@ loginForm.addEventListener("submit", async (event) => {
     loginCard.hidden = true;
     adminApp.hidden = false;
     await loadWorks();
+    await loadAnalytics();
   } catch (error) {
     loginNote.textContent = error.message;
   }
@@ -329,6 +396,10 @@ saveButton.addEventListener("click", async () => {
   }
 });
 
+analyticsRefresh?.addEventListener("click", () => {
+  loadAnalytics();
+});
+
 logoutButton.addEventListener("click", async () => {
   await api("/api/logout", { method: "POST", body: "{}" }).catch(() => {});
   sessionStorage.removeItem(sessionKey);
@@ -343,6 +414,7 @@ api("/api/session")
     loginCard.hidden = true;
     adminApp.hidden = false;
     await loadWorks();
+    await loadAnalytics();
   })
   .catch(() => {
     loginCard.hidden = false;
