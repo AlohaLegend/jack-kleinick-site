@@ -703,7 +703,19 @@ export default {
     }
 
     if (request.method === "POST" && pathname === "/api/spotify/import") {
-      return importSpotifyProject(request, env);
+      try {
+        return await importSpotifyProject(request, env);
+      } catch (error) {
+        const message = String(error?.message || "");
+        const friendlyMessage = message.includes("Spotify lookup failed")
+          ? "Spotify could not read that link. Check the URL and try again."
+          : cleanString(message, "Spotify import failed.", 260);
+        return jsonResponse(
+          request,
+          { error: friendlyMessage },
+          { status: 400, env },
+        );
+      }
     }
 
     return jsonResponse(request, { error: "Not found." }, { status: 404, env });

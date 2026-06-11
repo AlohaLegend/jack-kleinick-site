@@ -4,18 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jack Kleinick Admin</title>
-    <link rel="stylesheet" href="styles.css?v=20260611-hq2" />
-    <script src="admin.js?v=20260611-hq2" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260611-gta-lite" />
+    <script src="admin.js?v=20260611-gta-lite" defer></script>
   </head>
   <body>
-    <div class="easter-wagon" aria-hidden="true">
-      <span class="wagon-body"></span>
-      <span class="wagon-window front"></span>
-      <span class="wagon-window back"></span>
-      <span class="wagon-wheel left"></span>
-      <span class="wagon-wheel right"></span>
-    </div>
-
     <main class="admin-shell">
       <section class="login-card" id="login-card">
         <div class="hud-strip">
@@ -42,6 +34,8 @@
             <p class="small">Import, tune, and publish selected works.</p>
           </div>
           <div class="header-actions">
+            <span class="hud-money" id="hud-work-total">$000020</span>
+            <span class="wanted-meter" aria-label="Backend heat level"><span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span></span>
             <span class="live-pill">Live site</span>
             <button class="ghost-button" id="logout-button" type="button">Log out</button>
             <button class="primary-button" id="save-button" type="button">Save live</button>
@@ -53,6 +47,11 @@
             <p class="kicker">01 / Import</p>
             <h2>Paste a Spotify link</h2>
             <p class="small">The title, artist, year, cover art, and background color will fill in automatically. Credits stay editable.</p>
+            <div class="flow-cards" aria-label="Admin editing flow">
+              <span>Import</span>
+              <span>Check credits</span>
+              <span>Save live</span>
+            </div>
           </div>
           <form id="import-form">
             <input id="spotify-url" type="url" placeholder="https://open.spotify.com/track/..." required />
@@ -108,6 +107,13 @@
             </div>
           </div>
         </section>
+
+        <div class="easter-wagon-track" aria-hidden="true">
+          <div class="easter-wagon">
+            <span class="wagon-shadow"></span>
+            <img src="assets/station-wagon.svg" alt="" />
+          </div>
+        </div>
 
         <section class="workspace">
           <aside class="work-list-shell">
@@ -167,7 +173,7 @@
 
             <label>
               Tracks
-              <textarea id="field-tracks" name="tracks" rows="8" placeholder="Track title | Spotify URL"></textarea>
+              <textarea id="field-tracks" name="tracks" rows="8" placeholder="One per line: Track title | Spotify URL"></textarea>
             </label>
 
             <div class="editor-actions">
