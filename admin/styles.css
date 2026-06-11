@@ -443,13 +443,18 @@ label {
 .workspace {
   display: grid;
   grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
+  align-items: stretch;
   min-height: 39rem;
   overflow: hidden;
 }
 
 .work-list-shell {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  min-height: 0;
   border-right: 1px solid var(--line);
   background: rgba(0, 0, 0, 0.18);
+  overflow: hidden;
 }
 
 .list-title,
@@ -471,7 +476,10 @@ label {
 
 .work-list {
   display: grid;
-  max-height: 44rem;
+  align-content: start;
+  min-height: 0;
+  height: 100%;
+  max-height: none;
   overflow: auto;
   scrollbar-color: var(--green) rgba(255, 255, 255, 0.06);
 }
@@ -621,11 +629,13 @@ label {
   }
 
   .work-list-shell {
+    display: block;
     border-right: 0;
     border-bottom: 1px solid var(--line);
   }
 
   .work-list {
+    height: auto;
     max-height: 18rem;
   }
 }
