@@ -45,6 +45,7 @@ const fields = {
 let works = [];
 let selectedIndex = -1;
 let dirty = false;
+let loginInProgress = false;
 const API_BASE = "https://jack-kleinick-cms-auth.bammediaauth.workers.dev";
 const API_TIMEOUT_MS = 18000;
 const sessionKey = "jackAdminSession";
@@ -386,6 +387,7 @@ async function openAdminApp() {
 
 loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
+  loginInProgress = true;
   loginNote.textContent = "Checking password...";
   const loginButton = loginForm.querySelector("button");
   setButtonBusy(loginButton, true, "Checking...");
@@ -402,6 +404,7 @@ loginForm.addEventListener("submit", async (event) => {
   } catch (error) {
     loginNote.textContent = friendlyError(error);
   } finally {
+    loginInProgress = false;
     setButtonBusy(loginButton, false);
   }
 });
@@ -493,6 +496,7 @@ api("/api/session")
     await openAdminApp();
   })
   .catch(() => {
+    if (loginInProgress || sessionStorage.getItem(sessionKey)) return;
     loginCard.hidden = false;
     adminApp.hidden = true;
   });

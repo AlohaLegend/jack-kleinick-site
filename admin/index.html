@@ -4,8 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Jack Kleinick Admin</title>
-    <link rel="stylesheet" href="styles.css?v=20260611-gta-lite" />
-    <script src="admin.js?v=20260611-gta-lite" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260611-gta-simple" />
+    <script src="admin.js?v=20260611-gta-simple" defer></script>
   </head>
   <body>
     <main class="admin-shell">
@@ -35,7 +35,10 @@
           </div>
           <div class="header-actions">
             <span class="hud-money" id="hud-work-total">$000020</span>
-            <span class="wanted-meter" aria-label="Backend heat level"><span>★</span><span>★</span><span>★</span><span>★</span><span>☆</span></span>
+            <span class="wanted-meter" aria-label="Backend heat level">
+              <span>HEAT</span>
+              <i></i><i></i><i></i><i></i><i class="is-empty"></i>
+            </span>
             <span class="live-pill">Live site</span>
             <button class="ghost-button" id="logout-button" type="button">Log out</button>
             <button class="primary-button" id="save-button" type="button">Save live</button>
