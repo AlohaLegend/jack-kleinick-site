@@ -420,7 +420,9 @@ importForm.addEventListener("submit", async (event) => {
       timeoutMs: 45000,
     });
     imported.project.colors = await extractColors(imported.source.thumbnailUrl);
+    if (selectedIndex >= 0) syncCurrent();
     works.unshift(imported.project);
+    selectedIndex = -1;
     dirty = true;
     spotifyUrl.value = "";
     selectWork(0);
