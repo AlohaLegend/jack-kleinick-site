@@ -60,6 +60,11 @@ function safeExternalUrl(value = "") {
   }
 }
 
+function assetUrl(value = "") {
+  if (/^https?:\/\//i.test(value)) return value;
+  return `/${String(value || "assets/studio-hero.jpg").replace(/^\/+/, "")}`;
+}
+
 function analyticsEnabled() {
   return ANALYTICS_HOSTS.has(window.location.hostname);
 }
@@ -129,7 +134,7 @@ function projectMood(index) {
 
 function applyAlbumMood(index) {
   const [dark, pastel] = projectMood(index);
-  const image = projects[index]?.image || "assets/studio-hero.jpg";
+  const image = assetUrl(projects[index]?.image);
   document.body.style.setProperty("--album-a", dark);
   document.body.style.setProperty("--album-b", pastel);
   document.body.style.setProperty("--page-tint", pastel);
@@ -197,7 +202,7 @@ function renderColumnCard(project, index, copyIndex) {
   const trackCount = Array.isArray(project.tracks) ? project.tracks.length : 0;
   return `
     <button class="column-card" type="button" data-token="${index}" aria-label="Focus ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
-      <img src="${escapeAttr(project.image || "assets/studio-hero.jpg")}" alt="${escapeAttr(project.album)} cover" loading="lazy" decoding="async">
+      <img src="${escapeAttr(assetUrl(project.image))}" alt="${escapeAttr(project.album)} cover" loading="lazy" decoding="async">
       <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
       <span class="card-copy">
         <strong>${escapeHtml(project.album || "Untitled")}</strong>
@@ -278,7 +283,7 @@ function openProject(index) {
   modalRole.textContent = project.role || "";
   modalTracks.innerHTML = renderTrackLinks(project);
   modalPlatforms.innerHTML = renderPlatformLinks(project);
-  modalImage.src = project.image || "assets/studio-hero.jpg";
+  modalImage.src = assetUrl(project.image);
   modalImage.alt = project.album || "";
   prevButton.disabled = index === 0;
   nextButton.disabled = index === projects.length - 1;
