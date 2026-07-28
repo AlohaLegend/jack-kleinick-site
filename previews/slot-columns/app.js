@@ -10,6 +10,7 @@ let displayedProject = 0;
 let modalSwipe = null;
 let lastWheelNavAt = 0;
 let lastAnalyticsEvent = { path: "", time: 0 };
+let columnHoldTimer = null;
 
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
@@ -198,15 +199,21 @@ function columnProjects(columnIndex) {
   return projects.filter((_, index) => index % 3 === columnIndex);
 }
 
-function renderColumnCard(project, index, copyIndex) {
-  const trackCount = Array.isArray(project.tracks) ? project.tracks.length : 0;
+function holdColumnMotion(duration = 1800) {
+  document.body.classList.add("is-column-paused");
+  window.clearTimeout(columnHoldTimer);
+  columnHoldTimer = window.setTimeout(() => {
+    document.body.classList.remove("is-column-paused");
+  }, duration);
+}
+
+function renderColumnCard(project, index) {
   return `
-    <button class="column-card" type="button" data-token="${index}" aria-label="Focus ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
+    <button class="column-card" type="button" data-token="${index}" aria-label="Select ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
       <img src="${escapeAttr(assetUrl(project.image))}" alt="${escapeAttr(project.album)} cover" loading="lazy" decoding="async">
-      <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
       <span class="card-copy">
         <strong>${escapeHtml(project.album || "Untitled")}</strong>
-        <small>${escapeHtml(project.artist || "")}${trackCount > 1 ? ` / ${trackCount} tracks` : ""}</small>
+        <small>${escapeHtml(project.artist || "")}</small>
       </span>
       <span class="card-tint" aria-hidden="true"></span>
     </button>
@@ -227,7 +234,7 @@ function renderGrid() {
       return `
         <div class="work-column is-column-${columnIndex + 1}" style="--column-speed: ${42 + columnIndex * 7}s; --column-offset: ${columnIndex * -8}rem;">
           <div class="column-rail">
-            ${repeatedItems.map((project, copyIndex) => renderColumnCard(project, projects.indexOf(project), copyIndex)).join("")}
+            ${repeatedItems.map((project) => renderColumnCard(project, projects.indexOf(project))).join("")}
           </div>
         </div>
       `;
@@ -242,8 +249,15 @@ function renderGrid() {
 function bindColumnCards() {
   grid.querySelectorAll(".column-card").forEach((card) => {
     const index = Number(card.dataset.token);
-    card.addEventListener("click", () => focusProject(index));
-    card.addEventListener("dblclick", () => openProject(index));
+    card.addEventListener("pointerdown", () => holdColumnMotion(2200));
+    card.addEventListener("pointerenter", () => holdColumnMotion(1200));
+    card.addEventListener("focus", () => holdColumnMotion(1800));
+    card.addEventListener("click", () => {
+      const alreadySelected = displayedProject === index;
+      focusProject(index);
+      holdColumnMotion(alreadySelected ? 1000 : 2400);
+      if (alreadySelected) openProject(index);
+    });
   });
 }
 
@@ -260,7 +274,15 @@ function focusProject(index) {
   focusTracks.innerHTML = renderTrackLinks(project);
   focusPlatforms.innerHTML = renderPlatformLinks(project);
   grid.querySelectorAll(".column-card").forEach((card) => {
-    card.classList.toggle("is-focused", Number(card.dataset.token) === index);
+    const cardIndex = Number(card.dataset.token);
+    const isFocused = cardIndex === index;
+    const cardProject = projects[cardIndex] || {};
+    card.classList.toggle("is-focused", isFocused);
+    card.setAttribute("aria-pressed", String(isFocused));
+    card.setAttribute(
+      "aria-label",
+      `${isFocused ? "Open credits for" : "Select"} ${cardProject.album || "Untitled"} by ${cardProject.artist || ""}`,
+    );
   });
 }
 

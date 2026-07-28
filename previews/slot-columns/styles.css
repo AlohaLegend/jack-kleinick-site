@@ -1531,7 +1531,8 @@ body.is-lite-mode .modal-backdrop {
 }
 
 .is-column-stage .cover-field:hover .column-rail,
-.is-column-stage .cover-field:focus-within .column-rail {
+.is-column-stage .cover-field:focus-within .column-rail,
+body.is-column-paused .column-rail {
   animation-play-state: paused;
 }
 
@@ -1543,7 +1544,10 @@ body.is-lite-mode .modal-backdrop {
   border: 1px solid rgba(245, 241, 234, 0.08);
   background: #111;
   color: var(--ink);
+  cursor: pointer;
   text-align: left;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, 0.18);
   transition:
     border-color 220ms ease,
@@ -1575,23 +1579,10 @@ body.is-lite-mode .modal-backdrop {
     linear-gradient(135deg, color-mix(in srgb, var(--album-a) 18%, transparent), transparent 52%);
 }
 
-.card-index,
 .card-copy,
 .card-tint {
   position: relative;
   z-index: 2;
-}
-
-.card-index {
-  align-self: start;
-  width: fit-content;
-  margin: 0.58rem;
-  padding: 0.2rem 0.38rem;
-  border: 0;
-  background: rgba(0, 0, 0, 0.22);
-  color: color-mix(in srgb, var(--album-b) 72%, var(--ink));
-  font-size: clamp(0.62rem, 0.82vw, 0.74rem);
-  line-height: 1;
 }
 
 .card-copy {
@@ -1599,6 +1590,7 @@ body.is-lite-mode .modal-backdrop {
   display: grid;
   gap: 0.2rem;
   padding: 0.72rem;
+  min-width: 0;
   text-shadow: 0 0.12rem 0.55rem rgba(0, 0, 0, 0.78);
 }
 
@@ -1609,16 +1601,24 @@ body.is-lite-mode .modal-backdrop {
 }
 
 .card-copy strong {
+  display: -webkit-box;
+  overflow: hidden;
   font-size: clamp(1.04rem, 1.75vw, 1.8rem);
   font-style: italic;
   font-weight: 500;
   line-height: 0.94;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 
 .card-copy small {
+  overflow: hidden;
   color: rgba(245, 241, 234, 0.7);
   font-size: clamp(0.7rem, 0.92vw, 0.86rem);
   line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .card-tint {
@@ -1655,6 +1655,10 @@ body.is-lite-mode .modal-backdrop {
   transform: scaleX(1);
 }
 
+.column-card:active {
+  transform: scale(0.985);
+}
+
 .is-column-stage .stage-target {
   border-radius: 0;
 }
@@ -1671,6 +1675,9 @@ body.is-lite-mode .modal-backdrop {
   grid-template-columns: 7.6rem minmax(0, 1fr);
   align-items: start;
   padding: 0.72rem;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   background:
     linear-gradient(135deg, color-mix(in srgb, var(--album-a) 18%, transparent), transparent 58%),
     color-mix(in srgb, var(--panel-bg) 92%, #000);
@@ -1689,7 +1696,7 @@ body.is-lite-mode .modal-backdrop {
 
 .is-column-stage .stage-focus h2 {
   font-size: clamp(1.55rem, 2.9vw, 2.8rem);
-  line-height: 0.94;
+  line-height: 1.04;
 }
 
 .is-column-stage .stage-focus span,
@@ -1791,29 +1798,26 @@ body.is-lite-mode .modal-backdrop {
   .column-rail {
     gap: 0.42rem;
     padding: 0.42rem;
+    animation-duration: calc(var(--column-speed) + 18s);
   }
 
   .column-card {
     min-height: clamp(5.65rem, 15.2vh, 7.8rem);
   }
 
-  .card-index {
-    margin: 0.36rem;
-    padding: 0.16rem 0.28rem;
-    font-size: 0.56rem;
-  }
-
   .card-copy {
-    padding: 0.42rem;
+    gap: 0.12rem;
+    padding: 0.42rem 0.38rem 0.38rem;
+    opacity: 0.9;
   }
 
   .card-copy strong {
-    font-size: clamp(0.72rem, 3.3vw, 0.92rem);
-    line-height: 0.98;
+    font-size: clamp(0.64rem, 2.85vw, 0.78rem);
+    line-height: 1.02;
   }
 
   .card-copy small {
-    font-size: 0.58rem;
+    display: none;
   }
 
   .is-column-stage .stage-focus {
@@ -1826,6 +1830,9 @@ body.is-lite-mode .modal-backdrop {
     grid-template-columns: 3.1rem minmax(0, 1fr);
     padding: 0.5rem 0.72rem calc(0.5rem + env(safe-area-inset-bottom));
     background: rgba(9, 11, 12, 0.9);
+    box-shadow:
+      0 -0.8rem 2.4rem rgba(0, 0, 0, 0.35),
+      0 0 2.6rem color-mix(in srgb, var(--album-b) 12%, transparent);
   }
 
   .is-column-stage .stage-focus .stage-target {
