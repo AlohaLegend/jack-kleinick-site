@@ -2,11 +2,18 @@ const CONTENT_API_BASE = "https://jack-kleinick-cms-auth.bammediaauth.workers.de
 const ANALYTICS_HOSTS = new Set(["jackkleinick.com", "www.jackkleinick.com"]);
 const ANALYTICS_VISITOR_KEY = "jackAnalyticsVisitor";
 const fallbackContent = window.JackKleinickContent || { works: [] };
+
 let projects = [];
+let activeProject = 0;
+let focusedProject = 0;
+let displayedProject = 0;
+let modalSwipe = null;
+let lastWheelNavAt = 0;
+let lastAnalyticsEvent = { path: "", time: 0 };
+
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
 const stageFocus = document.querySelector("#stage-focus");
-const stageTarget = document.querySelector(".stage-target");
 const focusTitle = document.querySelector("#focus-title");
 const focusMeta = document.querySelector("#focus-meta");
 const focusRole = document.querySelector("#focus-role");
@@ -27,237 +34,6 @@ const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
 const entryScreen = document.querySelector("#entry-screen");
 
-let activeProject = 0;
-let focusedProject = 0;
-let displayedProject = 0;
-let lastFrame = 0;
-let introReleaseTimer;
-let sensorPermissionAsked = false;
-let sensorsActive = false;
-let lastShakeAt = 0;
-let lastMotionMagnitude = 0;
-let modalSwipe = null;
-let lastWheelNavAt = 0;
-let lastCoverTap = { index: -1, time: 0 };
-let lastAnalyticsEvent = { path: "", time: 0 };
-let liteMode = false;
-let lastFpsSample = 0;
-const fpsSamples = [];
-const bodies = [];
-const deviceGravity = { x: 0, y: 0 };
-const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-function viewportBounds() {
-  return {
-    width: window.innerWidth,
-    height: window.innerHeight,
-    windowWidth: window.innerWidth,
-  };
-}
-
-function focusTargetPosition(size = 0) {
-  if (!stageTarget) {
-    const bounds = viewportBounds();
-    return {
-      x: bounds.width * 0.5 - size * 0.5,
-      y: bounds.height * 0.52 - size * 0.5,
-      radius: Math.max(118, bounds.width * 0.12),
-    };
-  }
-
-  const target = stageTarget.getBoundingClientRect();
-  return {
-    x: target.left + target.width * 0.5 - size * 0.5,
-    y: target.top + target.height * 0.5 - size * 0.5,
-    radius: Math.max(96, target.width * 0.58),
-  };
-}
-
-function recordObstacle() {
-  if (!stageTarget) return null;
-  const target = stageTarget.getBoundingClientRect();
-  return {
-    x: target.left + target.width * 0.5,
-    y: target.top + target.height * 0.5,
-    radius: target.width * 0.5,
-  };
-}
-
-function panelObstacle() {
-  if (!stageFocus) return null;
-  const panel = stageFocus.getBoundingClientRect();
-  const padding = 8;
-  return {
-    left: panel.left - padding,
-    right: panel.right + padding,
-    top: panel.top - padding,
-    bottom: panel.bottom + padding,
-  };
-}
-
-function headerObstacle() {
-  if (window.innerWidth > 560) return null;
-  const header = document.querySelector(".site-header")?.getBoundingClientRect();
-  if (!header?.height) return null;
-  const padding = 8;
-  return {
-    left: header.left - padding,
-    right: header.right + padding,
-    top: header.top - padding,
-    bottom: header.bottom + padding,
-  };
-}
-
-function edgeBleed() {
-  return 0;
-}
-
-function topPlayEdge() {
-  if (window.innerWidth > 560) return 0;
-  const header = document.querySelector(".site-header")?.getBoundingClientRect();
-  return header?.height ? header.bottom + 8 : 0;
-}
-
-function storedLitePreference() {
-  try {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("lite") === "1") return true;
-    if (params.get("lite") === "0") {
-      window.localStorage.setItem("jackLiteMode", "0");
-      return false;
-    }
-    if (params.get("lite") === "save") {
-      window.localStorage.setItem("jackLiteMode", "1");
-      return true;
-    }
-    return window.localStorage.getItem("jackLiteMode") === "1";
-  } catch {
-    return false;
-  }
-}
-
-function enableLiteMode(reason = "adaptive") {
-  if (liteMode) return;
-  liteMode = true;
-  document.body.classList.add("is-lite-mode");
-  document.body.dataset.liteReason = reason;
-  fpsSamples.length = 0;
-  bodies.forEach((body) => {
-    body.vx *= 0.35;
-    body.vy *= 0.35;
-    body.rotation *= 0.6;
-  });
-}
-
-function prefersLiteMode() {
-  return liteMode || reduceMotionQuery.matches;
-}
-
-function sampleFrameRate(timestamp) {
-  if (liteMode || document.hidden || !workView.classList.contains("is-active") || modal.classList.contains("is-open")) {
-    lastFpsSample = timestamp;
-    return;
-  }
-
-  if (lastFpsSample) {
-    const frameMs = timestamp - lastFpsSample;
-    if (frameMs > 0 && frameMs < 250) {
-      fpsSamples.push(1000 / frameMs);
-      if (fpsSamples.length > 90) fpsSamples.shift();
-      if (fpsSamples.length === 90) {
-        const averageFps = fpsSamples.reduce((sum, fps) => sum + fps, 0) / fpsSamples.length;
-        if (averageFps < 42) enableLiteMode("low-fps");
-      }
-    }
-  }
-
-  lastFpsSample = timestamp;
-}
-
-function clamp(value, min, max) {
-  return Math.max(min, Math.min(max, value));
-}
-
-function bodyScale(body) {
-  if (body.index !== focusedProject) return 1;
-  if (prefersLiteMode()) return body.pinned ? 1.16 : 1.08;
-  return body.pinned ? 1.28 : 1.16;
-}
-
-function stageFloor(bounds) {
-  return bounds.height;
-}
-
-function tossCovers(force = 1) {
-  bodies.forEach((body, index) => {
-    if (body.dragging || body.pinned) return;
-
-    const adjustedForce = prefersLiteMode() ? force * 0.35 : force;
-    const phase = performance.now() * 0.003 + index * 1.91;
-    body.vx += Math.cos(phase) * 0.72 * adjustedForce;
-    body.vy += Math.sin(phase * 1.23) * 0.55 * adjustedForce;
-    body.rotation += Math.sin(phase) * 5.5 * adjustedForce;
-  });
-}
-
-function handleDeviceOrientation(event) {
-  if (typeof event.gamma === "number") {
-    const targetX = clamp(event.gamma / 34, -1, 1);
-    deviceGravity.x += (targetX - deviceGravity.x) * 0.08;
-  }
-}
-
-function handleDeviceMotion(event) {
-  const source = event.accelerationIncludingGravity || event.acceleration;
-  if (!source) return;
-
-  const x = source.x || 0;
-  const y = source.y || 0;
-  const z = source.z || 0;
-  const magnitude = Math.hypot(x, y, z);
-  const delta = Math.abs(magnitude - lastMotionMagnitude);
-  lastMotionMagnitude = magnitude;
-
-  const now = performance.now();
-  if (delta < 8.5 || now - lastShakeAt < 650) return;
-
-  lastShakeAt = now;
-  tossCovers(clamp(delta / 11, 0.8, 1.8));
-}
-
-async function enableDeviceSensors() {
-  if (sensorsActive) return true;
-  if (sensorPermissionAsked) return false;
-  sensorPermissionAsked = true;
-
-  try {
-    const permissionRequests = [];
-    if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function") {
-      permissionRequests.push(DeviceOrientationEvent.requestPermission());
-    }
-
-    if (typeof DeviceMotionEvent !== "undefined" && typeof DeviceMotionEvent.requestPermission === "function") {
-      permissionRequests.push(DeviceMotionEvent.requestPermission());
-    }
-
-    const states = await Promise.all(permissionRequests);
-    if (states.some((state) => state !== "granted")) {
-      sensorPermissionAsked = false;
-      return false;
-    }
-  } catch {
-    sensorPermissionAsked = false;
-    return false;
-  }
-
-  window.addEventListener("deviceorientation", handleDeviceOrientation);
-  window.addEventListener("devicemotion", handleDeviceMotion);
-  sensorsActive = true;
-  document.body.classList.add("motion-enabled");
-  motionEnable?.setAttribute("hidden", "");
-  tossCovers(0.35);
-  return true;
-}
-
 function escapeHtml(value = "") {
   return String(value).replace(/[&<>"']/g, (character) => {
     const entities = {
@@ -272,18 +48,16 @@ function escapeHtml(value = "") {
 }
 
 function escapeAttr(value = "") {
-  return escapeHtml(value);
+  return escapeHtml(value).replace(/`/g, "&#96;");
 }
 
 function safeExternalUrl(value = "") {
-  const fallback = "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp";
   try {
-    const url = new URL(String(value), window.location.href);
-    if (url.protocol === "https:" || url.protocol === "http:") return url.href;
+    const url = new URL(value);
+    return url.protocol === "http:" || url.protocol === "https:" ? url.href : "#";
   } catch {
-    return fallback;
+    return "#";
   }
-  return fallback;
 }
 
 function analyticsEnabled() {
@@ -294,25 +68,23 @@ function analyticsVisitorId() {
   try {
     const existing = window.localStorage.getItem(ANALYTICS_VISITOR_KEY);
     if (existing) return existing;
-    const created =
-      window.crypto?.randomUUID?.() ||
-      `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
-    window.localStorage.setItem(ANALYTICS_VISITOR_KEY, created);
-    return created;
+    const value = crypto.randomUUID();
+    window.localStorage.setItem(ANALYTICS_VISITOR_KEY, value);
+    return value;
   } catch {
-    return "";
+    return "unknown";
   }
 }
 
 function analyticsDevice() {
-  if (window.matchMedia("(max-width: 560px)").matches) return "Phone";
-  if (window.matchMedia("(max-width: 1024px)").matches) return "Tablet";
-  return "Desktop";
+  const width = window.innerWidth;
+  if (width < 680) return "phone";
+  if (width < 1100) return "tablet";
+  return "desktop";
 }
 
 function analyticsPath(value = "") {
-  const cleaned = String(value || window.location.pathname || "/").trim();
-  return cleaned.startsWith("/") ? cleaned : `/${cleaned}`;
+  return value.startsWith("/") ? value : `/${value}`;
 }
 
 function projectSlug(project = {}) {
@@ -328,35 +100,21 @@ function projectSlug(project = {}) {
 
 function trackPageView(path) {
   if (!analyticsEnabled()) return;
+  const now = Date.now();
+  const cleanPath = analyticsPath(path);
+  if (lastAnalyticsEvent.path === cleanPath && now - lastAnalyticsEvent.time < 1200) return;
+  lastAnalyticsEvent = { path: cleanPath, time: now };
 
-  const nextPath = analyticsPath(path);
-  const now = performance.now();
-  if (lastAnalyticsEvent.path === nextPath && now - lastAnalyticsEvent.time < 5000) return;
-  lastAnalyticsEvent = { path: nextPath, time: now };
-
-  const payload = {
-    path: nextPath,
-    referrer: document.referrer,
-    title: document.title,
+  const body = JSON.stringify({
     visitorId: analyticsVisitorId(),
+    path: cleanPath,
+    referrer: document.referrer || "",
     device: analyticsDevice(),
     language: navigator.language || "",
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || "",
-    screen: `${window.screen?.width || window.innerWidth}x${window.screen?.height || window.innerHeight}`,
-  };
-  const body = JSON.stringify(payload);
-  const url = `${CONTENT_API_BASE}/analytics/collect`;
+    screen: `${window.screen?.width || 0}x${window.screen?.height || 0}`,
+  });
 
-  try {
-    if (navigator.sendBeacon) {
-      const blob = new Blob([body], { type: "application/json" });
-      if (navigator.sendBeacon(url, blob)) return;
-    }
-  } catch {
-    // Fall through to fetch.
-  }
-
-  fetch(url, {
+  fetch(`${CONTENT_API_BASE}/analytics/collect`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body,
@@ -370,11 +128,11 @@ function projectMood(index) {
 }
 
 function applyAlbumMood(index) {
-  const mood = projectMood(index);
+  const [dark, pastel] = projectMood(index);
   const image = projects[index]?.image || "assets/studio-hero.jpg";
-  document.body.style.setProperty("--album-a", mood[0]);
-  document.body.style.setProperty("--album-b", mood[1]);
-  document.body.style.setProperty("--page-tint", mood[1]);
+  document.body.style.setProperty("--album-a", dark);
+  document.body.style.setProperty("--album-b", pastel);
+  document.body.style.setProperty("--page-tint", pastel);
   document.body.style.setProperty("--record-art", `url("${image}")`);
 }
 
@@ -393,7 +151,7 @@ function platformIcon(name) {
     youtube: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.5v7l6-3.5z"></path><rect x="3" y="6" width="18" height="12" rx="4"></rect></svg>`,
     google: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12.2 10.8h7.1c.1.5.2.9.2 1.5 0 4.2-2.8 7.2-7.1 7.2A7.5 7.5 0 1 1 17.6 6"></path></svg>`,
   };
-  return icons[name];
+  return icons[name] || "";
 }
 
 function renderPlatformLinks(project) {
@@ -420,270 +178,8 @@ function renderPlatformLinks(project) {
     .join("");
 }
 
-function renderGrid() {
-  if (!projects.length) {
-    grid.innerHTML = "";
-    entryScreen?.classList.add("is-complete");
-    return;
-  }
-
-  grid.innerHTML = projects
-    .map(
-      (project, index) => `
-        <button class="cover-token" type="button" data-token="${index}" aria-label="Focus ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
-          <img src="${escapeAttr(project.image)}" alt="${escapeAttr(project.album)} cover" loading="lazy" decoding="async">
-          <span><strong>${escapeHtml(project.album)}</strong><small>${escapeHtml(project.artist)}</small></span>
-        </button>
-      `,
-    )
-    .join("");
-
-  setupBodies();
-  const manualLite = storedLitePreference();
-  if (manualLite || reduceMotionQuery.matches) {
-    enableLiteMode(manualLite ? "manual" : "reduced-motion");
-  }
-  startIntroSelection();
-  window.requestAnimationFrame(updateStage);
-}
-
-function startIntroSelection() {
-  const index = randomProjectIndex();
-  focusProject(index, { snap: true, intro: true });
-  if (prefersLiteMode()) {
-    releaseFocusedProject();
-    return;
-  }
-
-  introReleaseTimer = window.setTimeout(() => {
-    releaseFocusedProject({ toss: true });
-  }, 3600);
-}
-
-function setupBodies() {
-  const bounds = viewportBounds();
-  const tokens = [...grid.querySelectorAll(".cover-token")];
-  bodies.length = 0;
-
-  tokens.forEach((token, index) => {
-    const size = token.offsetWidth || 116;
-    const lane = index % 5;
-    const bleed = edgeBleed(size);
-    const spread = Math.max(1, bounds.width - size + bleed * 2);
-    bodies.push({
-      token,
-      index,
-      x: -bleed + ((index * 173 + lane * 41) % spread),
-      y: -bleed + ((index * 211 + lane * 83) % Math.max(120, bounds.height - size + bleed * 2)),
-      vx: ((index % 7) - 3) * 0.052,
-      vy: ((index % 5) - 2) * 0.038,
-      drift: index * 1.73,
-      rotation: (index % 2 === 0 ? -1 : 1) * (2 + (index % 5)),
-      dragging: false,
-      pinned: false,
-      pointerId: null,
-      offsetX: 0,
-      offsetY: 0,
-      lastX: 0,
-      lastY: 0,
-      lastMove: 0,
-      startX: 0,
-      startY: 0,
-      lastTapMovement: Infinity,
-      dragVx: 0,
-      dragVy: 0,
-    });
-
-    token.addEventListener("pointerdown", (event) => beginDrag(event, index));
-    token.addEventListener("pointermove", (event) => dragToken(event, index));
-    token.addEventListener("pointerup", (event) => endDrag(event, index));
-    token.addEventListener("pointercancel", (event) => endDrag(event, index));
-    token.addEventListener("click", (event) => handleCoverClick(event, index));
-    token.addEventListener("dblclick", () => openProject(index));
-  });
-}
-
-function stagePoint(event) {
-  return {
-    x: event.clientX,
-    y: event.clientY,
-  };
-}
-
-function beginDrag(event, index) {
-  const body = bodies[index];
-  const point = stagePoint(event);
-  const now = performance.now();
-  const isMobileTap = window.matchMedia("(max-width: 560px)").matches;
-  if (isMobileTap && lastCoverTap.index === index && now - lastCoverTap.time < 420) {
-    lastCoverTap = { index: -1, time: 0 };
-    openProject(index);
-    event.preventDefault();
-    return;
-  }
-
-  if (isMobileTap) {
-    lastCoverTap = { index, time: now };
-  }
-
-  body.dragging = true;
-  body.pinned = false;
-  window.clearTimeout(introReleaseTimer);
-  body.pointerId = event.pointerId;
-  body.offsetX = point.x - body.x;
-  body.offsetY = point.y - body.y;
-  body.lastX = point.x;
-  body.lastY = point.y;
-  body.lastMove = performance.now();
-  body.startX = point.x;
-  body.startY = point.y;
-  body.dragVx = body.vx;
-  body.dragVy = body.vy;
-  body.token.setPointerCapture(event.pointerId);
-  body.dragClone = body.token.cloneNode(true);
-  body.dragClone.classList.add("drag-proxy");
-  document.body.appendChild(body.dragClone);
-  body.token.classList.add("is-drag-source");
-  event.preventDefault();
-}
-
-function dragToken(event, index) {
-  const body = bodies[index];
-  if (!body.dragging || body.pointerId !== event.pointerId) return;
-
-  const point = stagePoint(event);
-  const now = performance.now();
-  const elapsed = Math.max(16, now - body.lastMove);
-  body.x = point.x - body.offsetX;
-  body.y = point.y - body.offsetY;
-  const rawVx = ((point.x - body.lastX) / elapsed) * 16;
-  const rawVy = ((point.y - body.lastY) / elapsed) * 16;
-  body.dragVx += (rawVx - body.dragVx) * 0.28;
-  body.dragVy += (rawVy - body.dragVy) * 0.28;
-  body.vx = body.dragVx;
-  body.vy = body.dragVy;
-
-  const speed = Math.hypot(body.dragVx, body.dragVy);
-  const tiltSource = Math.abs(body.dragVx) < 0.018 && speed < 0.045 ? 0 : body.dragVx;
-  const targetRotation = Math.max(-7.5, Math.min(7.5, tiltSource * 1.85));
-  body.rotation += (targetRotation - body.rotation) * 0.18;
-  resolveHeaderCollision(body, { includeDragging: true });
-  body.lastX = point.x;
-  body.lastY = point.y;
-  body.lastMove = now;
-}
-
-function pushBodyFromDrag(dragged, target) {
-  if (!dragged || !target || target.dragging || target.pinned) return;
-
-  const draggedSize = dragged.token.offsetWidth || 116;
-  const targetSize = target.token.offsetWidth || 116;
-  const draggedRadius = draggedSize * 0.5;
-  const targetRadius = targetSize * 0.5;
-  const dragSpeed = Math.min(1.8, Math.hypot(dragged.vx, dragged.vy));
-  const draggedCenterX = dragged.x + draggedRadius;
-  const draggedCenterY = dragged.y + draggedRadius;
-  const targetCenterX = target.x + targetRadius;
-  const targetCenterY = target.y + targetRadius;
-  const dx = targetCenterX - draggedCenterX;
-  const dy = targetCenterY - draggedCenterY;
-  const distance = Math.max(1, Math.hypot(dx, dy));
-  const collisionRange = draggedRadius + targetRadius;
-  const cushion = collisionRange * (1.72 + dragSpeed * 0.06);
-
-  if (distance >= cushion) return;
-
-  const nx = dx / distance;
-  const ny = dy / distance;
-  const pressure = (cushion - distance) / cushion;
-  const nearContact = Math.max(0, (collisionRange - distance) / collisionRange);
-  const push = pressure * pressure * 14 + nearContact * 6;
-
-  target.x += nx * push;
-  target.y += ny * push;
-  target.vx += nx * (0.045 + pressure * 0.1) + dragged.vx * 0.024;
-  target.vy += ny * (0.045 + pressure * 0.1) + dragged.vy * 0.024;
-  target.rotation += nx * pressure * 0.42;
-}
-
-function endDrag(event, index) {
-  const body = bodies[index];
-  if (!body.dragging || body.pointerId !== event.pointerId) return;
-  const point = stagePoint(event);
-  const moved = Math.hypot(point.x - body.startX, point.y - body.startY);
-
-  body.dragging = false;
-  body.pointerId = null;
-  body.token.releasePointerCapture(event.pointerId);
-  body.dragClone?.remove();
-  body.dragClone = null;
-  body.token.classList.remove("is-drag-source");
-  body.token.style.zIndex = "";
-  body.introPinned = false;
-  body.lastTapMovement = moved;
-
-  const size = body.token.offsetWidth || 116;
-  const target = focusTargetPosition(size);
-  const distance = Math.hypot(body.x - target.x, body.y - target.y);
-
-  if (distance < target.radius) {
-    focusProject(index, { play: true });
-    body.vx = body.x < target.x ? -0.38 : 0.38;
-    body.vy = -0.18;
-  } else {
-    focusProject(index);
-  }
-
-}
-
-function handleCoverClick(event, index) {
-  if (!window.matchMedia("(max-width: 560px)").matches) return;
-
-  const body = bodies[index];
-  if (!body || body.lastTapMovement > 12) return;
-
-  const now = performance.now();
-  const isDoubleTap = lastCoverTap.index === index && now - lastCoverTap.time < 420;
-  if (isDoubleTap) {
-    lastCoverTap = { index: -1, time: 0 };
-    openProject(index);
-    event.preventDefault();
-    return;
-  }
-
-  lastCoverTap = { index, time: now };
-}
-
-function releaseFocusedProject(options = {}) {
-  const body = bodies[focusedProject];
-  if (!body) return;
-
-  body.pinned = false;
-  body.introPinned = false;
-
-  if (options.toss) {
-    const direction = focusedProject % 2 === 0 ? 1 : -1;
-    body.vx = 0.35 * direction;
-    body.vy = -0.22;
-    body.rotation = direction * 3.5;
-  }
-
-  body.token.classList.remove("is-focused", "is-intro-focused");
-  document.body.classList.remove("is-playing");
-  focusedProject = -1;
-}
-
-function focusProject(index, options = {}) {
-  if (!projects[index]) return;
-  focusedProject = index;
-  displayedProject = index;
-  const project = projects[index];
-  applyAlbumMood(index);
-  document.body.classList.add("is-playing");
-  focusTitle.textContent = project.album;
-  focusMeta.textContent = `${project.artist} / ${project.year}`;
-  focusRole.textContent = project.role;
-  focusTracks.innerHTML = (Array.isArray(project.tracks) ? project.tracks : [])
+function renderTrackLinks(project) {
+  return (Array.isArray(project.tracks) ? project.tracks : [])
     .map((track) => {
       const item = typeof track === "string" ? { title: track, url: "" } : track;
       return item.url
@@ -691,298 +187,76 @@ function focusProject(index, options = {}) {
         : `<span>${escapeHtml(item.title)}</span>`;
     })
     .join("");
+}
+
+function columnProjects(columnIndex) {
+  return projects.filter((_, index) => index % 3 === columnIndex);
+}
+
+function renderColumnCard(project, index, copyIndex) {
+  const trackCount = Array.isArray(project.tracks) ? project.tracks.length : 0;
+  return `
+    <button class="column-card" type="button" data-token="${index}" aria-label="Focus ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
+      <img src="${escapeAttr(project.image || "assets/studio-hero.jpg")}" alt="${escapeAttr(project.album)} cover" loading="lazy" decoding="async">
+      <span class="card-index">${String(index + 1).padStart(2, "0")}</span>
+      <span class="card-copy">
+        <strong>${escapeHtml(project.album || "Untitled")}</strong>
+        <small>${escapeHtml(project.artist || "")}${trackCount > 1 ? ` / ${trackCount} tracks` : ""}</small>
+      </span>
+      <span class="card-tint" aria-hidden="true"></span>
+    </button>
+  `;
+}
+
+function renderGrid() {
+  if (!projects.length) {
+    grid.innerHTML = "";
+    entryScreen?.classList.add("is-complete");
+    return;
+  }
+
+  grid.innerHTML = [0, 1, 2]
+    .map((columnIndex) => {
+      const items = columnProjects(columnIndex);
+      const repeatedItems = [...items, ...items, ...items];
+      return `
+        <div class="work-column is-column-${columnIndex + 1}" style="--column-speed: ${42 + columnIndex * 7}s; --column-offset: ${columnIndex * -8}rem;">
+          <div class="column-rail">
+            ${repeatedItems.map((project, copyIndex) => renderColumnCard(project, projects.indexOf(project), copyIndex)).join("")}
+          </div>
+        </div>
+      `;
+    })
+    .join("");
+
+  const initialIndex = randomProjectIndex();
+  focusProject(initialIndex);
+  bindColumnCards();
+}
+
+function bindColumnCards() {
+  grid.querySelectorAll(".column-card").forEach((card) => {
+    const index = Number(card.dataset.token);
+    card.addEventListener("click", () => focusProject(index));
+    card.addEventListener("dblclick", () => openProject(index));
+  });
+}
+
+function focusProject(index) {
+  if (!projects[index]) return;
+  focusedProject = index;
+  displayedProject = index;
+  const project = projects[index];
+  applyAlbumMood(index);
+  document.body.classList.add("is-playing");
+  focusTitle.textContent = project.album || "Untitled";
+  focusMeta.textContent = [project.artist, project.year].filter(Boolean).join(" / ");
+  focusRole.textContent = project.role || "";
+  focusTracks.innerHTML = renderTrackLinks(project);
   focusPlatforms.innerHTML = renderPlatformLinks(project);
-
-  bodies.forEach((body, bodyIndex) => {
-    body.token.classList.toggle("is-focused", bodyIndex === index);
-    body.token.classList.toggle("is-intro-focused", bodyIndex === index && options.intro);
-    if (bodyIndex !== index) body.pinned = false;
-    if (bodyIndex !== index) body.introPinned = false;
+  grid.querySelectorAll(".column-card").forEach((card) => {
+    card.classList.toggle("is-focused", Number(card.dataset.token) === index);
   });
-
-  if (options.snap && bodies[index]) {
-    const body = bodies[index];
-    const size = body.token.offsetWidth || 116;
-    const target = focusTargetPosition(size);
-    body.x = target.x;
-    body.y = target.y;
-    body.vx = 0;
-    body.vy = 0;
-    body.rotation = 0;
-    body.pinned = true;
-    body.introPinned = Boolean(options.intro);
-    body.token.style.zIndex = "7";
-  }
-}
-
-function clampBodyToViewport(body, bounds, floor) {
-  const size = body.token.offsetWidth || 116;
-  const scale = bodyScale(body);
-  const scaleInset = (size * (scale - 1)) / 2;
-  const bleed = edgeBleed();
-  const leftEdge = -bleed + scaleInset;
-  const rightEdge = bounds.width - size + bleed - scaleInset;
-  const topEdge = topPlayEdge() - bleed + scaleInset;
-
-  if (body.x < leftEdge) {
-    body.x = leftEdge;
-    body.vx = Math.abs(body.vx) * 0.72 + 0.035;
-  }
-
-  if (body.x > rightEdge) {
-    body.x = rightEdge;
-    body.vx = -Math.abs(body.vx) * 0.72 - 0.035;
-  }
-
-  if (body.y < topEdge) {
-    body.y = topEdge;
-    body.vy = Math.abs(body.vy) * 0.62 + 0.025;
-  }
-
-  if (!body.dragging && body.y + size + scaleInset > floor) {
-    body.y = floor - size - scaleInset;
-    body.vy = Math.abs(body.vy) > 0.08 ? -Math.abs(body.vy) * 0.58 : -0.07;
-    body.vx *= 0.99;
-    body.rotation *= 0.985;
-  }
-}
-
-function applySeparation(body, axis, amount) {
-  if (axis === "x") {
-    body.x += amount;
-    body.vx = body.vx * -0.18 + Math.sign(amount) * 0.012;
-    return;
-  }
-
-  body.y += amount;
-  body.vy = amount < 0 ? -Math.abs(body.vy) * 0.24 - 0.035 : Math.abs(body.vy) * 0.16;
-  body.vx *= 0.94;
-  body.rotation *= 0.98;
-}
-
-function keepBodyMoving(body, timestamp, delta) {
-  const speed = Math.hypot(body.vx, body.vy);
-  if (speed > 0.055) return;
-
-  const driftTime = timestamp * 0.00016 + body.drift;
-  body.vx += Math.sin(driftTime * 1.7) * 0.0055 * delta;
-  body.vy += Math.sin(driftTime * 2.1) * 0.0046 * delta;
-}
-
-function separatePair(a, b) {
-  const aSize = a.token.offsetWidth || 116;
-  const bSize = b.token.offsetWidth || 116;
-  const aLeft = a.x;
-  const aRight = a.x + aSize;
-  const aTop = a.y;
-  const aBottom = a.y + aSize;
-  const bLeft = b.x;
-  const bRight = b.x + bSize;
-  const bTop = b.y;
-  const bBottom = b.y + bSize;
-  const overlapX = Math.min(aRight, bRight) - Math.max(aLeft, bLeft);
-  const overlapY = Math.min(aBottom, bBottom) - Math.max(aTop, bTop);
-
-  if (overlapX <= 0 || overlapY <= 0) return;
-
-  const axis = overlapY < overlapX * 1.2 ? "y" : "x";
-  const aCenter = axis === "x" ? a.x + aSize * 0.5 : a.y + aSize * 0.5;
-  const bCenter = axis === "x" ? b.x + bSize * 0.5 : b.y + bSize * 0.5;
-  const direction = aCenter < bCenter ? -1 : 1;
-  const overlap = axis === "x" ? overlapX : overlapY;
-  const separation = overlap + 0.5;
-  const aLocked = a.dragging || a.pinned;
-  const bLocked = b.dragging || b.pinned;
-
-  if (aLocked && bLocked) return;
-
-  if (aLocked) {
-    applySeparation(b, axis, -direction * separation * 0.48);
-    return;
-  }
-
-  if (bLocked) {
-    applySeparation(a, axis, direction * separation * 0.48);
-    return;
-  }
-
-  applySeparation(a, axis, direction * separation * 0.5);
-  applySeparation(b, axis, -direction * separation * 0.5);
-}
-
-function resolveCoverCollisions(bounds, floor) {
-  const draggedBodies = bodies.filter((body) => body.dragging);
-  draggedBodies.forEach((dragged) => {
-    bodies.forEach((body) => pushBodyFromDrag(dragged, body));
-  });
-
-  const passes = prefersLiteMode() ? 1 : 3;
-  for (let pass = 0; pass < passes; pass += 1) {
-    for (let first = 0; first < bodies.length; first += 1) {
-      for (let second = first + 1; second < bodies.length; second += 1) {
-        separatePair(bodies[first], bodies[second]);
-      }
-    }
-
-    bodies.forEach((body) => clampBodyToViewport(body, bounds, floor));
-  }
-}
-
-function resolveRecordCollision(body) {
-  if (body.dragging || body.pinned) return;
-  if (window.innerWidth <= 560) return;
-
-  const record = recordObstacle();
-  if (!record) return;
-
-  const size = body.token.offsetWidth || 116;
-  const coverRadius = size * 0.5;
-  const centerX = body.x + coverRadius;
-  const centerY = body.y + coverRadius;
-  const dx = centerX - record.x;
-  const dy = centerY - record.y;
-  const distance = Math.max(1, Math.hypot(dx, dy));
-  const minDistance = record.radius + coverRadius * 1.08;
-
-  if (distance >= minDistance) return;
-
-  const nx = dx / distance;
-  const ny = dy / distance;
-  const push = minDistance - distance + 1;
-  body.x += nx * push;
-  body.y += ny * push;
-  body.vx = Math.max(-1.2, Math.min(1.2, body.vx * 0.24 + nx * 0.18));
-  body.vy = Math.max(-1.2, Math.min(1.2, body.vy * 0.24 + ny * 0.16));
-  body.rotation += nx * 0.55;
-}
-
-function resolveRectCollision(body, rect, options = {}) {
-  if ((body.dragging && !options.includeDragging) || body.pinned) return;
-  if (!rect) return;
-
-  const size = body.token.offsetWidth || 116;
-  const scale = bodyScale(body);
-  const inset = (size * (scale - 1)) / 2;
-  const left = body.x - inset;
-  const right = body.x + size + inset;
-  const top = body.y - inset;
-  const bottom = body.y + size + inset;
-
-  if (right <= rect.left || left >= rect.right || bottom <= rect.top || top >= rect.bottom) return;
-
-  const maxX = window.innerWidth - size - inset;
-  const maxY = window.innerHeight - size - inset;
-  const pushes = [
-    { axis: "x", amount: rect.left - right, next: body.x + rect.left - right },
-    { axis: "x", amount: rect.right - left, next: body.x + rect.right - left },
-    { axis: "y", amount: rect.top - bottom, next: body.y + rect.top - bottom },
-    { axis: "y", amount: rect.bottom - top, next: body.y + rect.bottom - top },
-  ]
-    .map((push) => ({
-      ...push,
-      valid: push.axis === "x" ? push.next >= 0 && push.next <= maxX : push.next >= 0 && push.next <= maxY,
-    }))
-    .sort((a, b) => {
-      if (a.valid !== b.valid) return a.valid ? -1 : 1;
-      return Math.abs(a.amount) - Math.abs(b.amount);
-    });
-
-  const push = pushes[0];
-  if (push.axis === "x") {
-    body.x += push.amount;
-    body.vx = push.amount < 0 ? -Math.abs(body.vx) * 0.58 - 0.05 : Math.abs(body.vx) * 0.58 + 0.05;
-  } else {
-    body.y += push.amount;
-    body.vy = push.amount < 0 ? -Math.abs(body.vy) * 0.58 - 0.05 : Math.abs(body.vy) * 0.58 + 0.05;
-  }
-  body.rotation *= 0.97;
-}
-
-function resolvePanelCollision(body) {
-  resolveRectCollision(body, panelObstacle());
-}
-
-function resolveHeaderCollision(body, options = {}) {
-  resolveRectCollision(body, headerObstacle(), options);
-}
-
-function updateStage(timestamp) {
-  if (!workView.classList.contains("is-active") || modal.classList.contains("is-open")) {
-    lastFrame = timestamp;
-    window.requestAnimationFrame(updateStage);
-    return;
-  }
-
-  sampleFrameRate(timestamp);
-
-  const bounds = viewportBounds();
-  const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
-  const floor = stageFloor(bounds);
-  const reducedMotion = reduceMotionQuery.matches || document.hidden;
-  const lite = prefersLiteMode();
-  lastFrame = timestamp;
-
-  bodies.forEach((body) => {
-    if (!body.dragging && !body.pinned) {
-      if (reducedMotion) {
-        body.vx *= 0.82;
-        body.vy *= 0.82;
-        body.rotation *= 0.96;
-      } else {
-        const driftPower = lite ? 0.34 : 1;
-        const driftTime = timestamp * 0.00016 + body.drift;
-        const size = body.token.offsetWidth || 116;
-        const centerX = (bounds.width - size) * 0.5;
-        const floatTargetY = (bounds.height - size) * (0.18 + 0.64 * (0.5 + Math.sin(driftTime * 0.72) * 0.5));
-        const lowerBand = bounds.height * 0.62;
-        body.vx += Math.sin(driftTime) * 0.0029 * driftPower * delta;
-        body.vx += deviceGravity.x * 0.0015 * driftPower * delta;
-        body.vx += (centerX - body.x) * 0.0000022 * driftPower * delta;
-        body.vy += Math.sin(driftTime * 1.35) * 0.0034 * driftPower * delta;
-        body.vy += (floatTargetY - body.y) * 0.0000065 * driftPower * delta;
-        if (body.y > lowerBand) {
-          body.vy -= ((body.y - lowerBand) / bounds.height) * 0.010 * driftPower * delta;
-        }
-        if (lite) {
-          const speed = Math.hypot(body.vx, body.vy);
-          if (speed < 0.025) {
-            body.vx += Math.sin(driftTime * 1.7) * 0.0012;
-            body.vy += Math.cos(driftTime * 1.3) * 0.001;
-          }
-        } else {
-          keepBodyMoving(body, timestamp, delta);
-        }
-        body.vx *= lite ? 0.982 : 0.994;
-        body.vy *= lite ? 0.982 : 0.994;
-      }
-
-      body.x += body.vx * delta;
-      body.y += body.vy * delta;
-      body.rotation += body.vx * 0.008;
-
-      clampBodyToViewport(body, bounds, floor);
-    }
-  });
-
-  resolveCoverCollisions(bounds, floor);
-  bodies.forEach((body) => {
-    resolveRecordCollision(body);
-    resolveHeaderCollision(body, { includeDragging: true });
-    resolvePanelCollision(body);
-    clampBodyToViewport(body, bounds, floor);
-  });
-
-  bodies.forEach((body, index) => {
-    const scale = bodyScale(body);
-    const transform = `translate3d(${body.x}px, ${body.y}px, 0) rotate(${body.rotation}deg) scale(${scale})`;
-    body.token.style.transform = transform;
-    body.token.style.zIndex = body.pinned ? "7" : String(3 + (index % 3));
-    if (body.dragClone) {
-      body.dragClone.style.transform = transform;
-    }
-  });
-
-  window.requestAnimationFrame(updateStage);
 }
 
 function showView(view) {
@@ -999,20 +273,13 @@ function openProject(index) {
   activeProject = index;
   const project = projects[index];
   applyAlbumMood(index);
-  modalTitle.innerHTML = `<em>${escapeHtml(project.album)}</em><br>${escapeHtml(project.artist)}`;
-  modalYear.textContent = project.year;
-  modalRole.textContent = project.role;
-  modalTracks.innerHTML = (Array.isArray(project.tracks) ? project.tracks : [])
-    .map((track) => {
-      const item = typeof track === "string" ? { title: track, url: "" } : track;
-      return item.url
-        ? `<a href="${escapeAttr(safeExternalUrl(item.url))}" target="_blank" rel="noreferrer">${escapeHtml(item.title)}</a>`
-        : `<span>${escapeHtml(item.title)}</span>`;
-    })
-    .join("");
+  modalTitle.innerHTML = `<em>${escapeHtml(project.album || "Untitled")}</em><br>${escapeHtml(project.artist || "")}`;
+  modalYear.textContent = project.year || "";
+  modalRole.textContent = project.role || "";
+  modalTracks.innerHTML = renderTrackLinks(project);
   modalPlatforms.innerHTML = renderPlatformLinks(project);
   modalImage.src = project.image || "assets/studio-hero.jpg";
-  modalImage.alt = project.album;
+  modalImage.alt = project.album || "";
   prevButton.disabled = index === 0;
   nextButton.disabled = index === projects.length - 1;
   modal.classList.add("is-open");
@@ -1062,14 +329,16 @@ async function loadContent() {
 }
 
 async function bootSite() {
+  stage?.classList.add("is-column-stage");
+  motionEnable?.setAttribute("hidden", "");
   const content = await loadContent();
   projects = Array.isArray(content.works) ? content.works : [];
   renderGrid();
   trackPageView("/");
 
   window.setTimeout(() => {
-    entryScreen.classList.add("is-complete");
-  }, 2600);
+    entryScreen?.classList.add("is-complete");
+  }, 2100);
 }
 
 bootSite();
@@ -1082,33 +351,23 @@ document.addEventListener("click", (event) => {
   if (close) closeModal();
 });
 
-motionEnable?.addEventListener("click", async (event) => {
-  event.stopPropagation();
-  const enabled = await enableDeviceSensors();
-  if (!enabled) {
-    motionEnable.removeAttribute("hidden");
-  }
-});
-
-focusOpen.addEventListener("click", () => {
+focusOpen?.addEventListener("click", () => {
   if (displayedProject < 0) return;
   openProject(displayedProject);
 });
 
 stageFocus?.addEventListener("click", (event) => {
-  if (window.matchMedia("(max-width: 560px)").matches && displayedProject >= 0) {
+  if (event.target.closest("button, a")) return;
+  if (displayedProject >= 0 && window.matchMedia("(max-width: 640px)").matches) {
     openProject(displayedProject);
-    return;
   }
-
-  event.stopPropagation();
 });
 
-prevButton.addEventListener("click", () => {
+prevButton?.addEventListener("click", () => {
   shiftProject(-1);
 });
 
-nextButton.addEventListener("click", () => {
+nextButton?.addEventListener("click", () => {
   shiftProject(1);
 });
 
@@ -1156,21 +415,3 @@ modal.addEventListener(
   },
   { passive: false },
 );
-
-window.addEventListener("resize", () => {
-  const bounds = viewportBounds();
-  const floor = stageFloor(bounds);
-  bodies.forEach((body) => {
-    const size = body.token.offsetWidth || 116;
-    const scaleInset = (size * (bodyScale(body) - 1)) / 2;
-    const bleed = edgeBleed();
-    body.x = Math.min(Math.max(-bleed + scaleInset, body.x), bounds.width - size + bleed - scaleInset);
-    body.y = Math.min(Math.max(topPlayEdge() - bleed + scaleInset, body.y), floor - size + bleed - scaleInset);
-  });
-});
-
-if (typeof reduceMotionQuery.addEventListener === "function") {
-  reduceMotionQuery.addEventListener("change", (event) => {
-    if (event.matches) enableLiteMode("reduced-motion");
-  });
-}
