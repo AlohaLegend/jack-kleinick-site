@@ -449,6 +449,7 @@ editor.addEventListener("input", () => {
 newButton.addEventListener("click", () => {
   if (selectedIndex >= 0) syncCurrent();
   works.unshift(blankWork());
+  selectedIndex = -1;
   dirty = true;
   selectWork(0);
 });
@@ -457,9 +458,11 @@ deleteButton.addEventListener("click", () => {
   if (selectedIndex < 0 || !works[selectedIndex]) return;
   const project = works[selectedIndex];
   if (!window.confirm(`Delete ${project.album}?`)) return;
+  const nextIndex = Math.min(selectedIndex, works.length - 2);
   works.splice(selectedIndex, 1);
+  selectedIndex = -1;
   dirty = true;
-  selectWork(Math.min(selectedIndex, works.length - 1));
+  selectWork(nextIndex);
   setStatus("Deleted. Save to keep this change.");
 });
 
