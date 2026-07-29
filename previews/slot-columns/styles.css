@@ -1436,7 +1436,6 @@ body.is-lite-mode .modal-backdrop {
   height: 100vh;
   isolation: isolate;
   background:
-    linear-gradient(90deg, rgba(245, 241, 234, 0.035), transparent 18%, rgba(0, 0, 0, 0.18) 50%, transparent 82%),
     linear-gradient(140deg, color-mix(in srgb, var(--album-a) 18%, transparent), transparent 46%),
     linear-gradient(320deg, color-mix(in srgb, var(--album-b) 20%, transparent), transparent 52%),
     var(--page);
@@ -1541,7 +1540,7 @@ body.is-column-paused .column-rail {
   display: grid;
   min-height: clamp(8.2rem, 17vh, 13rem);
   overflow: hidden;
-  border: 1px solid rgba(245, 241, 234, 0.08);
+  border: 0;
   background: #111;
   color: var(--ink);
   cursor: pointer;
@@ -1550,7 +1549,6 @@ body.is-column-paused .column-rail {
   -webkit-tap-highlight-color: transparent;
   box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, 0.18);
   transition:
-    border-color 220ms ease,
     box-shadow 220ms ease,
     filter 220ms ease,
     transform 220ms ease;
@@ -1634,7 +1632,6 @@ body.is-column-paused .column-rail {
 .column-card:hover,
 .column-card:focus-visible,
 .column-card.is-focused {
-  border-color: color-mix(in srgb, var(--album-b) 54%, rgba(245, 241, 234, 0.26));
   box-shadow:
     0 1.25rem 2.6rem rgba(0, 0, 0, 0.34),
     0 0 2.8rem color-mix(in srgb, var(--album-b) 24%, transparent);
