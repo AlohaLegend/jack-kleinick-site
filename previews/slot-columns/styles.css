@@ -28,7 +28,7 @@ body {
   --amber: #d8a55b;
   --album-a: #b96a3d;
   --album-b: #7eb2ad;
-  --record-art: url("/assets/studio-hero.jpg");
+  --record-art: none;
   --panel-bg: rgba(9, 11, 12, 0.52);
   --panel-border: color-mix(in srgb, var(--album-b) 30%, rgba(245, 241, 234, 0.12));
   background: var(--page);
@@ -99,6 +99,11 @@ img {
   line-height: 1;
 }
 
+.site-title {
+  font: inherit;
+  line-height: 1;
+}
+
 .hover-glow,
 .name-button,
 .info-button {
@@ -129,8 +134,8 @@ img {
   overflow: hidden;
   background: var(--page);
   transition:
-    opacity 900ms ease,
-    visibility 900ms ease;
+    opacity 280ms ease,
+    visibility 280ms ease;
 }
 
 .entry-screen::before {
@@ -173,7 +178,7 @@ img {
   color: var(--muted);
   font-size: clamp(0.92rem, 2vw, 1.18rem);
   opacity: 0;
-  animation: entryText 1600ms ease forwards;
+  animation: entryText 560ms ease forwards;
 }
 
 .entry-copy h1 {
@@ -184,7 +189,7 @@ img {
   line-height: 0.85;
   opacity: 0;
   transform: translateY(0.5rem);
-  animation: entryTitle 1600ms 180ms ease forwards;
+  animation: entryTitle 600ms 60ms ease forwards;
 }
 
 .entry-index {
@@ -208,19 +213,19 @@ img {
   inset: 0;
   background: var(--ink);
   transform: translateX(-100%);
-  animation: entryBar 1300ms ease forwards;
+  animation: entryBar 520ms ease forwards;
 }
 
 .entry-index span:nth-child(2)::after {
-  animation-delay: 180ms;
+  animation-delay: 80ms;
 }
 
 .entry-index span:nth-child(3)::after {
-  animation-delay: 360ms;
+  animation-delay: 160ms;
 }
 
 .entry-index span:nth-child(4)::after {
-  animation-delay: 540ms;
+  animation-delay: 240ms;
 }
 
 .site-main {
@@ -1869,4 +1874,3 @@ body.is-column-paused .column-rail {
     overflow: auto;
   }
 }
-

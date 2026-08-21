@@ -3,20 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Selected work and contact for producer Jack Kleinick." />
+    <meta
+      name="description"
+      content="Official portfolio of Los Angeles producer, songwriter, and multi-instrumentalist Jack Kleinick, featuring selected credits, releases, and listening links."
+    />
+    <meta name="author" content="Jack Kleinick" />
     <meta name="theme-color" content="#090b0c" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Jack Kleinick — Producer, Writer, Multi-Instrumentalist" />
-    <meta property="og:description" content="Selected work and contact for producer Jack Kleinick." />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Jack Kleinick" />
+    <meta property="og:title" content="Jack Kleinick | Producer, Songwriter &amp; Multi-Instrumentalist" />
+    <meta
+      property="og:description"
+      content="Official portfolio featuring selected production and songwriting credits, releases, and listening links."
+    />
     <meta property="og:url" content="https://jackkleinick.com/" />
     <meta property="og:image" content="https://jackkleinick.com/assets/jack-kleinick-portrait.jpeg" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <title>Jack Kleinick</title>
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1080" />
+    <meta property="og:image:height" content="1080" />
+    <meta property="og:image:alt" content="Portrait of music producer Jack Kleinick" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Jack Kleinick | Producer, Songwriter &amp; Multi-Instrumentalist" />
+    <meta
+      name="twitter:description"
+      content="Selected production and songwriting credits, releases, and listening links."
+    />
+    <meta name="twitter:image" content="https://jackkleinick.com/assets/jack-kleinick-portrait.jpeg" />
+    <meta name="twitter:image:alt" content="Portrait of music producer Jack Kleinick" />
+    <title>Jack Kleinick | Producer, Songwriter &amp; Multi-Instrumentalist</title>
     <link rel="canonical" href="https://jackkleinick.com/" />
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23090b0c'/%3E%3Cpath d='M17 43c6-20 13-25 30-22-8 2-12 7-12 20 0 8-8 12-14 8-3-2-4-4-4-6Z' fill='%23f5f1ea'/%3E%3C/svg%3E" />
+    <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+    <link rel="preconnect" href="https://jack-kleinick-cms-auth.bammediaauth.workers.dev" />
     <link rel="stylesheet" href="styles.css" />
-    <script src="content/works.js"></script>
+    <script src="content/works.js" defer></script>
     <script src="app.js" defer></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://jackkleinick.com/#website",
+            "url": "https://jackkleinick.com/",
+            "name": "Jack Kleinick",
+            "description": "Official portfolio of producer, songwriter, and multi-instrumentalist Jack Kleinick.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Person",
+            "@id": "https://jackkleinick.com/#person",
+            "name": "Jack Kleinick",
+            "url": "https://jackkleinick.com/",
+            "image": "https://jackkleinick.com/assets/jack-kleinick-portrait.jpeg",
+            "jobTitle": ["Music Producer", "Songwriter", "Multi-Instrumentalist"],
+            "description": "Los Angeles-based producer, songwriter, and multi-instrumentalist.",
+            "homeLocation": {
+              "@type": "City",
+              "name": "Los Angeles"
+            },
+            "sameAs": [
+              "https://www.instagram.com/jackkleinick/",
+              "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp"
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div class="entry-screen" id="entry-screen" aria-hidden="true">
@@ -31,7 +84,9 @@
     </div>
 
     <header class="site-header">
-      <button class="name-button" type="button" data-view="work" aria-pressed="true">Jack Kleinick</button>
+      <h1 class="site-title">
+        <button class="name-button" type="button" data-view="work" aria-pressed="true">Jack Kleinick</button>
+      </h1>
       <div class="header-actions">
         <button class="info-button" type="button" data-view="info" aria-pressed="false">Info</button>
       </div>
@@ -66,7 +121,7 @@
       <section class="view info-view" id="info-view" aria-label="Info" aria-hidden="true">
         <div class="info-shell">
           <figure class="info-portrait">
-            <img src="assets/jack-kleinick-portrait.jpeg" alt="Jack Kleinick" width="1080" height="1080" decoding="async" />
+            <img data-src="assets/jack-kleinick-portrait.jpeg" alt="Jack Kleinick" width="1080" height="1080" decoding="async" />
             <figcaption>
               <span>Los Angeles CA</span>
               <span>producer / writer / multi-instrumentalist</span>
@@ -156,7 +211,7 @@
       <article class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <button class="close-button" type="button" aria-label="Close project" data-close>&times;</button>
         <div class="modal-art-shell">
-          <img id="modal-image" src="assets/studio-hero.jpg" alt="" width="1080" height="1080" decoding="async" />
+          <img id="modal-image" alt="" width="1080" height="1080" decoding="async" />
         </div>
         <div class="modal-copy">
           <h1 id="modal-title"></h1>

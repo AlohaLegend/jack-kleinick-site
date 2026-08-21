@@ -29,6 +29,7 @@ const entryScreen = document.querySelector("#entry-screen");
 const siteHeader = document.querySelector(".site-header");
 const siteMain = document.querySelector(".site-main");
 const modalCloseButton = modal.querySelector(".close-button");
+const infoPortrait = document.querySelector(".info-portrait img");
 
 let activeProject = 0;
 let focusedProject = 0;
@@ -1007,6 +1008,9 @@ function updateStage(timestamp) {
 
 function showView(view) {
   const showInfo = view === "info";
+  if (showInfo && infoPortrait?.dataset.src && !infoPortrait.getAttribute("src")) {
+    infoPortrait.src = infoPortrait.dataset.src;
+  }
   workView.classList.toggle("is-active", !showInfo);
   infoView.classList.toggle("is-active", showInfo);
   workView.setAttribute("aria-hidden", String(showInfo));
@@ -1136,7 +1140,7 @@ async function bootSite() {
 
   window.setTimeout(() => {
     entryScreen.classList.add("is-complete");
-  }, 2600);
+  }, 700);
 }
 
 bootSite();
