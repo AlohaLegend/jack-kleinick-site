@@ -428,8 +428,8 @@ async function loadContent() {
 async function bootSite() {
   stage?.classList.add("is-column-stage");
   motionEnable?.setAttribute("hidden", "");
-  const content = await loadContent();
-  projects = Array.isArray(content.works) ? content.works : [];
+  const initialContent = fallbackContent;
+  projects = Array.isArray(initialContent.works) ? initialContent.works : [];
   renderGrid();
   updateStageFocusAccessibility();
   trackPageView("/");
@@ -437,6 +437,19 @@ async function bootSite() {
   window.setTimeout(() => {
     entryScreen?.classList.add("is-complete");
   }, 700);
+
+  const liveContent = await loadContent();
+  if (
+    !Array.isArray(liveContent.works) ||
+    !liveContent.works.length ||
+    liveContent.updatedAt === initialContent.updatedAt
+  ) {
+    return;
+  }
+
+  projects = liveContent.works;
+  renderGrid();
+  updateStageFocusAccessibility();
 }
 
 bootSite();
