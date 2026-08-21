@@ -228,16 +228,22 @@ function holdColumnMotion(duration = 1800) {
   }, duration);
 }
 
-function renderColumnCard(project, index) {
+function renderColumnCard(project, index, { duplicate = false } = {}) {
+  const element = duplicate ? "div" : "button";
+  const accessibilityAttributes = duplicate
+    ? 'aria-hidden="true" data-duplicate="true"'
+    : `type="button" aria-label="Select ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}"`;
+  const imageAlt = duplicate ? "" : `${project.album} cover`;
+
   return `
-    <button class="column-card" type="button" data-token="${index}" aria-label="Select ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
-      <img src="${escapeAttr(assetUrl(project.image))}" alt="${escapeAttr(project.album)} cover" width="300" height="300" loading="lazy" decoding="async">
+    <${element} class="column-card" data-token="${index}" ${accessibilityAttributes}>
+      <img src="${escapeAttr(assetUrl(project.image))}" alt="${escapeAttr(imageAlt)}" width="300" height="300" loading="lazy" decoding="async">
       <span class="card-copy">
         <strong>${escapeHtml(project.album || "Untitled")}</strong>
         <small>${escapeHtml(project.artist || "")}</small>
       </span>
       <span class="card-tint" aria-hidden="true"></span>
-    </button>
+    </${element}>
   `;
 }
 
@@ -255,7 +261,13 @@ function renderGrid() {
       return `
         <div class="work-column is-column-${columnIndex + 1}" style="--column-speed: ${42 + columnIndex * 7}s; --column-offset: ${columnIndex * -8}rem;">
           <div class="column-rail">
-            ${repeatedItems.map((project) => renderColumnCard(project, projects.indexOf(project))).join("")}
+            ${repeatedItems
+              .map((project, repeatIndex) =>
+                renderColumnCard(project, projects.indexOf(project), {
+                  duplicate: repeatIndex >= items.length,
+                }),
+              )
+              .join("")}
           </div>
         </div>
       `;
@@ -299,6 +311,7 @@ function focusProject(index) {
     const isFocused = cardIndex === index;
     const cardProject = projects[cardIndex] || {};
     card.classList.toggle("is-focused", isFocused);
+    if (card.dataset.duplicate === "true") return;
     card.setAttribute("aria-pressed", String(isFocused));
     card.setAttribute(
       "aria-label",
