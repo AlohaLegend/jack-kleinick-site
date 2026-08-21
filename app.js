@@ -26,6 +26,9 @@ const modalPlatforms = document.querySelector("#modal-platforms");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
 const entryScreen = document.querySelector("#entry-screen");
+const siteHeader = document.querySelector(".site-header");
+const siteMain = document.querySelector(".site-main");
+const modalCloseButton = modal.querySelector(".close-button");
 
 let activeProject = 0;
 let focusedProject = 0;
@@ -42,6 +45,7 @@ let lastCoverTap = { index: -1, time: 0 };
 let lastAnalyticsEvent = { path: "", time: 0 };
 let liteMode = false;
 let lastFpsSample = 0;
+let modalReturnFocus = null;
 const fpsSamples = [];
 const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
@@ -286,6 +290,20 @@ function safeExternalUrl(value = "") {
   return fallback;
 }
 
+function normalizeTrack(track) {
+  const item = typeof track === "string" ? { title: track, url: "" } : { ...track };
+  if (item.url || typeof item.title !== "string") return item;
+
+  const embeddedUrl = item.title.match(/\s+(https?:\/\/\S+)\s*$/i);
+  if (!embeddedUrl) return item;
+
+  return {
+    ...item,
+    title: item.title.slice(0, embeddedUrl.index).trim(),
+    url: embeddedUrl[1],
+  };
+}
+
 function analyticsEnabled() {
   return ANALYTICS_HOSTS.has(window.location.hostname);
 }
@@ -397,11 +415,13 @@ function platformIcon(name) {
 }
 
 function renderPlatformLinks(project) {
-  const tracks = Array.isArray(project.tracks) ? project.tracks : [];
-  const firstTrack = tracks.find((track) => typeof track !== "string" && track.url);
+  const tracks = (Array.isArray(project.tracks) ? project.tracks : []).map(normalizeTrack);
+  const firstTrack = tracks.find((track) => track.url);
   const firstTitle = firstTrack?.title || project.album;
   const query = platformSearchQuery(project, firstTitle);
-  const spotifyHref = safeExternalUrl(firstTrack?.url);
+  const spotifyHref = firstTrack?.url
+    ? safeExternalUrl(firstTrack.url)
+    : `https://open.spotify.com/search/${query}`;
   const platforms = [
     ["spotify", "Spotify", spotifyHref],
     ["apple", "Apple Music", `https://music.apple.com/us/search?term=${query}`],
@@ -431,7 +451,7 @@ function renderGrid() {
     .map(
       (project, index) => `
         <button class="cover-token" type="button" data-token="${index}" aria-label="Focus ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
-          <img src="${escapeAttr(project.image)}" alt="${escapeAttr(project.album)} cover" loading="lazy" decoding="async">
+          <img src="${escapeAttr(project.image)}" alt="${escapeAttr(project.album)} cover" width="300" height="300" loading="lazy" decoding="async">
           <span><strong>${escapeHtml(project.album)}</strong><small>${escapeHtml(project.artist)}</small></span>
         </button>
       `,
@@ -989,13 +1009,35 @@ function showView(view) {
   const showInfo = view === "info";
   workView.classList.toggle("is-active", !showInfo);
   infoView.classList.toggle("is-active", showInfo);
+  workView.setAttribute("aria-hidden", String(showInfo));
+  infoView.setAttribute("aria-hidden", String(!showInfo));
+  document.querySelectorAll("[data-view]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.view === view));
+  });
   document.body.classList.toggle("is-info-view", showInfo);
   closeModal();
   trackPageView(showInfo ? "/info" : "/");
 }
 
+function setModalBackgroundInert(isInert) {
+  [siteHeader, siteMain].forEach((element) => {
+    if (isInert) element.setAttribute("inert", "");
+    else element.removeAttribute("inert");
+  });
+}
+
+function modalFocusableElements() {
+  return [...modal.querySelectorAll("button:not([disabled]), a[href]")].filter((element) =>
+    element.matches(":not([hidden])") && (element.offsetWidth || element.offsetHeight),
+  );
+}
+
 function openProject(index) {
   if (!projects[index]) return;
+  const wasOpen = modal.classList.contains("is-open");
+  if (!wasOpen) {
+    modalReturnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+  }
   activeProject = index;
   const project = projects[index];
   applyAlbumMood(index);
@@ -1004,7 +1046,7 @@ function openProject(index) {
   modalRole.textContent = project.role;
   modalTracks.innerHTML = (Array.isArray(project.tracks) ? project.tracks : [])
     .map((track) => {
-      const item = typeof track === "string" ? { title: track, url: "" } : track;
+      const item = normalizeTrack(track);
       return item.url
         ? `<a href="${escapeAttr(safeExternalUrl(item.url))}" target="_blank" rel="noreferrer">${escapeHtml(item.title)}</a>`
         : `<span>${escapeHtml(item.title)}</span>`;
@@ -1017,17 +1059,41 @@ function openProject(index) {
   nextButton.disabled = index === projects.length - 1;
   modal.classList.add("is-open");
   modal.setAttribute("aria-hidden", "false");
+  setModalBackgroundInert(true);
   document.body.classList.add("is-modal-open");
   document.body.style.overflow = "hidden";
+  if (!wasOpen) {
+    window.requestAnimationFrame(() => modalCloseButton?.focus({ preventScroll: true }));
+  }
   trackPageView(`/work/${projectSlug(project)}`);
 }
 
 function closeModal() {
+  const wasOpen = modal.classList.contains("is-open");
   modal.classList.remove("is-open");
   modal.setAttribute("aria-hidden", "true");
+  setModalBackgroundInert(false);
   document.body.classList.remove("is-modal-open");
   document.body.style.overflow = "";
   modalSwipe = null;
+  if (wasOpen && modalReturnFocus?.isConnected) {
+    modalReturnFocus.focus({ preventScroll: true });
+  }
+  modalReturnFocus = null;
+}
+
+function updateStageFocusAccessibility() {
+  if (!stageFocus) return;
+  const isMobile = window.matchMedia("(max-width: 560px)").matches;
+  if (isMobile) {
+    stageFocus.setAttribute("role", "button");
+    stageFocus.setAttribute("tabindex", "0");
+    stageFocus.setAttribute("aria-label", "Open selected work credits and links");
+  } else {
+    stageFocus.removeAttribute("role");
+    stageFocus.removeAttribute("tabindex");
+    stageFocus.removeAttribute("aria-label");
+  }
 }
 
 function shiftProject(direction) {
@@ -1065,6 +1131,7 @@ async function bootSite() {
   const content = await loadContent();
   projects = Array.isArray(content.works) ? content.works : [];
   renderGrid();
+  updateStageFocusAccessibility();
   trackPageView("/");
 
   window.setTimeout(() => {
@@ -1104,6 +1171,13 @@ stageFocus?.addEventListener("click", (event) => {
   event.stopPropagation();
 });
 
+stageFocus?.addEventListener("keydown", (event) => {
+  if (!window.matchMedia("(max-width: 560px)").matches || displayedProject < 0) return;
+  if (event.key !== "Enter" && event.key !== " ") return;
+  event.preventDefault();
+  openProject(displayedProject);
+});
+
 prevButton.addEventListener("click", () => {
   shiftProject(-1);
 });
@@ -1114,7 +1188,25 @@ nextButton.addEventListener("click", () => {
 
 document.addEventListener("keydown", (event) => {
   if (!modal.classList.contains("is-open")) return;
-  if (event.key === "Escape") closeModal();
+  if (event.key === "Escape") {
+    event.preventDefault();
+    closeModal();
+    return;
+  }
+  if (event.key === "Tab") {
+    const focusable = modalFocusableElements();
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || !modal.contains(document.activeElement))) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && (document.activeElement === last || !modal.contains(document.activeElement))) {
+      event.preventDefault();
+      first.focus();
+    }
+    return;
+  }
   if (event.key === "ArrowLeft") shiftProject(-1);
   if (event.key === "ArrowRight") shiftProject(1);
 });
@@ -1158,6 +1250,7 @@ modal.addEventListener(
 );
 
 window.addEventListener("resize", () => {
+  updateStageFocusAccessibility();
   const bounds = viewportBounds();
   const floor = stageFloor(bounds);
   bodies.forEach((body) => {

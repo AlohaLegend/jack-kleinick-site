@@ -4,7 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Selected work and contact for producer Jack Kleinick." />
+    <meta name="theme-color" content="#090b0c" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Jack Kleinick — Producer, Writer, Multi-Instrumentalist" />
+    <meta property="og:description" content="Selected work and contact for producer Jack Kleinick." />
+    <meta property="og:url" content="https://jackkleinick.com/" />
+    <meta property="og:image" content="https://jackkleinick.com/assets/jack-kleinick-portrait.jpeg" />
+    <meta name="twitter:card" content="summary_large_image" />
     <title>Jack Kleinick</title>
+    <link rel="canonical" href="https://jackkleinick.com/" />
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23090b0c'/%3E%3Cpath d='M17 43c6-20 13-25 30-22-8 2-12 7-12 20 0 8-8 12-14 8-3-2-4-4-4-6Z' fill='%23f5f1ea'/%3E%3C/svg%3E" />
     <link rel="stylesheet" href="styles.css" />
     <script src="content/works.js"></script>
@@ -23,14 +31,14 @@
     </div>
 
     <header class="site-header">
-      <button class="name-button" type="button" data-view="work">Jack Kleinick</button>
+      <button class="name-button" type="button" data-view="work" aria-pressed="true">Jack Kleinick</button>
       <div class="header-actions">
-        <button class="info-button" type="button" data-view="info">Info</button>
+        <button class="info-button" type="button" data-view="info" aria-pressed="false">Info</button>
       </div>
     </header>
 
     <main class="site-main">
-      <section class="view is-active" id="work-view" aria-label="Selected works">
+      <section class="view is-active" id="work-view" aria-label="Selected works" aria-hidden="false">
         <section class="gravity-stage" id="gravity-stage" aria-label="Floating selected works">
           <div class="stage-focus" id="stage-focus" aria-live="polite">
             <div class="stage-target" aria-hidden="true"></div>
@@ -55,10 +63,10 @@
         </section>
       </section>
 
-      <section class="view info-view" id="info-view" aria-label="Info">
+      <section class="view info-view" id="info-view" aria-label="Info" aria-hidden="true">
         <div class="info-shell">
           <figure class="info-portrait">
-            <img src="assets/jack-kleinick-portrait.jpeg" alt="Jack Kleinick" loading="lazy" decoding="async" />
+            <img src="assets/jack-kleinick-portrait.jpeg" alt="Jack Kleinick" width="1080" height="1080" decoding="async" />
             <figcaption>
               <span>Los Angeles CA</span>
               <span>producer / writer / multi-instrumentalist</span>
@@ -148,7 +156,7 @@
       <article class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
         <button class="close-button" type="button" aria-label="Close project" data-close>&times;</button>
         <div class="modal-art-shell">
-          <img id="modal-image" src="assets/studio-hero.jpg" alt="" decoding="async" />
+          <img id="modal-image" src="assets/studio-hero.jpg" alt="" width="1080" height="1080" decoding="async" />
         </div>
         <div class="modal-copy">
           <h1 id="modal-title"></h1>

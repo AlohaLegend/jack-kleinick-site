@@ -1,6 +1,6 @@
 # Jack Kleinick Website Respawn Point
 
-This project lives at `D:\LOOMSWEBSITE`.
+The current checkout lives in the `jack-kleinick-site` repository. Do not rely on an old machine-specific drive path.
 
 Use this file to continue the build from another computer or another Codex session.
 
@@ -8,21 +8,27 @@ Use this file to continue the build from another computer or another Codex sessi
 
 - Client/site: Jack Kleinick, producer / multi-instrumentalist / songwriter.
 - GitHub repo: `https://github.com/AlohaLegend/jack-kleinick-site`
-- Live test site: `https://alohalegend.github.io/jack-kleinick-site/`
+- Production site: `https://jackkleinick.com/`
 - Current style direction: dark, editorial, simple, music-credit portfolio, with floating draggable album covers and a record/player focus area.
 - Main files: `index.html`, `styles.css`, `app.js`.
 - Managed fallback data: `content/works.json` and `content/works.js`.
 - Live content/auth backend: Cloudflare Worker in `cms-auth-worker/`.
 - Live Worker URL: `https://jack-kleinick-cms-auth.bammediaauth.workers.dev`.
 - Live admin UI: `admin/index.html`, `admin/styles.css`, `admin/admin.js`, served at `https://jackkleinick.com/admin/`.
-- Local server script: `start-site.cmd`, backed by `server.ps1`.
+- Cross-platform local server: `node server.mjs`.
+- Windows launcher: `start-site.cmd`, backed by `server.ps1`.
 
 ## Run Locally
 
-From PowerShell:
+From the repository root on macOS, Linux, or Windows:
+
+```sh
+node server.mjs
+```
+
+On Windows, you can alternatively use:
 
 ```powershell
-cd D:\LOOMSWEBSITE
 .\start-site.cmd
 ```
 
@@ -42,7 +48,7 @@ Open:
 https://jackkleinick.com/admin/
 ```
 
-The password is stored in Cloudflare as `ADMIN_PASSWORD`. A local copy exists at `D:\LOOMSWEBSITE\.jack-admin-password.txt` and is ignored by git.
+The password is stored in Cloudflare as `ADMIN_PASSWORD`. If a local copy is needed, keep it in `.jack-admin-password.txt`; that file is ignored by git.
 
 Admin flow:
 
@@ -71,16 +77,21 @@ Cloudflare resources:
 
 Deploy Worker changes:
 
-```powershell
-D:\JAKESWEBSITE\cms-auth-worker\node_modules\.bin\wrangler.cmd deploy --config D:\LOOMSWEBSITE\cms-auth-worker\wrangler.toml
+```sh
+cd cms-auth-worker
+npm install
+npm run deploy
 ```
 
 ## Verify
 
 Check JavaScript syntax:
 
-```powershell
-& "C:\Users\LMO80\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe" --check app.js
+```sh
+node --check app.js
+node --check admin/admin.js
+node --check previews/slot-columns/app.js
+node --check cms-auth-worker/src/index.js
 ```
 
 Useful responsive checks:
@@ -102,14 +113,14 @@ Things to re-check after motion changes:
 
 When changes are ready:
 
-```powershell
+```sh
 git status --short
-git add index.html styles.css app.js content admin cms-auth-worker robots.txt README.md RESPAWN.md
+git add -- <confirmed paths>
 git commit -m "Describe the change"
-git push origin HEAD:main
+git push -u origin HEAD
 ```
 
-GitHub Pages can take a short moment to update after push.
+Merge the reviewed branch into `main`; GitHub Pages deploys automatically after the merge.
 
 ## Current Notes
 

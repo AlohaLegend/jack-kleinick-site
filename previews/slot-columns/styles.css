@@ -55,6 +55,11 @@ a {
   font: inherit;
 }
 
+:where(a, button, [role="button"]):focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--album-b) 74%, white 26%);
+  outline-offset: 3px;
+}
+
 button {
   border: 0;
   background: transparent;
@@ -1864,5 +1869,4 @@ body.is-column-paused .column-rail {
     overflow: auto;
   }
 }
-
 
