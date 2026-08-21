@@ -1874,11 +1874,17 @@ body.is-column-paused .column-rail {
 
 @media (prefers-reduced-motion: reduce) {
   .column-rail {
-    animation: none !important;
-    transform: translateY(0) !important;
+    animation-name: columnDrift !important;
+    animation-duration: var(--column-speed) !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
   }
 
-  .work-column {
-    overflow: auto;
+  .is-column-2 .column-rail {
+    animation-direction: reverse !important;
+  }
+
+  .is-column-3 .column-rail {
+    animation-duration: calc(var(--column-speed) + 5s) !important;
   }
 }
