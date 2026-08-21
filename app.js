@@ -51,7 +51,6 @@ let stageAnimationStarted = false;
 const fpsSamples = [];
 const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
-const reduceMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 function viewportBounds() {
   return {
     width: window.innerWidth,
@@ -155,7 +154,7 @@ function enableLiteMode(reason = "adaptive") {
 }
 
 function prefersLiteMode() {
-  return liteMode || reduceMotionQuery.matches;
+  return liteMode;
 }
 
 function sampleFrameRate(timestamp) {
@@ -462,9 +461,7 @@ function renderGrid() {
 
   setupBodies();
   const manualLite = storedLitePreference();
-  if (manualLite || reduceMotionQuery.matches) {
-    enableLiteMode(manualLite ? "manual" : "reduced-motion");
-  }
+  if (manualLite) enableLiteMode("manual");
   startIntroSelection();
   if (!stageAnimationStarted) {
     stageAnimationStarted = true;
@@ -944,7 +941,7 @@ function updateStage(timestamp) {
   const bounds = viewportBounds();
   const delta = Math.min(2, Math.max(0.5, (timestamp - lastFrame) / 16 || 1));
   const floor = stageFloor(bounds);
-  const reducedMotion = reduceMotionQuery.matches || document.hidden;
+  const reducedMotion = document.hidden;
   const lite = prefersLiteMode();
   lastFrame = timestamp;
 
@@ -1283,9 +1280,3 @@ window.addEventListener("resize", () => {
     body.y = Math.min(Math.max(topPlayEdge() - bleed + scaleInset, body.y), floor - size + bleed - scaleInset);
   });
 });
-
-if (typeof reduceMotionQuery.addEventListener === "function") {
-  reduceMotionQuery.addEventListener("change", (event) => {
-    if (event.matches) enableLiteMode("reduced-motion");
-  });
-}
