@@ -47,6 +47,7 @@ let lastAnalyticsEvent = { path: "", time: 0 };
 let liteMode = false;
 let lastFpsSample = 0;
 let modalReturnFocus = null;
+let stageAnimationStarted = false;
 const fpsSamples = [];
 const bodies = [];
 const deviceGravity = { x: 0, y: 0 };
@@ -465,10 +466,14 @@ function renderGrid() {
     enableLiteMode(manualLite ? "manual" : "reduced-motion");
   }
   startIntroSelection();
-  window.requestAnimationFrame(updateStage);
+  if (!stageAnimationStarted) {
+    stageAnimationStarted = true;
+    window.requestAnimationFrame(updateStage);
+  }
 }
 
 function startIntroSelection() {
+  window.clearTimeout(introReleaseTimer);
   const index = randomProjectIndex();
   focusProject(index, { snap: true, intro: true });
   if (prefersLiteMode()) {
@@ -1132,8 +1137,8 @@ async function loadContent() {
 }
 
 async function bootSite() {
-  const content = await loadContent();
-  projects = Array.isArray(content.works) ? content.works : [];
+  const initialContent = fallbackContent;
+  projects = Array.isArray(initialContent.works) ? initialContent.works : [];
   renderGrid();
   updateStageFocusAccessibility();
   trackPageView("/");
@@ -1141,6 +1146,19 @@ async function bootSite() {
   window.setTimeout(() => {
     entryScreen.classList.add("is-complete");
   }, 700);
+
+  const liveContent = await loadContent();
+  if (
+    !Array.isArray(liveContent.works) ||
+    !liveContent.works.length ||
+    liveContent.updatedAt === initialContent.updatedAt
+  ) {
+    return;
+  }
+
+  projects = liveContent.works;
+  renderGrid();
+  updateStageFocusAccessibility();
 }
 
 bootSite();
