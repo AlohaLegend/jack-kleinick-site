@@ -1,81 +1,281 @@
-// Managed content for the Jack Kleinick site. Edit through the admin backend when possible.
+// Managed fallback content for the Jack Kleinick site. Regenerate with node scripts/sync-live-content.mjs.
 window.JackKleinickContent = {
-  "updatedAt": "2026-06-08T18:14:45.869Z",
+  "updatedAt": "2026-07-28T20:23:56.989Z",
   "works": [
     {
-      "album": "12065",
-      "artist": "grentperez",
-      "year": "Fast Friends",
-      "role": "12065: co-writer, producer, engineer, guitar, bass, keys, drum programming. Day by Day: co-writer, producer, drum programming, guitar.",
+      "album": "Gut Tug - EP",
+      "artist": "Madeline",
+      "year": "",
+      "role": "Producer\nCo-writer",
       "tracks": [
         {
-          "title": "12065",
-          "url": "https://open.spotify.com/track/0wwA0ZXgJTcuIWZrBP6G96"
-        },
-        {
-          "title": "Day by Day",
-          "url": "https://open.spotify.com/track/79oft65PDY4LL7MoLQ6Nxp"
+          "title": "Gut Tug - EP by Madeline",
+          "url": ""
         }
       ],
-      "image": "assets/covers/grentperez-12065.jpg",
+      "image": "assets/covers/live/madeline-gut-tug-ep.jpg",
       "colors": {
-        "dark": "#46190c",
-        "pastel": "#a56b55"
-      }
-    },
-    {
-      "album": "The Man",
-      "artist": "Gigi Perez",
-      "year": "Playlist credit",
-      "role": "Writing / production playlist credit",
-      "tracks": [
-        {
-          "title": "The Man",
-          "url": "https://open.spotify.com/track/5nhEyOUHbPrKfjOGpadH9M"
-        }
-      ],
-      "image": "assets/covers/gigi-perez-the-man.jpg",
-      "colors": {
-        "dark": "#18120c",
-        "pastel": "#716455"
-      }
-    },
-    {
-      "album": "die in the hills",
-      "artist": "Abi Carter",
-      "year": "Playlist credit",
-      "role": "Writing / production playlist credit",
-      "tracks": [
-        {
-          "title": "die in the hills",
-          "url": "https://open.spotify.com/track/6WlqETbhcWgkf2F2cvXHB8"
-        }
-      ],
-      "image": "assets/covers/abi-carter-die-in-the-hills.jpg",
-      "colors": {
-        "dark": "#04120c",
-        "pastel": "#5a6455"
+        "dark": "#001e57",
+        "pastel": "#263e0f"
       }
     },
     {
       "album": "Cosmic Wink",
       "artist": "Juliet Ivy",
       "year": "AWAL",
-      "role": "SOS 2001: co-writer, producer, engineer, guitar, bass, synths. Here We Go Again: additional production.",
+      "role": "SOS 2001 - producer, co-writer, guitar, bass\nHere We Go Again! - additional production",
       "tracks": [
         {
-          "title": "SOS 2001",
-          "url": "https://open.spotify.com/track/7izGUWUtK1kSKLIPPKO4fS"
-        },
-        {
-          "title": "Here We Go Again",
-          "url": "https://open.spotify.com/track/59FlFzfREVZFYmeDxC7oOm"
+          "title": "Cosmic Wink - EP by Juliet Ivy",
+          "url": ""
         }
       ],
-      "image": "assets/covers/juliet-ivy-sos-2001.jpg",
+      "image": "assets/covers/live/juliet-ivy-cosmic-wink.jpg",
       "colors": {
-        "dark": "#2e5d78",
-        "pastel": "#a8c7d7"
+        "dark": "#1d1111",
+        "pastel": "#837370"
+      }
+    },
+    {
+      "album": "Many Thanks!",
+      "artist": "Madeline",
+      "year": "",
+      "role": "co producer\nco writer",
+      "tracks": [
+        {
+          "title": "Many Thanks!",
+          "url": "https://open.spotify.com/track/5Z4pjJmCZzM1zBIwrFDwm2"
+        }
+      ],
+      "image": "assets/covers/live/madeline-many-thanks.jpg",
+      "colors": {
+        "dark": "#858686",
+        "pastel": "#f2f0ed"
+      }
+    },
+    {
+      "album": "flowerboy",
+      "artist": "jite",
+      "year": "",
+      "role": "producer\nco writer\nguitar",
+      "tracks": [
+        {
+          "title": "flowerboy",
+          "url": "https://open.spotify.com/track/62joMjNLLw9jzu3JTjRRxb"
+        }
+      ],
+      "image": "assets/covers/live/jite-flowerboy.jpg",
+      "colors": {
+        "dark": "#444545",
+        "pastel": "#adaba8"
+      }
+    },
+    {
+      "album": "Harmonious",
+      "artist": "Vida",
+      "year": "Amuseio AB",
+      "role": "producer\nsynths \ndrum programming",
+      "tracks": [
+        {
+          "title": "Harmonious",
+          "url": "https://open.spotify.com/track/6WREx5XQyjNerNhOb998MK"
+        }
+      ],
+      "image": "assets/covers/live/vida-harmonious.jpg",
+      "colors": {
+        "dark": "#2a4552",
+        "pastel": "#91abb6"
+      }
+    },
+    {
+      "album": "Sticking Around (feat. Ethansroom)",
+      "artist": "Hayden Everett, Ethansroom",
+      "year": "2024",
+      "role": "co writer",
+      "tracks": [
+        {
+          "title": "Sticking Around (feat. Ethansroom)",
+          "url": "https://open.spotify.com/track/28xfvB9qT9lvtmIiyr6aQJ"
+        }
+      ],
+      "image": "assets/covers/live/hayden-everett-ethansroom-sticking-around-feat-ethansroom.jpg",
+      "colors": {
+        "dark": "#5e6c5f",
+        "pastel": "#c8d5c4"
+      }
+    },
+    {
+      "album": "sweet dreams",
+      "artist": "Juliet Ivy",
+      "year": "2024",
+      "role": "producer\nco writer\nguitar\nbass\ndrum programming",
+      "tracks": [
+        {
+          "title": "sweet dreams",
+          "url": "https://open.spotify.com/track/2Ryg8Y4vcClhXTsTkHD5TE"
+        }
+      ],
+      "image": "assets/covers/live/juliet-ivy-sweet-dreams.jpg",
+      "colors": {
+        "dark": "#6b0404",
+        "pastel": "#d66562"
+      }
+    },
+    {
+      "album": "12065",
+      "artist": "grentperez",
+      "year": "AWAL",
+      "role": "producer\nco-writer\nguitar\nbass\nkeys",
+      "tracks": [
+        {
+          "title": "12065",
+          "url": "https://open.spotify.com/track/0wwA0ZXgJTcuIWZrBP6G96"
+        }
+      ],
+      "image": "assets/covers/live/grentperez-12065.jpg",
+      "colors": {
+        "dark": "#441e11",
+        "pastel": "#ad8170"
+      }
+    },
+    {
+      "album": "The Way I Love",
+      "artist": "Faye Meana",
+      "year": "Black Butter",
+      "role": "producer\nco writer",
+      "tracks": [
+        {
+          "title": "The Way I Love",
+          "url": "https://open.spotify.com/track/1b4DlWiSe9HpG0htLQ0WF6"
+        }
+      ],
+      "image": "assets/covers/live/faye-meana-the-way-i-love.jpg",
+      "colors": {
+        "dark": "#857979",
+        "pastel": "#f2e3e0"
+      }
+    },
+    {
+      "album": "Day By Day",
+      "artist": "grentperez",
+      "year": "AWAL",
+      "role": "",
+      "tracks": [
+        {
+          "title": "Day By Day",
+          "url": "https://open.spotify.com/track/79oft65PDY4LL7MoLQ6Nxp"
+        }
+      ],
+      "image": "assets/covers/live/grentperez-day-by-day.jpg",
+      "colors": {
+        "dark": "#858686",
+        "pastel": "#f2f0ed"
+      }
+    },
+    {
+      "album": "Talk",
+      "artist": "Wingtip",
+      "year": "Nettwerk",
+      "role": "producer\nco writer\nguitar\nbass",
+      "tracks": [
+        {
+          "title": "Talk",
+          "url": "https://open.spotify.com/track/1stp4ryfwcvCX1ChH9yJZN"
+        }
+      ],
+      "image": "assets/covers/live/wingtip-talk.jpg",
+      "colors": {
+        "dark": "#1d1104",
+        "pastel": "#837362"
+      }
+    },
+    {
+      "album": "Nose Job - Album by Caity Krone",
+      "artist": "Caity Krone",
+      "year": "2024",
+      "role": "Producer\nengineer\nguitar\nbass\nsynths",
+      "tracks": [
+        {
+          "title": "Nose Job - Album by Caity Krone",
+          "url": ""
+        }
+      ],
+      "image": "assets/covers/live/caity-krone-nose-job-album-by-caity-krone.jpg",
+      "colors": {
+        "dark": "#031111",
+        "pastel": "#677370"
+      }
+    },
+    {
+      "album": "Eating & Drinking & Being in Love - Album by Theo Kandel",
+      "artist": "Theo Kandel",
+      "year": "Nettwerk",
+      "role": "producer\nmixing engineer\nguitar\nbass\nco writer",
+      "tracks": [
+        {
+          "title": "Eating & Drinking & Being in Love - Album by Theo Kandel",
+          "url": ""
+        }
+      ],
+      "image": "assets/covers/live/theo-kandel-eating-and-drinking-and-being-in-love-album-by-theo-kandel.jpg",
+      "colors": {
+        "dark": "#442b2b",
+        "pastel": "#ad8f8c"
+      }
+    },
+    {
+      "album": "Villain",
+      "artist": "Caity Krone",
+      "year": "2023",
+      "role": "producer\nengineer\nguitar\nbass",
+      "tracks": [
+        {
+          "title": "Villain",
+          "url": "https://open.spotify.com/track/7tbJLOSjSOeq7ZPOuclI2W"
+        }
+      ],
+      "image": "assets/covers/live/caity-krone-villain.jpg",
+      "colors": {
+        "dark": "#101e1e",
+        "pastel": "#75817e"
+      }
+    },
+    {
+      "album": "This Again",
+      "artist": "Jack Rabbit",
+      "year": "2024",
+      "role": "producer\nengineer\nguitar\nbass",
+      "tracks": [
+        {
+          "title": "This Again",
+          "url": "https://open.spotify.com/track/6UoOZHWuhtcJL1WOZ1ITCY"
+        },
+        {
+          "title": "Duerme",
+          "url": "https://open.spotify.com/track/5qu7NnlgG04NohUAdnK2qp?si=9459c0330a2e4878"
+        }
+      ],
+      "image": "assets/covers/live/jack-rabbit-this-again.jpg",
+      "colors": {
+        "dark": "#372b38",
+        "pastel": "#9f8f9a"
+      }
+    },
+    {
+      "album": "Flight to JFK (Alt. Version)",
+      "artist": "Evan Honer, Theo Kandel",
+      "year": "Cloverdale Records",
+      "role": "Producer\nEngineer",
+      "tracks": [
+        {
+          "title": "Flight to JFK (Alt. Version)",
+          "url": "https://open.spotify.com/track/0veWoFat2XdwUCjzXMcTQt"
+        }
+      ],
+      "image": "assets/covers/live/evan-honer-theo-kandel-flight-to-jfk-alt-version.jpg",
+      "colors": {
+        "dark": "#103845",
+        "pastel": "#759da8"
       }
     },
     {
@@ -116,7 +316,7 @@ window.JackKleinickContent = {
       "album": "hotel room",
       "artist": "Puma Blue",
       "year": "Playlist credit",
-      "role": "Writing / production playlist credit",
+      "role": "shrieking eels (synths)",
       "tracks": [
         {
           "title": "hotel room",
@@ -133,7 +333,7 @@ window.JackKleinickContent = {
       "album": "When We Were Young",
       "artist": "Mia Wray",
       "year": "Mushroom Music",
-      "role": "Co-writer.",
+      "role": "Co-writer",
       "tracks": [
         {
           "title": "When We Were Young",
@@ -196,80 +396,10 @@ window.JackKleinickContent = {
       }
     },
     {
-      "album": "Honeydew Moon",
-      "artist": "Theo Kandel",
-      "year": "2026",
-      "role": "Writing / production playlist credit",
-      "tracks": [
-        {
-          "title": "Honeydew Moon",
-          "url": "https://open.spotify.com/track/7d2gHzUINbaKaJyNUqoaWR"
-        },
-        {
-          "title": "Flight to JFK (Alt. Version)",
-          "url": "https://open.spotify.com/track/0veWoFat2XdwUCjzXMcTQt"
-        }
-      ],
-      "image": "assets/covers/theo-kandel-honeydew-moon.jpg",
-      "colors": {
-        "dark": "#787a55",
-        "pastel": "#d8d49a"
-      }
-    },
-    {
-      "album": "Eating & Drinking & Being in Love",
-      "artist": "Theo Kandel",
-      "year": "Nettwerk",
-      "role": "Executive producer on all songs. Guitar, bass, synths, engineering, mixing on all songs.",
-      "tracks": [
-        {
-          "title": "Eating & Drinking & Being in Love (Intro)",
-          "url": "https://open.spotify.com/track/4c7NRJlgVAQBVzyvNFNUBh"
-        },
-        {
-          "title": "Lunch",
-          "url": "https://open.spotify.com/track/6rGbrQBd60SdCc4xBZBTwa"
-        },
-        {
-          "title": "On My Mind",
-          "url": "https://open.spotify.com/track/1qfLEX97vKcOs1bYIh47xt"
-        },
-        {
-          "title": "The Painters",
-          "url": "https://open.spotify.com/track/2kwQ7tZ1Jtod2rYaEEfb2e"
-        },
-        {
-          "title": "Fixer Upper",
-          "url": "https://open.spotify.com/track/7F1Q6Ih9d92zgSgzV3XZ7z"
-        },
-        {
-          "title": "Nothing New",
-          "url": "https://open.spotify.com/track/2QXjZ1GgUM5WRhBvP0WVIy"
-        },
-        {
-          "title": "One More Night (With My Friends in the City)",
-          "url": "https://open.spotify.com/track/65b8YwfRsbLnGmzQMcFEhG"
-        },
-        {
-          "title": "Romanticizing Poets",
-          "url": "https://open.spotify.com/track/1tvBHwke78BVAJZHIpfWBY"
-        },
-        {
-          "title": "Teeth",
-          "url": "https://open.spotify.com/track/7uF9b7nc4hbN4lgaoYCHz8"
-        }
-      ],
-      "image": "assets/covers/theo-kandel-eating-drinking.jpg",
-      "colors": {
-        "dark": "#88825d",
-        "pastel": "#ead795"
-      }
-    },
-    {
       "album": "The Tallest Child in New York",
       "artist": "Farrah Hanna",
       "year": "Mendel Records",
-      "role": "Producer, guitar, bass, synths, mixing and mastering engineer on all 5 songs.",
+      "role": "producer\nguitar\nbass\nsynths \nmixing",
       "tracks": [
         {
           "title": "Bugs",
@@ -299,96 +429,6 @@ window.JackKleinickContent = {
       }
     },
     {
-      "album": "Nose Job",
-      "artist": "Caity Krone",
-      "year": "EP",
-      "role": "Producer, engineer, guitar, bass, synths on Some Great Stadium, Nose Job, Camera Man, Angry Little Fish, At Least, Villain.",
-      "tracks": [
-        {
-          "title": "Some Great Stadium",
-          "url": "https://open.spotify.com/track/0wTUFDeJNbTaRZtt2QCxsS"
-        },
-        {
-          "title": "Nose Job",
-          "url": "https://open.spotify.com/track/6Qpg65XGgw9LQSOVM5hmu8"
-        },
-        {
-          "title": "Camera Man",
-          "url": "https://open.spotify.com/track/4bXOGO58ONBd5dtlMRXJuV"
-        },
-        {
-          "title": "Angry Little Fish",
-          "url": "https://open.spotify.com/track/1O6ezd2utSShzow2YxFX1x"
-        },
-        {
-          "title": "At Least",
-          "url": "https://open.spotify.com/track/3FkMStpMHUky7fGxhwGdk8"
-        },
-        {
-          "title": "Villain",
-          "url": "https://open.spotify.com/track/7tbJLOSjSOeq7ZPOuclI2W"
-        }
-      ],
-      "image": "assets/covers/caity-krone-some-great-stadium.jpg",
-      "colors": {
-        "dark": "#3d2924",
-        "pastel": "#937468"
-      }
-    },
-    {
-      "album": "A Sensitive Subject",
-      "artist": "Jack Rabbit",
-      "year": "Album",
-      "role": "Producer, engineer, mixing, guitar, bass, synths, drum programming on That's All, Right?, Amor, The Wedding Song, Texas Sky, Good Girl, and Fall. This Again: producer, guitars, bass, mellotron, drums, engineer, mix.",
-      "tracks": [
-        {
-          "title": "Tu Con El",
-          "url": "https://open.spotify.com/track/79cT5SZjsXBBCFTtURNyxL"
-        },
-        {
-          "title": "The Wedding Song",
-          "url": "https://open.spotify.com/track/2f4c6QmK9z7zmCzX2ZNHsX"
-        },
-        {
-          "title": "Fall",
-          "url": "https://open.spotify.com/track/7iXv9DKsDwc4VhfUB369wK"
-        },
-        {
-          "title": "That's All, Right?",
-          "url": "https://open.spotify.com/track/6Zz8d5d4GYtHD0rTBgSYWo"
-        },
-        {
-          "title": "Easy",
-          "url": "https://open.spotify.com/track/1f1xaBFgeenQIk0IQZxFOY"
-        },
-        {
-          "title": "Amor",
-          "url": "https://open.spotify.com/track/4ClUSNEqlGmh62GR9zyB98"
-        },
-        {
-          "title": "Texas Sky",
-          "url": "https://open.spotify.com/track/5S3KPP70fWailO9AlbzCJq"
-        },
-        {
-          "title": "Good Girl",
-          "url": "https://open.spotify.com/track/05HE1m7aqPnH1jHCmiHpoF"
-        },
-        {
-          "title": "Duerme",
-          "url": "https://open.spotify.com/track/5qu7NnlgG04NohUAdnK2qp"
-        },
-        {
-          "title": "This Again",
-          "url": "https://open.spotify.com/track/6UoOZHWuhtcJL1WOZ1ITCY"
-        }
-      ],
-      "image": "assets/covers/jack-rabbit-tu-con-el.jpg",
-      "colors": {
-        "dark": "#042647",
-        "pastel": "#5a7a98"
-      }
-    },
-    {
       "album": "Red Velvet",
       "artist": "Maeve",
       "year": "Single",
@@ -406,23 +446,6 @@ window.JackKleinickContent = {
       }
     },
     {
-      "album": "Traces",
-      "artist": "girli",
-      "year": "Believe UK",
-      "role": "Co-writer, producer, drum programming, synths, e-bow.",
-      "tracks": [
-        {
-          "title": "Traces",
-          "url": "https://open.spotify.com/search/Traces%20girli"
-        }
-      ],
-      "image": "assets/covers/girli-traces.jpg",
-      "colors": {
-        "dark": "#04333a",
-        "pastel": "#5a8989"
-      }
-    },
-    {
       "album": "To Let Go Your Hand",
       "artist": "kabir",
       "year": "2026",
@@ -437,101 +460,6 @@ window.JackKleinickContent = {
       "colors": {
         "dark": "#1f3a54",
         "pastel": "#7891a7"
-      }
-    },
-    {
-      "album": "Madeline",
-      "artist": "Madeline",
-      "year": "Playlist album block",
-      "role": "Producer, Songwriter, Acoustic Guitar",
-      "tracks": [
-        {
-          "title": "Somebody I Know",
-          "url": "https://open.spotify.com/track/0LNAyKS5FaiswCBiQCRX9W"
-        },
-        {
-          "title": "Thought You Knew",
-          "url": "https://open.spotify.com/track/0gApnA64zqfVmApEkNjkrq"
-        },
-        {
-          "title": "Many Thanks!",
-          "url": "https://open.spotify.com/track/5Z4pjJmCZzM1zBIwrFDwm2"
-        },
-        {
-          "title": "Ugly Feeling",
-          "url": "https://open.spotify.com/track/5Qas541chxKAJOzCpmo0tJ"
-        },
-        {
-          "title": "Relief",
-          "url": "https://open.spotify.com/track/1O06RitJzwO4wFBXLCP5w1"
-        },
-        {
-          "title": "Sad Eyes",
-          "url": "https://open.spotify.com/track/1oFiyAfqKtWvfypciikTfP"
-        },
-        {
-          "title": "Dancing in the Dark",
-          "url": "https://open.spotify.com/track/1lYcvk3x3BMKuWFXaoWwTJ"
-        },
-        {
-          "title": "Humor in It",
-          "url": "https://open.spotify.com/track/0gR8O92taM0yCZuMzGsEVW"
-        },
-        {
-          "title": "Wake Up",
-          "url": "https://open.spotify.com/track/50Dh6tcBoiGYu6aSSlPi3M"
-        },
-        {
-          "title": "Guilty Conscience",
-          "url": "https://open.spotify.com/track/0Q9GHV4vReliaijBp2oSvT"
-        },
-        {
-          "title": "Emergency Snack",
-          "url": "https://open.spotify.com/track/4AMCf4h4oFGI0TsE8D9BMp"
-        }
-      ],
-      "image": "assets/covers/madeline-thought-you-knew.jpg",
-      "colors": {
-        "dark": "#666277",
-        "pastel": "#c9c3dc"
-      }
-    },
-    {
-      "album": "HEAT",
-      "artist": "Appleby",
-      "year": "Playlist credit",
-      "role": "Writing / production playlist credit",
-      "tracks": [
-        {
-          "title": "HEAT",
-          "url": "https://open.spotify.com/track/78kFAIcwaR4U84jl8Z2SmK"
-        },
-        {
-          "title": "Navy Blue",
-          "url": "https://open.spotify.com/track/5xBoZEEn0ygvVDOAtqSpWR"
-        }
-      ],
-      "image": "assets/covers/appleby-heat.jpg",
-      "colors": {
-        "dark": "#7b755b",
-        "pastel": "#e0d4af"
-      }
-    },
-    {
-      "album": "Selected Works",
-      "artist": "Spotify Playlist",
-      "year": "Listen",
-      "role": "Playlist reel",
-      "tracks": [
-        {
-          "title": "Open playlist",
-          "url": "https://open.spotify.com/playlist/0vlibWutg819Jhq4i6lZmp"
-        }
-      ],
-      "image": "assets/studio-hero.jpg",
-      "colors": {
-        "dark": "#6d4227",
-        "pastel": "#c69a76"
       }
     }
   ]

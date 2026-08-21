@@ -25,10 +25,12 @@ The current local admin password copy is stored in `.jack-admin-password.txt`, w
 
 ## Deploy
 
-From the repo root:
+From the repository root:
 
-```powershell
-D:\JAKESWEBSITE\cms-auth-worker\node_modules\.bin\wrangler.cmd deploy --config D:\LOOMSWEBSITE\cms-auth-worker\wrangler.toml
+```sh
+cd cms-auth-worker
+npm install
+npm run deploy
 ```
 
 ## Notes

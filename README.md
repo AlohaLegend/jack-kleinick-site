@@ -1,18 +1,22 @@
 # Jack Kleinick Website
 
-Interactive portfolio prototype for music producer Jack Kleinick.
+Production portfolio for music producer Jack Kleinick.
 
 ## Run locally
 
-This version has no build step. The easiest preview is to open `index.html` directly from File Explorer.
+This site has no build step. From the repository root, run:
 
-You can also serve the folder with the Windows launcher:
+```sh
+node server.mjs
+```
+
+Then visit `http://127.0.0.1:4173`.
+
+On Windows, the included launcher is also available:
 
 ```powershell
 .\start-site.cmd
 ```
-
-Then visit `http://localhost:4173`.
 
 If your browser cannot reach `localhost`, use:
 
@@ -33,6 +37,16 @@ Find the LAN IP with:
 ```powershell
 ipconfig
 ```
+
+## Refresh the fallback catalog
+
+After a major update in the live admin, refresh the checked-in emergency copy:
+
+```sh
+node scripts/sync-live-content.mjs
+```
+
+The script downloads Worker-hosted cover art into `assets/covers/live/` and regenerates both fallback content files.
 
 ## Notes
 
@@ -55,5 +69,6 @@ https://jack-kleinick-cms-auth.bammediaauth.workers.dev
 - The admin wagon lane uses a public-domain OpenClipart station wagon SVG, downloaded from OpenClipart/FreeSVG.
 - `assets/studio-hero.jpg` is a compressed placeholder image used for the playlist/selected-works card.
 - The site is static and deploys through GitHub Pages from `main`.
+- The public fallback catalog is intentionally checked in for resilience; refresh it after major live-catalog updates.
 - The Info page links to Jack's Instagram handle, Spotify playlist, Apple Music search, and YouTube Music search.
 - Before final launch, re-check the credit metadata and replace placeholder/playlist artwork if Jack supplies approved assets.

@@ -162,6 +162,15 @@ function parseTrackLines(value) {
     .filter(Boolean)
     .map((line) => {
       const parts = line.split("|");
+      if (parts.length === 1) {
+        const embeddedUrl = line.match(/\s+(https?:\/\/\S+)\s*$/i);
+        if (embeddedUrl) {
+          return {
+            title: line.slice(0, embeddedUrl.index).trim(),
+            url: embeddedUrl[1],
+          };
+        }
+      }
       return {
         title: (parts.shift() || "").trim(),
         url: parts.join("|").trim(),
