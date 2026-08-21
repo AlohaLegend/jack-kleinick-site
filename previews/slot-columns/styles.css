@@ -1547,7 +1547,7 @@ body.is-lite-mode .modal-backdrop {
   animation-duration: calc(var(--column-speed) + 5s);
 }
 
-.work-column:hover .column-rail,
+.work-column.is-hovered .column-rail,
 .work-column:focus-within .column-rail,
 .work-column.is-paused .column-rail {
   animation-play-state: paused;

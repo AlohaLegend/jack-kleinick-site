@@ -286,6 +286,11 @@ function renderGrid() {
 }
 
 function bindColumnCards() {
+  grid.querySelectorAll(".work-column").forEach((column) => {
+    column.addEventListener("pointerenter", () => column.classList.add("is-hovered"));
+    column.addEventListener("pointerleave", () => column.classList.remove("is-hovered"));
+  });
+
   grid.querySelectorAll(".column-card").forEach((card) => {
     const index = Number(card.dataset.token);
     card.addEventListener("pointerenter", () => {
