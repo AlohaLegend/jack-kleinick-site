@@ -10,7 +10,8 @@ let displayedProject = 0;
 let modalSwipe = null;
 let lastWheelNavAt = 0;
 let lastAnalyticsEvent = { path: "", time: 0 };
-let columnHoldTimer = null;
+let hoverFocusTimer = null;
+const columnHoldTimers = new WeakMap();
 
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
@@ -220,12 +221,17 @@ function columnProjects(columnIndex) {
   return projects.filter((_, index) => index % 3 === columnIndex);
 }
 
-function holdColumnMotion(duration = 1800) {
-  document.body.classList.add("is-column-paused");
-  window.clearTimeout(columnHoldTimer);
-  columnHoldTimer = window.setTimeout(() => {
-    document.body.classList.remove("is-column-paused");
+function holdColumnMotion(card, duration = 1400) {
+  const column = card?.closest(".work-column");
+  if (!column) return;
+
+  column.classList.add("is-paused");
+  window.clearTimeout(columnHoldTimers.get(column));
+  const timer = window.setTimeout(() => {
+    column.classList.remove("is-paused");
+    columnHoldTimers.delete(column);
   }, duration);
+  columnHoldTimers.set(column, timer);
 }
 
 function renderColumnCard(project, index, { duplicate = false } = {}) {
@@ -282,13 +288,17 @@ function renderGrid() {
 function bindColumnCards() {
   grid.querySelectorAll(".column-card").forEach((card) => {
     const index = Number(card.dataset.token);
-    card.addEventListener("pointerdown", () => holdColumnMotion(2200));
-    card.addEventListener("pointerenter", () => holdColumnMotion(1200));
-    card.addEventListener("focus", () => holdColumnMotion(1800));
+    card.addEventListener("pointerenter", () => {
+      window.clearTimeout(hoverFocusTimer);
+      hoverFocusTimer = window.setTimeout(() => focusProject(index), 160);
+    });
+    card.addEventListener("pointerleave", () => window.clearTimeout(hoverFocusTimer));
+    card.addEventListener("pointerdown", () => holdColumnMotion(card, 900));
+    card.addEventListener("focus", () => holdColumnMotion(card, 1400));
     card.addEventListener("click", () => {
       const alreadySelected = displayedProject === index;
       focusProject(index);
-      holdColumnMotion(alreadySelected ? 1000 : 2400);
+      holdColumnMotion(card, alreadySelected ? 700 : 1500);
       if (alreadySelected) openProject(index);
     });
   });
