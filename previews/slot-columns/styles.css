@@ -1547,9 +1547,9 @@ body.is-lite-mode .modal-backdrop {
   animation-duration: calc(var(--column-speed) + 5s);
 }
 
-.is-column-stage .cover-field:hover .column-rail,
-.is-column-stage .cover-field:focus-within .column-rail,
-body.is-column-paused .column-rail {
+.work-column:hover .column-rail,
+.work-column:focus-within .column-rail,
+.work-column.is-paused .column-rail {
   animation-play-state: paused;
 }
 
@@ -1567,9 +1567,9 @@ body.is-column-paused .column-rail {
   -webkit-tap-highlight-color: transparent;
   box-shadow: 0 1rem 2.2rem rgba(0, 0, 0, 0.18);
   transition:
-    box-shadow 220ms ease,
-    filter 220ms ease,
-    transform 220ms ease;
+    box-shadow 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 340ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 340ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .column-card img {
@@ -1581,8 +1581,8 @@ body.is-column-paused .column-rail {
   filter: saturate(0.92) brightness(0.72);
   transform: scale(1.01);
   transition:
-    filter 260ms ease,
-    transform 260ms ease;
+    filter 420ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .column-card::before {
@@ -1644,7 +1644,7 @@ body.is-column-paused .column-rail {
   background: linear-gradient(90deg, var(--album-a), var(--album-b));
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 220ms ease;
+  transition: transform 360ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .column-card:hover,
@@ -1654,14 +1654,14 @@ body.is-column-paused .column-rail {
     0 1.25rem 2.6rem rgba(0, 0, 0, 0.34),
     0 0 2.8rem color-mix(in srgb, var(--album-b) 24%, transparent);
   filter: saturate(1.05);
-  transform: translateY(-0.08rem);
+  transform: translateY(-0.12rem) scale(1.012);
 }
 
 .column-card:hover img,
 .column-card:focus-visible img,
 .column-card.is-focused img {
   filter: saturate(1.08) brightness(0.86);
-  transform: scale(1.045);
+  transform: scale(1.03);
 }
 
 .column-card:hover .card-tint,
