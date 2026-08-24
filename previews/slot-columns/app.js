@@ -236,7 +236,6 @@ function renderColumnCard(project, index, { duplicate = false } = {}) {
         <strong>${escapeHtml(project.album || "Untitled")}</strong>
         <small>${escapeHtml(project.artist || "")}</small>
       </span>
-      <span class="card-tint" aria-hidden="true"></span>
     </${element}>
   `;
 }
