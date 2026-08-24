@@ -31,6 +31,8 @@ const modalTitle = document.querySelector("#modal-title");
 const modalYear = document.querySelector("#modal-year");
 const modalRole = document.querySelector("#modal-role");
 const modalTracks = document.querySelector("#modal-tracks");
+const modalCreditsSection = document.querySelector("#modal-credits-section");
+const modalTracksSection = document.querySelector("#modal-tracks-section");
 const modalPlatforms = document.querySelector("#modal-platforms");
 const prevButton = document.querySelector("#prev-project");
 const nextButton = document.querySelector("#next-project");
@@ -238,7 +240,7 @@ function renderColumnCard(project, index, { duplicate = false } = {}) {
   const element = duplicate ? "div" : "button";
   const accessibilityAttributes = duplicate
     ? 'aria-hidden="true" data-duplicate="true"'
-    : `type="button" aria-label="Select ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}"`;
+    : `type="button" aria-label="Open credits for ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}"`;
   const imageAlt = duplicate ? "" : `${project.album} cover`;
 
   return `
@@ -296,10 +298,9 @@ function bindColumnCards() {
     card.addEventListener("pointerdown", () => holdColumnMotion(card, 900));
     card.addEventListener("focus", () => holdColumnMotion(card, 1400));
     card.addEventListener("click", () => {
-      const alreadySelected = displayedProject === index;
       focusProject(index);
-      holdColumnMotion(card, alreadySelected ? 700 : 1500);
-      if (alreadySelected) openProject(index);
+      holdColumnMotion(card, 900);
+      openProject(index);
     });
   });
 }
@@ -313,8 +314,12 @@ function focusProject(index) {
   document.body.classList.add("is-playing");
   focusTitle.textContent = project.album || "Untitled";
   focusMeta.textContent = [project.artist, project.year].filter(Boolean).join(" / ");
-  focusRole.textContent = project.role || "";
-  focusTracks.innerHTML = renderTrackLinks(project);
+  const role = String(project.role || "").trim();
+  const trackLinks = renderTrackLinks(project);
+  focusRole.textContent = role;
+  focusRole.hidden = !role;
+  focusTracks.innerHTML = trackLinks;
+  focusTracks.hidden = !trackLinks;
   focusPlatforms.innerHTML = renderPlatformLinks(project);
   grid.querySelectorAll(".column-card").forEach((card) => {
     const cardIndex = Number(card.dataset.token);
@@ -325,7 +330,7 @@ function focusProject(index) {
     card.setAttribute("aria-pressed", String(isFocused));
     card.setAttribute(
       "aria-label",
-      `${isFocused ? "Open credits for" : "Select"} ${cardProject.album || "Untitled"} by ${cardProject.artist || ""}`,
+      `Open credits for ${cardProject.album || "Untitled"} by ${cardProject.artist || ""}`,
     );
   });
 }
@@ -371,8 +376,12 @@ function openProject(index) {
   applyAlbumMood(index);
   modalTitle.innerHTML = `<em>${escapeHtml(project.album || "Untitled")}</em><br>${escapeHtml(project.artist || "")}`;
   modalYear.textContent = project.year || "";
-  modalRole.textContent = project.role || "";
-  modalTracks.innerHTML = renderTrackLinks(project);
+  const role = String(project.role || "").trim();
+  const trackLinks = renderTrackLinks(project);
+  modalRole.textContent = role;
+  modalCreditsSection.hidden = !role;
+  modalTracks.innerHTML = trackLinks;
+  modalTracksSection.hidden = !trackLinks;
   modalPlatforms.innerHTML = renderPlatformLinks(project);
   modalImage.src = assetUrl(project.image);
   modalImage.alt = project.album || "";

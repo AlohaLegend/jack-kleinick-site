@@ -95,6 +95,14 @@ img {
   line-height: 1;
 }
 
+.info-button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .site-title {
   font: inherit;
   line-height: 1;
@@ -876,9 +884,10 @@ body.is-lite-mode .modal-backdrop {
 .modal-art-shell img {
   position: relative;
   z-index: 1;
-  width: min(74%, 21rem);
+  width: min(74%, 21rem, calc(100dvh - 8rem));
+  height: auto;
   aspect-ratio: 1;
-  object-fit: cover;
+  object-fit: contain;
   border: 1px solid color-mix(in srgb, var(--album-b) 34%, rgba(245, 241, 234, 0.1));
   box-shadow:
     0 1.5rem 4rem rgba(0, 0, 0, 0.48),
@@ -997,12 +1006,12 @@ body.is-lite-mode .modal-backdrop {
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2.75rem;
+  height: 2.75rem;
   border-radius: 50%;
   color: var(--ink);
   background: rgba(255, 255, 255, 0.12);
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   line-height: 1;
 }
 
@@ -1389,7 +1398,8 @@ body.is-lite-mode .modal-backdrop {
   }
 
   .modal-art-shell img {
-    width: min(68%, 13.75rem);
+    width: min(68%, 13.75rem, 34dvh);
+    height: auto;
   }
 
   .modal-copy {

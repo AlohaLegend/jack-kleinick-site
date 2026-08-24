@@ -99,6 +99,19 @@ img {
   line-height: 1;
 }
 
+.name-button,
+.info-button,
+.back-button {
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+}
+
+.info-button {
+  min-width: 2.75rem;
+  justify-content: center;
+}
+
 .site-title {
   font: inherit;
   line-height: 1;
@@ -880,9 +893,10 @@ body.is-lite-mode .modal-backdrop {
 .modal-art-shell img {
   position: relative;
   z-index: 1;
-  width: min(74%, 21rem);
+  width: min(74%, 21rem, calc(100dvh - 8rem));
+  height: auto;
   aspect-ratio: 1;
-  object-fit: cover;
+  object-fit: contain;
   border: 1px solid color-mix(in srgb, var(--album-b) 34%, rgba(245, 241, 234, 0.1));
   box-shadow:
     0 1.5rem 4rem rgba(0, 0, 0, 0.48),
@@ -928,6 +942,9 @@ body.is-lite-mode .modal-backdrop {
 
 .track-list span,
 .track-list a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.5rem;
   padding: 0.28rem 0.5rem;
   border: 1px solid var(--panel-border);
   background: color-mix(in srgb, var(--album-a) 34%, var(--soft));
@@ -960,7 +977,7 @@ body.is-lite-mode .modal-backdrop {
 .platform-icon {
   display: grid;
   place-items: center;
-  width: 2.2rem;
+  width: 2.65rem;
   aspect-ratio: 1;
   border: 1px solid var(--panel-border);
   background: color-mix(in srgb, var(--album-a) 26%, rgba(245, 241, 234, 0.04));
@@ -1001,12 +1018,13 @@ body.is-lite-mode .modal-backdrop {
   z-index: 2;
   display: grid;
   place-items: center;
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid color-mix(in srgb, var(--album-b) 38%, rgba(245, 241, 234, 0.2));
   border-radius: 50%;
   color: var(--ink);
   background: rgba(255, 255, 255, 0.12);
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   line-height: 1;
 }
 
@@ -1061,7 +1079,7 @@ body.is-lite-mode .modal-backdrop {
 .transport-button {
   gap: 0.3rem;
   min-width: 5.25rem;
-  min-height: 2.25rem;
+  min-height: 2.75rem;
   padding: 0.45rem 0.72rem;
   text-transform: lowercase;
 }
@@ -1222,6 +1240,10 @@ body.is-lite-mode .modal-backdrop {
   body {
     --page: #090b0c;
     --header: rgba(9, 11, 12, 0.9);
+  }
+
+  .site-header {
+    padding: 0.45rem 0.72rem;
   }
 
   body:not(.is-info-view):not(.is-modal-open) .site-main {
@@ -1393,7 +1415,8 @@ body.is-lite-mode .modal-backdrop {
   }
 
   .modal-art-shell img {
-    width: min(68%, 13.75rem);
+    width: min(68%, 13.75rem, 34dvh);
+    height: auto;
   }
 
   .modal-copy {
@@ -1422,6 +1445,7 @@ body.is-lite-mode .modal-backdrop {
 
   .track-list span,
   .track-list a {
+    min-height: 2.75rem;
     padding: 0.34rem 0.48rem;
     font-size: 0.92rem;
     line-height: 1.05;
@@ -1432,7 +1456,7 @@ body.is-lite-mode .modal-backdrop {
   }
 
   .platform-icon {
-    width: 2.05rem;
+    width: 2.75rem;
   }
 
   .modal-nav {
@@ -1552,8 +1576,9 @@ body.is-lite-mode .modal-backdrop {
 }
 
 .work-column:focus-within .column-rail,
+.is-modal-open .column-rail,
 .work-column.is-paused .column-rail {
-  animation-play-state: paused;
+  animation-play-state: paused !important;
 }
 
 .column-card {
@@ -1880,19 +1905,86 @@ body.is-lite-mode .modal-backdrop {
   }
 }
 
+@media (min-width: 641px) and (max-width: 1080px) and (max-height: 560px) {
+  .stage-heading {
+    top: 4.15rem;
+    right: 21rem;
+  }
+
+  .stage-heading span:first-child {
+    font-size: clamp(1.8rem, 5vw, 2.75rem);
+  }
+
+  .stage-heading span:last-child {
+    display: none;
+  }
+
+  .is-column-stage .cover-field {
+    inset: 6.7rem 21rem 0.65rem 0.65rem;
+  }
+
+  .is-column-stage .stage-focus {
+    top: 4.15rem;
+    left: auto;
+    right: 0.65rem;
+    bottom: auto;
+    width: 19.7rem;
+    min-height: 0;
+    max-height: calc(100dvh - 4.8rem);
+    grid-template-columns: 5rem minmax(0, 1fr);
+    padding: 0.62rem;
+  }
+
+  .is-column-stage .stage-focus .stage-target {
+    width: 5rem;
+  }
+
+  .is-column-stage #focus-role,
+  .is-column-stage .focus-tracks,
+  .is-column-stage .focus-platforms {
+    display: none;
+  }
+
+  .is-column-stage .stage-focus h2 {
+    font-size: clamp(1.15rem, 3.2vw, 1.7rem);
+  }
+
+  .modal-card {
+    width: calc(100% - 1rem);
+    height: calc(100dvh - 1rem);
+  }
+
+  .modal-copy {
+    grid-template-rows: auto;
+    align-content: start;
+    gap: 0.55rem;
+    overflow: auto;
+    padding: 1rem 3.5rem 1rem 0;
+  }
+
+  .modal-copy h1 {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    line-height: 0.92;
+  }
+
+  .modal-year {
+    margin-top: -0.3rem;
+  }
+
+  .track-list {
+    max-height: none;
+  }
+
+  .modal-nav {
+    margin-top: 0;
+    padding-top: 0.55rem;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .column-rail {
-    animation-name: columnDrift !important;
-    animation-duration: var(--column-speed) !important;
-    animation-timing-function: linear !important;
-    animation-iteration-count: infinite !important;
-  }
-
-  .is-column-2 .column-rail {
-    animation-direction: reverse !important;
-  }
-
-  .is-column-3 .column-rail {
-    animation-duration: calc(var(--column-speed) + 5s) !important;
+    animation: none !important;
+    transform: translateY(var(--column-offset));
+    will-change: auto;
   }
 }
