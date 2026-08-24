@@ -283,12 +283,97 @@ label {
 }
 
 .import-panel h2,
+.portrait-panel h2,
 .analytics-panel h2 {
   margin-top: 0.15rem;
   font-size: clamp(1.75rem, 3vw, 2.55rem);
   font-weight: 850;
   line-height: 1.2;
   text-transform: uppercase;
+}
+
+.portrait-panel {
+  grid-template-columns: minmax(0, 1fr) minmax(24rem, 34rem);
+  align-items: center;
+  border-left-color: var(--amber);
+}
+
+.portrait-guidance {
+  margin-top: 0.55rem;
+  color: var(--dim);
+}
+
+.portrait-control {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: 0.8rem;
+  align-items: stretch;
+}
+
+#portrait-preview {
+  width: 7.5rem;
+  aspect-ratio: 1;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+}
+
+.portrait-drop {
+  position: relative;
+  display: grid;
+  place-content: center;
+  min-height: 7.5rem;
+  border: 1px dashed rgba(242, 199, 91, 0.55);
+  border-radius: 4px;
+  background: rgba(242, 199, 91, 0.06);
+  padding: 1rem;
+  color: var(--text);
+  cursor: pointer;
+  text-align: center;
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    transform 140ms ease,
+    opacity 140ms ease;
+}
+
+.portrait-drop input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.portrait-drop strong {
+  color: #fff3cf;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+.portrait-drop span {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.86rem;
+}
+
+.portrait-drop:hover,
+.portrait-drop:focus-within,
+.portrait-drop.is-dragging {
+  border-color: var(--green);
+  background: var(--green-soft);
+  transform: translateY(-1px);
+}
+
+.portrait-drop.is-uploading {
+  pointer-events: none;
+  opacity: 0.58;
+}
+
+#portrait-status {
+  grid-column: 1 / -1;
+  min-height: 1.35rem;
 }
 
 .flow-cards {
@@ -621,6 +706,10 @@ label {
     max-width: none;
   }
 
+  .portrait-panel {
+    grid-template-columns: 1fr;
+  }
+
   .analytics-metrics,
   .analytics-lists {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -662,6 +751,7 @@ label {
   }
 
   .import-panel h2,
+  .portrait-panel h2,
   .analytics-panel h2 {
     font-size: clamp(1.55rem, 8.4vw, 2.15rem);
   }
@@ -692,6 +782,18 @@ label {
 
   .editor-preview img {
     width: 5.6rem;
+  }
+
+  .portrait-control {
+    grid-template-columns: 5.6rem minmax(0, 1fr);
+  }
+
+  #portrait-preview {
+    width: 5.6rem;
+  }
+
+  .portrait-drop {
+    min-height: 5.6rem;
   }
 
   #status {

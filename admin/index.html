@@ -6,8 +6,8 @@
     <meta name="robots" content="noindex, nofollow" />
     <meta name="theme-color" content="#090b0c" />
     <title>Jack Kleinick Admin</title>
-    <link rel="stylesheet" href="styles.css?v=20260611-editor-spacing" />
-    <script src="admin.js?v=20260821-maintenance" defer></script>
+    <link rel="stylesheet" href="styles.css?v=20260824-portrait" />
+    <script src="admin.js?v=20260824-portrait" defer></script>
   </head>
   <body>
     <main class="admin-shell">
@@ -59,10 +59,29 @@
           </form>
         </section>
 
+        <section class="portrait-panel control-panel" aria-labelledby="portrait-title">
+          <div class="portrait-copy">
+            <p class="kicker">02 / Info photo</p>
+            <h2 id="portrait-title">Profile portrait</h2>
+            <p class="small">Drop in a new photo or choose one from the computer. It updates the Info page immediately.</p>
+            <p class="small portrait-guidance">JPG, PNG, WebP, or GIF · up to 8 MB · a square image works best</p>
+          </div>
+
+          <div class="portrait-control">
+            <img id="portrait-preview" src="/assets/jack-kleinick-portrait.jpeg" alt="Current Info page portrait" />
+            <label class="portrait-drop" id="portrait-drop" for="portrait-file">
+              <input id="portrait-file" type="file" accept="image/jpeg,image/png,image/webp,image/gif" />
+              <strong>Drop photo here</strong>
+              <span>or click to choose a file</span>
+            </label>
+            <p class="small" id="portrait-status" role="status">Current Info photo</p>
+          </div>
+        </section>
+
         <section class="analytics-panel control-panel" aria-labelledby="analytics-title">
           <div class="analytics-header">
             <div>
-              <p class="kicker">02 / Traffic</p>
+              <p class="kicker">03 / Traffic</p>
               <h2 id="analytics-title">Website analytics</h2>
               <p class="small" id="analytics-updated">Traffic appears here after the first live visit.</p>
             </div>
@@ -126,7 +145,7 @@
 
           <form class="editor" id="editor">
             <div class="panel-title">
-              <p class="kicker">03 / Selected work</p>
+              <p class="kicker">04 / Selected work</p>
               <span id="status" role="status"></span>
             </div>
 
