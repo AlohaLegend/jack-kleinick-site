@@ -18,6 +18,10 @@ const previewImage = document.querySelector("#preview-image");
 const previewTitle = document.querySelector("#preview-title");
 const previewMeta = document.querySelector("#preview-meta");
 const analyticsRefresh = document.querySelector("#analytics-refresh");
+const portraitPreview = document.querySelector("#portrait-preview");
+const portraitDrop = document.querySelector("#portrait-drop");
+const portraitFile = document.querySelector("#portrait-file");
+const portraitStatus = document.querySelector("#portrait-status");
 const analyticsEls = {
   updated: document.querySelector("#analytics-updated"),
   pageviews: document.querySelector("#analytics-pageviews"),
@@ -42,6 +46,7 @@ const fields = {
 };
 
 let works = [];
+let profile = { portrait: "assets/jack-kleinick-portrait.jpeg" };
 let selectedIndex = -1;
 let dirty = false;
 let loginInProgress = false;
@@ -122,13 +127,14 @@ async function api(path, options = {}) {
   const { headers: optionHeaders = {}, timeoutMs = API_TIMEOUT_MS, ...fetchOptions } = options;
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), timeoutMs);
+  const isFormData = typeof FormData !== "undefined" && fetchOptions.body instanceof FormData;
 
   try {
     const response = await fetch(`${API_BASE}${path}`, {
       cache: "no-store",
       credentials: "include",
       headers: {
-        "content-type": "application/json",
+        ...(!isFormData ? { "content-type": "application/json" } : {}),
         ...(session ? { Authorization: `Bearer ${session}` } : {}),
         ...optionHeaders,
       },
@@ -230,6 +236,11 @@ function renderList() {
     .join("");
 }
 
+function renderPortrait() {
+  if (!portraitPreview) return;
+  portraitPreview.src = assetUrl(profile.portrait || "assets/jack-kleinick-portrait.jpeg");
+}
+
 function selectWork(index) {
   if (selectedIndex >= 0) syncCurrent();
   selectedIndex = index;
@@ -322,6 +333,8 @@ function extractColors(imageUrl) {
 async function loadWorks() {
   const data = await api("/api/works");
   works = Array.isArray(data.works) ? data.works : [];
+  profile = data.profile || profile;
+  renderPortrait();
   if (works.length) {
     selectWork(0);
     return;
@@ -330,6 +343,49 @@ async function loadWorks() {
   selectedIndex = -1;
   renderList();
   renderPreview();
+}
+
+async function uploadPortrait(file) {
+  const allowedTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+  if (!file || !allowedTypes.has(file.type)) {
+    portraitStatus.textContent = "Choose a JPG, PNG, WebP, or GIF image.";
+    portraitStatus.style.color = "#ffc5bc";
+    return;
+  }
+  if (!file.size || file.size > 8 * 1024 * 1024) {
+    portraitStatus.textContent = "Choose an image smaller than 8 MB.";
+    portraitStatus.style.color = "#ffc5bc";
+    return;
+  }
+
+  const previewUrl = URL.createObjectURL(file);
+  portraitPreview.src = previewUrl;
+  portraitDrop.classList.add("is-uploading");
+  portraitFile.disabled = true;
+  portraitStatus.textContent = "Uploading and updating the Info page...";
+  portraitStatus.style.color = "";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file, file.name);
+    const data = await api("/api/profile/portrait", {
+      method: "POST",
+      body: formData,
+      timeoutMs: 45000,
+    });
+    profile = data.profile || profile;
+    renderPortrait();
+    portraitStatus.textContent = "Updated live. New page loads will use this photo.";
+  } catch (error) {
+    renderPortrait();
+    portraitStatus.textContent = friendlyError(error);
+    portraitStatus.style.color = "#ffc5bc";
+  } finally {
+    URL.revokeObjectURL(previewUrl);
+    portraitDrop.classList.remove("is-uploading");
+    portraitFile.disabled = false;
+    portraitFile.value = "";
+  }
 }
 
 async function loadAnalytics() {
@@ -369,9 +425,10 @@ async function saveWorks() {
   if (selectedIndex >= 0) syncCurrent();
   const data = await api("/api/works", {
     method: "PUT",
-    body: JSON.stringify({ works }),
+    body: JSON.stringify({ works, profile }),
   });
   works = Array.isArray(data.works) ? data.works : works;
+  profile = data.profile || profile;
   dirty = false;
   renderList();
   setStatus("Saved live. New page loads will use this catalog.");
@@ -492,6 +549,28 @@ saveBottomButton?.addEventListener("click", handleSave);
 
 analyticsRefresh?.addEventListener("click", () => {
   loadAnalytics();
+});
+
+portraitFile?.addEventListener("change", () => {
+  uploadPortrait(portraitFile.files?.[0]);
+});
+
+["dragenter", "dragover"].forEach((eventName) => {
+  portraitDrop?.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    portraitDrop.classList.add("is-dragging");
+  });
+});
+
+["dragleave", "drop"].forEach((eventName) => {
+  portraitDrop?.addEventListener(eventName, (event) => {
+    event.preventDefault();
+    portraitDrop.classList.remove("is-dragging");
+  });
+});
+
+portraitDrop?.addEventListener("drop", (event) => {
+  uploadPortrait(event.dataTransfer?.files?.[0]);
 });
 
 logoutButton.addEventListener("click", async () => {

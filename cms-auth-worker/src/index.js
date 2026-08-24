@@ -225,8 +225,13 @@ const cleanWork = (work = {}) => ({
   },
 });
 
+const cleanProfile = (profile = {}) => ({
+  portrait: cleanAsset(profile.portrait, "assets/jack-kleinick-portrait.jpeg"),
+});
+
 const normalizeContent = (content = {}) => ({
   updatedAt: cleanString(content.updatedAt, new Date().toISOString(), 40),
+  profile: cleanProfile(content.profile),
   works: Array.isArray(content.works) ? content.works.map(cleanWork) : [],
 });
 
@@ -331,6 +336,34 @@ const saveRemoteAsset = async (request, env, imageUrl, slug) => {
   return `${new URL(request.url).origin}${ASSET_ROUTE_PREFIX}${filename}`;
 };
 
+const saveUploadedAsset = async (request, env, file, slug) => {
+  if (!env.JACK_CMS_CONTENT) throw new Error("Asset storage is not configured.");
+  if (!file || typeof file.arrayBuffer !== "function") throw new Error("Choose an image to upload.");
+
+  const contentType = cleanString(file.type, "", 80).toLowerCase();
+  const extension = ALLOWED_ASSET_TYPES[contentType];
+  if (!extension) throw new Error("Use a JPG, PNG, WebP, or GIF image.");
+  if (!file.size || file.size > MAX_ASSET_BYTES) throw new Error("Image must be smaller than 8 MB.");
+
+  const buffer = await file.arrayBuffer();
+  if (!buffer.byteLength || buffer.byteLength > MAX_ASSET_BYTES) throw new Error("Image must be smaller than 8 MB.");
+
+  const safeSlug = slugify(slug || file.name || "jack-upload");
+  const originalName = cleanString(file.name, `${safeSlug}.${extension}`, 160).replaceAll('"', "");
+  const filename = `${Date.now().toString(36)}-${crypto.randomUUID().slice(0, 8)}-${safeSlug}.${extension}`;
+
+  await env.JACK_CMS_CONTENT.put(`${ASSET_KEY_PREFIX}${filename}`, buffer, {
+    metadata: {
+      byteLength: buffer.byteLength,
+      contentType,
+      originalName,
+      uploadedAt: new Date().toISOString(),
+    },
+  });
+
+  return `${new URL(request.url).origin}${ASSET_ROUTE_PREFIX}${filename}`;
+};
+
 const importSpotifyProject = async (request, env) => {
   const sessionError = await requireSession(request, env);
   if (sessionError) return sessionError;
@@ -405,8 +438,27 @@ const handleWorksUpdate = async (request, env) => {
   if (sessionError) return sessionError;
 
   const body = await readJson(request);
-  const content = await writeContent(env, { works: body?.works || body?.content?.works || [] });
+  const current = await readContent(env);
+  const content = await writeContent(env, {
+    profile: body?.profile || body?.content?.profile || current.profile,
+    works: body?.works || body?.content?.works || [],
+  });
   return jsonResponse(request, content, { env });
+};
+
+const handlePortraitUpload = async (request, env) => {
+  const sessionError = await requireSession(request, env);
+  if (sessionError) return sessionError;
+
+  const formData = await request.formData();
+  const portrait = await saveUploadedAsset(request, env, formData.get("file"), "jack-info-photo");
+  const current = await readContent(env);
+  const content = await writeContent(env, {
+    ...current,
+    profile: { ...current.profile, portrait },
+  });
+
+  return jsonResponse(request, { profile: content.profile, updatedAt: content.updatedAt }, { env });
 };
 
 const handleAdminWorks = async (request, env) => {
@@ -713,6 +765,18 @@ export default {
         return jsonResponse(
           request,
           { error: friendlyMessage },
+          { status: 400, env },
+        );
+      }
+    }
+
+    if (request.method === "POST" && pathname === "/api/profile/portrait") {
+      try {
+        return await handlePortraitUpload(request, env);
+      } catch (error) {
+        return jsonResponse(
+          request,
+          { error: cleanString(error?.message, "Portrait upload failed.", 260) },
           { status: 400, env },
         );
       }

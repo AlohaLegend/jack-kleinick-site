@@ -448,10 +448,18 @@ async function loadContent() {
   return fallbackContent;
 }
 
+function applyProfile(content) {
+  const portrait = content?.profile?.portrait;
+  if (!portrait || !infoPortrait) return;
+  infoPortrait.dataset.src = assetUrl(portrait);
+  if (infoPortrait.getAttribute("src")) infoPortrait.src = assetUrl(portrait);
+}
+
 async function bootSite() {
   stage?.classList.add("is-column-stage");
   motionEnable?.setAttribute("hidden", "");
   const initialContent = fallbackContent;
+  applyProfile(initialContent);
   projects = Array.isArray(initialContent.works) ? initialContent.works : [];
   renderGrid();
   updateStageFocusAccessibility();
@@ -462,6 +470,7 @@ async function bootSite() {
   }, 700);
 
   const liveContent = await loadContent();
+  applyProfile(liveContent);
   if (
     !Array.isArray(liveContent.works) ||
     !liveContent.works.length ||
