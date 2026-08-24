@@ -1575,12 +1575,6 @@ body.is-lite-mode .modal-backdrop {
   animation-duration: calc(var(--column-speed) + 5s);
 }
 
-.work-column:focus-within .column-rail,
-.is-modal-open .column-rail,
-.work-column.is-paused .column-rail {
-  animation-play-state: paused !important;
-}
-
 .column-card {
   position: relative;
   display: grid;
