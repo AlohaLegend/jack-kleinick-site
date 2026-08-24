@@ -11,7 +11,6 @@ let modalSwipe = null;
 let lastWheelNavAt = 0;
 let lastAnalyticsEvent = { path: "", time: 0 };
 let hoverFocusTimer = null;
-const columnHoldTimers = new WeakMap();
 
 const grid = document.querySelector("#work-grid");
 const stage = document.querySelector("#gravity-stage");
@@ -223,19 +222,6 @@ function columnProjects(columnIndex) {
   return projects.filter((_, index) => index % 3 === columnIndex);
 }
 
-function holdColumnMotion(card, duration = 1400) {
-  const column = card?.closest(".work-column");
-  if (!column) return;
-
-  column.classList.add("is-paused");
-  window.clearTimeout(columnHoldTimers.get(column));
-  const timer = window.setTimeout(() => {
-    column.classList.remove("is-paused");
-    columnHoldTimers.delete(column);
-  }, duration);
-  columnHoldTimers.set(column, timer);
-}
-
 function renderColumnCard(project, index, { duplicate = false } = {}) {
   const element = duplicate ? "div" : "button";
   const accessibilityAttributes = duplicate
@@ -295,11 +281,8 @@ function bindColumnCards() {
       hoverFocusTimer = window.setTimeout(() => focusProject(index), 160);
     });
     card.addEventListener("pointerleave", () => window.clearTimeout(hoverFocusTimer));
-    card.addEventListener("pointerdown", () => holdColumnMotion(card, 900));
-    card.addEventListener("focus", () => holdColumnMotion(card, 1400));
     card.addEventListener("click", () => {
       focusProject(index);
-      holdColumnMotion(card, 900);
       openProject(index);
     });
   });
