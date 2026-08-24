@@ -1442,6 +1442,8 @@ body.is-lite-mode .modal-backdrop {
 
 /* Experimental branch: three-column selected works concept. */
 .is-column-stage {
+  --column-focus-reserve: clamp(31.5rem, 41vw, 35rem);
+  --column-stage-width: min(calc(100vw - var(--column-focus-reserve) - 2rem), 72rem);
   min-height: 100vh;
   height: 100vh;
   isolation: isolate;
@@ -1460,8 +1462,9 @@ body.is-lite-mode .modal-backdrop {
 .stage-heading {
   position: fixed;
   top: clamp(5.2rem, 11vh, 7.8rem);
-  left: 1.2rem;
-  right: clamp(31.5rem, 41vw, 35rem);
+  left: calc((100vw - var(--column-focus-reserve) - var(--column-stage-width)) / 2);
+  right: auto;
+  width: var(--column-stage-width);
   z-index: 7;
   display: flex;
   align-items: end;
@@ -1484,9 +1487,10 @@ body.is-lite-mode .modal-backdrop {
 
 .is-column-stage .cover-field {
   position: fixed;
-  inset: clamp(9.5rem, 22vh, 13.5rem) clamp(31.5rem, 41vw, 35rem) 1rem 1rem;
+  inset: clamp(9.5rem, 22vh, 13.5rem) auto 1rem calc((100vw - var(--column-focus-reserve) - var(--column-stage-width)) / 2);
   z-index: 3;
   display: grid;
+  width: var(--column-stage-width);
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(0.62rem, 1.2vw, 1rem);
   overflow: hidden;
@@ -1555,7 +1559,9 @@ body.is-lite-mode .modal-backdrop {
 .column-card {
   position: relative;
   display: grid;
-  min-height: clamp(8.2rem, 17vh, 13rem);
+  width: 100%;
+  min-height: 0;
+  aspect-ratio: 1;
   overflow: hidden;
   border: 0;
   background: #111;
@@ -1753,11 +1759,14 @@ body.is-lite-mode .modal-backdrop {
 
 @media (max-width: 1080px) {
   .stage-heading {
+    width: auto;
+    left: 1.2rem;
     right: 1rem;
   }
 
   .is-column-stage .cover-field {
     inset: clamp(9rem, 20vh, 12rem) 1rem 12rem;
+    width: auto;
   }
 
   .is-column-stage .stage-focus {
@@ -1816,7 +1825,7 @@ body.is-lite-mode .modal-backdrop {
   }
 
   .column-card {
-    min-height: clamp(5.65rem, 15.2vh, 7.8rem);
+    min-height: 0;
   }
 
   .card-copy {

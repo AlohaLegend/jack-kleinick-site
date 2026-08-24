@@ -35,9 +35,9 @@
     <link rel="canonical" href="https://jackkleinick.com/" />
     <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://jack-kleinick-cms-auth.bammediaauth.workers.dev" />
-    <link rel="stylesheet" href="styles.css?v=20260821b" />
+    <link rel="stylesheet" href="styles.css?v=20260824-columns-live" />
     <script src="content/works.js" defer></script>
-    <script src="app.js?v=20260821b" defer></script>
+    <script src="app.js?v=20260824-columns-live" defer></script>
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -94,7 +94,11 @@
 
     <main class="site-main">
       <section class="view is-active" id="work-view" aria-label="Selected works" aria-hidden="false">
-        <section class="gravity-stage" id="gravity-stage" aria-label="Floating selected works">
+        <section class="gravity-stage is-column-stage" id="gravity-stage" aria-label="Selected works">
+          <div class="stage-heading" aria-hidden="true">
+            <span>Selected Work</span>
+            <span>writing / production / songs</span>
+          </div>
           <div class="stage-focus" id="stage-focus" aria-live="polite">
             <div class="stage-target" aria-hidden="true"></div>
             <div class="focus-copy">
@@ -108,7 +112,7 @@
                 <button type="button" id="focus-open" aria-label="Open selected work credits and links">
                   <span>Credits</span>
                 </button>
-                <button type="button" id="motion-enable" class="motion-button" aria-label="Enable phone tilt and shake controls">
+                <button type="button" id="motion-enable" class="motion-button" aria-label="Enable phone tilt and shake controls" hidden>
                   <span>Tilt</span>
                 </button>
               </div>
