@@ -291,6 +291,11 @@ function safeExternalUrl(value = "") {
   return fallback;
 }
 
+function assetUrl(value = "") {
+  if (/^https?:\/\//i.test(value)) return value;
+  return `/${String(value || "assets/studio-hero.jpg").replace(/^\/+/, "")}`;
+}
+
 function normalizeTrack(track) {
   const item = typeof track === "string" ? { title: track, url: "" } : { ...track };
   if (item.url || typeof item.title !== "string") return item;
@@ -390,7 +395,7 @@ function projectMood(index) {
 
 function applyAlbumMood(index) {
   const mood = projectMood(index);
-  const image = projects[index]?.image || "assets/studio-hero.jpg";
+  const image = assetUrl(projects[index]?.image);
   document.body.style.setProperty("--album-a", mood[0]);
   document.body.style.setProperty("--album-b", mood[1]);
   document.body.style.setProperty("--page-tint", mood[1]);
@@ -452,7 +457,7 @@ function renderGrid() {
     .map(
       (project, index) => `
         <button class="cover-token" type="button" data-token="${index}" aria-label="Focus ${escapeAttr(project.album)} by ${escapeAttr(project.artist)}">
-          <img src="${escapeAttr(project.image)}" alt="${escapeAttr(project.album)} cover" width="300" height="300" loading="lazy" decoding="async">
+          <img src="${escapeAttr(assetUrl(project.image))}" alt="${escapeAttr(project.album)} cover" width="300" height="300" loading="lazy" decoding="async">
           <span><strong>${escapeHtml(project.album)}</strong><small>${escapeHtml(project.artist)}</small></span>
         </button>
       `,
@@ -1059,7 +1064,7 @@ function openProject(index) {
     })
     .join("");
   modalPlatforms.innerHTML = renderPlatformLinks(project);
-  modalImage.src = project.image || "assets/studio-hero.jpg";
+  modalImage.src = assetUrl(project.image);
   modalImage.alt = project.album;
   prevButton.disabled = index === 0;
   nextButton.disabled = index === projects.length - 1;
@@ -1136,8 +1141,8 @@ async function loadContent() {
 function applyProfile(content) {
   const portrait = content?.profile?.portrait;
   if (!portrait || !infoPortrait) return;
-  infoPortrait.dataset.src = portrait;
-  if (infoPortrait.getAttribute("src")) infoPortrait.src = portrait;
+  infoPortrait.dataset.src = assetUrl(portrait);
+  if (infoPortrait.getAttribute("src")) infoPortrait.src = assetUrl(portrait);
 }
 
 async function bootSite() {
