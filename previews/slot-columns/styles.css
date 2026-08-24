@@ -1977,8 +1977,10 @@ body.is-lite-mode .modal-backdrop {
 
 @media (prefers-reduced-motion: reduce) {
   .column-rail {
-    animation: none !important;
-    transform: translateY(var(--column-offset));
-    will-change: auto;
+    animation-name: columnDrift !important;
+    animation-duration: calc(var(--column-speed) + 24s) !important;
+    animation-timing-function: linear !important;
+    animation-iteration-count: infinite !important;
+    will-change: transform;
   }
 }
